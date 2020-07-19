@@ -9,9 +9,9 @@ public struct State
     public State(string name, Action enter, Action exit, Action update)
     {
         this.name = name;
-        Enter = enter;
-        Exit = exit;
-        Update = update;
+        this.Enter = enter;
+        this.Exit = exit;
+        this.Update = update;
     }
 
     public string name;
@@ -22,13 +22,19 @@ public struct State
 
 public class StateMachine
 {
-    private Dictionary<string, State> states;
+    private Dictionary<string, State> states = new Dictionary<string, State>();
     private State CurState { get { return states[curState]; } }
-    private string curState;
+    private string curState = null;
 
-    private void Transition(string nextState)
+    public Action StateEnter;
+    public Action StateExit;
+
+    public void Transition(string nextState)
     {
-        CurState.Exit();
+        if(curState != null)
+        {
+            CurState.Exit();
+        }
         curState = nextState;
         CurState.Enter();
     }
@@ -46,17 +52,9 @@ public class StateMachine
 
 public abstract class Boss : MonoBehaviour, IDamagable
 {
-    public int phaseCount = 0;
-    public int curPhase = 0;
-    public List<int> patternCount;
-    public int curPattern = 0;
-
-    public float minWaitTime, maxWaitTime;
-    public float waitStartTime, waitTime;
-
     public int Health { get; private set; }
-    protected List<StateMachine> stateMachines;
-    protected int phase;
+    protected List<StateMachine> stateMachines = new List<StateMachine>();
+    protected int phase = -1;
     protected StateMachine StateMachine { get { return stateMachines[phase]; } }
 
     private void Start()
@@ -66,12 +64,17 @@ public abstract class Boss : MonoBehaviour, IDamagable
 
     private void Update()
     {
-        //StateMachine.Update();
+        StateMachine.Update();
     }
 
     protected void ChangePhase()
     {
-
+        if(phase != -1)
+        {
+            StateMachine.StateExit();
+        }
+        phase += 1;
+        StateMachine.StateEnter();
     }
 
     protected abstract void Init();
@@ -86,10 +89,33 @@ public abstract class Boss : MonoBehaviour, IDamagable
         }
     }
 
-    public void SetRandomPattern()
+    public IEnumerator CameraZoomIn(float resetTime)
     {
-        Debug.Log(patternCount[curPhase]);
-        curPattern = UnityEngine.Random.Range(0, patternCount[curPhase]);
+        float zoomInTime = 1;
+        float zoomOutTime = 0.5f;
+
+        Vector3 originalPos = Camera.main.transform.position;
+        float originalSize = Camera.main.orthographicSize;
+
+        Vector3 destPos = new Vector3(transform.position.x, transform.position.y, Camera.main.transform.position.z);
+        float destSize = 3;
+
+        for (float timer = 0; timer <= zoomInTime; timer += Time.deltaTime)
+        {
+            yield return null;
+            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, destPos, timer / zoomInTime);
+            Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, destSize, timer / zoomInTime);
+        }
+
+        yield return new WaitForSeconds(resetTime - zoomInTime - zoomOutTime);
+
+
+        for (float timer = 0; timer <= zoomOutTime; timer += Time.deltaTime)
+        {
+            yield return null;
+            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, originalPos, timer / zoomOutTime);
+            Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, originalSize, timer / zoomOutTime);
+        }
     }
 
     public void FollowPlayer()
