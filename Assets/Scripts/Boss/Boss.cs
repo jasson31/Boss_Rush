@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public struct State
@@ -25,7 +26,7 @@ public class StateMachine
     private State CurState { get { return states[curState]; } }
     private string curState;
 
-    private void Transtion(string nextState)
+    private void Transition(string nextState)
     {
         CurState.Exit();
         curState = nextState;
@@ -45,6 +46,14 @@ public class StateMachine
 
 public abstract class Boss : MonoBehaviour, IDamagable
 {
+    public int phaseCount = 0;
+    public int curPhase = 0;
+    public List<int> patternCount;
+    public int curPattern = 0;
+
+    public float minWaitTime, maxWaitTime;
+    public float waitStartTime, waitTime;
+
     public int Health { get; private set; }
     protected List<StateMachine> stateMachines;
     protected int phase;
@@ -57,7 +66,12 @@ public abstract class Boss : MonoBehaviour, IDamagable
 
     private void Update()
     {
-        StateMachine.Update();
+        //StateMachine.Update();
+    }
+
+    protected void ChangePhase()
+    {
+
     }
 
     protected abstract void Init();
@@ -70,6 +84,26 @@ public abstract class Boss : MonoBehaviour, IDamagable
         {
             OnDead();
         }
+    }
+
+    public void SetRandomPattern()
+    {
+        Debug.Log(patternCount[curPhase]);
+        curPattern = UnityEngine.Random.Range(0, patternCount[curPhase]);
+    }
+
+    public void FollowPlayer()
+    {
+        //TODO
+        Vector3 direction = (GameObject.Find("Player").transform.position - transform.position).normalized;
+        transform.position += direction * Time.deltaTime;
+        GetComponent<SpriteRenderer>().flipX = direction.x < 0;
+    }
+
+    public float DistanceFromPlayer()
+    {
+        //TODO
+        return (GameObject.Find("Player").transform.position - transform.position).magnitude;
     }
 
     protected void TeleportTo(Vector3 position)
