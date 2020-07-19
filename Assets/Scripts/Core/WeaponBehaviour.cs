@@ -12,6 +12,25 @@ public class WeaponBehaviour : MonoBehaviour
     [SerializeField]
     private Transform handTransform;
 
+    private void OnDrawGizmos()
+    {
+        if (Weapon)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(handTransform.position, Weapon.range);
+        }
+    }
+
+    private void Awake()
+    {
+        Weapon weapon = ScriptableObject.CreateInstance<Weapon>();
+        weapon.attackBehaviour = new SwordAttack();
+        weapon.damage = 3;
+        weapon.range = 2;
+        weapons.Add(weapon);
+        Debug.Log(weapon.attackBehaviour);
+    }
+
     private void OnEnable()
     {
         if (weapons.Count > weaponIndex)
@@ -24,6 +43,11 @@ public class WeaponBehaviour : MonoBehaviour
     private void OnDisable()
     {
         InputHandler.inst.OnAttackKeyDown -= UseWeaponAttack;
+    }
+
+    private void Update()
+    {
+        Weapon.Update();
     }
 
     public void ChangeWeapon(int index)
