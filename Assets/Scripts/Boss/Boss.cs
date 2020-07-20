@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using UnityEditor.Animations;
 using UnityEngine;
 
 public struct State
@@ -22,39 +23,53 @@ public struct State
 
 public class StateMachine
 {
+    public int minHealth;
+    public int AttackCount { get; private set; }
     private Dictionary<string, State> states = new Dictionary<string, State>();
-    private State CurState { get { return states[curState]; } }
-    private string curState = null;
 
-    public Action StateEnter;
-    public Action StateExit;
 
-    public void Transition(string nextState)
+    public State GetState(string state)
     {
-        if(curState != null)
+        return states[state];
+    }
+
+    public void AddState(State runState, List<State> attackState)
+    {
+        states.Add("Run", runState);
+        AttackCount = attackState.Count;
+        for (int i = 0; i < attackState.Count; i++)
         {
-            CurState.Exit();
+            Debug.Log("Attack" + i.ToString());
+            states.Add("Attack" + i.ToString(), attackState[i]);
         }
-        curState = nextState;
-        CurState.Enter();
     }
 
-    public void Update()
+    public void AddState(State runState, List<State> attackState, State additionalState, bool isDeath)
     {
-        CurState.Update();
+        AddState(runState, attackState);
+        states.Add(isDeath ? "Death" : "Stunned", additionalState);
     }
 
-    public void AddState(State state)
+    public void AddState(State runState, List<State> attackState, State deathState, State stunnedState)
     {
-        states.Add(state.name, state);
+        AddState(runState, attackState, deathState, true);
+        states.Add("Stunned", stunnedState);
     }
+
 }
 
 public abstract class Boss : MonoBehaviour, IDamagable
 {
+    public bool isInvincible = false;
     protected Animator animator;
-    public int Health { get; private set; }
+    protected int currentAttack;
+
+    [SerializeField]
+    protected List<AnimatorController> phaseController;
+
+    public int Health { get; set; }
     protected List<StateMachine> stateMachines = new List<StateMachine>();
+    [SerializeField]
     protected int phase = -1;
     protected StateMachine StateMachine { get { return stateMachines[phase]; } }
 
@@ -66,28 +81,59 @@ public abstract class Boss : MonoBehaviour, IDamagable
 
     private void Update()
     {
-        StateMachine.Update();
+        //StateMachine.Update();
     }
+
+    public void StateEnter(string state)
+    {
+        if(state == "Attack") StateMachine.GetState(state + currentAttack.ToString()).Enter();
+        else StateMachine.GetState(state).Enter();
+    }
+
+    public void StateUpdate(string state)
+    {
+        if (state == "Attack") StateMachine.GetState(state + currentAttack.ToString()).Update();
+        else StateMachine.GetState(state).Update();
+    }
+
+    public void StateExit(string state)
+    {
+        if (state == "Attack") StateMachine.GetState(state + currentAttack.ToString()).Exit();
+        else StateMachine.GetState(state).Exit();
+    }
+
 
     protected void ChangePhase()
     {
-        if(phase != -1)
+        /*if(phase != -1)
         {
             StateMachine.StateExit();
         }
         phase += 1;
-        StateMachine.StateEnter();
+        StateMachine.StateEnter();*/
+        currentAttack = 0;
+        phase += 1;
+        animator.runtimeAnimatorController = phaseController[phase];
     }
 
     protected abstract void Init();
-    protected abstract void OnDead();
 
     public virtual void GetDamaged(int damage)
     {
-        Health -= damage;
-        if (Health <= 0)
+        if(!isInvincible)
         {
-            OnDead();
+            Health -= damage;
+
+            if (StateMachine.minHealth == 0 && Health <= 0)
+            {
+                animator.SetTrigger("Death");
+            }
+            else if (Health <= StateMachine.minHealth)
+            {
+                Health = StateMachine.minHealth;
+                ChangePhase();
+            }
+            Debug.Log("Ouch" + Health);
         }
     }
 
@@ -127,8 +173,13 @@ public abstract class Boss : MonoBehaviour, IDamagable
         {
             Vector3 direction = (GameObject.Find("Player").transform.position - transform.position).normalized;
             transform.position += direction * Time.deltaTime;
-            GetComponent<SpriteRenderer>().flipX = direction.x < 0;
+            LookPlayer();
         }
+    }
+
+    public void LookPlayer()
+    {
+
     }
 
     public float DistanceFromPlayer()
