@@ -6,15 +6,10 @@ using UnityEngine;
 public class DummyBoss : Boss
 {
     float phaseEnterTimer = 0;
-    IEnumerator IdleWait(float waitTime, Action callback)
-    {
-        float startTime = Time.time;
-        while (Time.time - startTime < waitTime)
-        {
-            yield return null;
-        }
-        callback();
-    }
+    float patternWaitStart = 0;
+    float patternWaitTimer = 0;
+    bool inPattern = false;
+
     protected override void Init()
     {
         StateMachine phase1 = new StateMachine();
@@ -45,7 +40,8 @@ public class DummyBoss : Boss
         State idle = new State("idle",
             delegate
             {
-
+                Debug.Log("Idle");
+                animator.SetTrigger("idle");
             },
             delegate
             {
@@ -53,18 +49,51 @@ public class DummyBoss : Boss
             },
             delegate
             {
-                FollowPlayer();
+                FollowPlayer(1);
                 if (DistanceFromPlayer() < 1)
                 {
-                    Debug.Log("Attack");
+                    phase1.Transition("pattern1");
                 }
             });
 
+        State pattern1 = new State("pattern1",
+            delegate
+            {
+                Debug.Log("Attack");
+                patternWaitStart = Time.time;
+                patternWaitTimer = 2;
+                inPattern = false;
+            },
+            delegate
+            {
+                inPattern = false;
+            },
+            delegate
+            {
+                if(Time.time - patternWaitStart < patternWaitTimer)
+                {
+                    FollowPlayer(1);
+                    if(DistanceFromPlayer() > 1)
+                    {
+                        patternWaitStart = Time.time;
+                    }
+                }
+                else if(!inPattern)
+                {
+                    animator.SetTrigger("pattern");
+                    inPattern = true;
+                }
 
-
+                if (animator.GetBool("patternEnd"))
+                {
+                    phase1.Transition("idle");
+                    animator.SetBool("patternEnd", false);
+                }
+            });
 
         phase1.AddState(phase1Enter);
         phase1.AddState(idle);
+        phase1.AddState(pattern1);
 
 
 

@@ -52,6 +52,7 @@ public class StateMachine
 
 public abstract class Boss : MonoBehaviour, IDamagable
 {
+    protected Animator animator;
     public int Health { get; private set; }
     protected List<StateMachine> stateMachines = new List<StateMachine>();
     protected int phase = -1;
@@ -59,6 +60,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
 
     private void Start()
     {
+        animator = GetComponent<Animator>();
         Init();
     }
 
@@ -118,12 +120,15 @@ public abstract class Boss : MonoBehaviour, IDamagable
         }
     }
 
-    public void FollowPlayer()
+    public void FollowPlayer(float minDistance)
     {
         //TODO
-        Vector3 direction = (GameObject.Find("Player").transform.position - transform.position).normalized;
-        transform.position += direction * Time.deltaTime;
-        GetComponent<SpriteRenderer>().flipX = direction.x < 0;
+        if(DistanceFromPlayer() > minDistance)
+        {
+            Vector3 direction = (GameObject.Find("Player").transform.position - transform.position).normalized;
+            transform.position += direction * Time.deltaTime;
+            GetComponent<SpriteRenderer>().flipX = direction.x < 0;
+        }
     }
 
     public float DistanceFromPlayer()
