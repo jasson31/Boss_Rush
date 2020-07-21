@@ -5,10 +5,12 @@ using UnityEngine;
 public class BossStunnedState : StateMachineBehaviour
 {
     Boss boss;
+    float stunStartTime;
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         boss = animator.GetComponent<Boss>();
+        stunStartTime = Time.time;
         boss.StateEnter("Stunned");
     }
 
@@ -16,6 +18,10 @@ public class BossStunnedState : StateMachineBehaviour
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         boss.StateUpdate("Stunned");
+        if(Time.time - stunStartTime > boss.stunTime)
+        {
+            animator.SetTrigger("StunEnd");
+        }
     }
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state

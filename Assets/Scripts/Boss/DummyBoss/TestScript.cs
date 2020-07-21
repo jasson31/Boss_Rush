@@ -18,5 +18,9 @@ public class TestScript : MonoBehaviour
         {
             boss.GetDamaged(1);
         }
+        if(Input.GetKeyDown(KeyCode.S))
+        {
+            boss.Stun(5);
+        }
     }
 }

@@ -12,10 +12,12 @@ public class DummyBoss : Boss
         StateMachine phase2 = new StateMachine();
 
         State p1Run = new State();
+        State p1Stunned = new State();
         State p1Attack1 = new State();
         State p1Attack2 = new State();
 
         State p2Run = new State();
+        State p2Stunned = new State();
         State p2Attack = new State();
         State p2Death = new State();
 
@@ -30,21 +32,28 @@ public class DummyBoss : Boss
             if(DistanceFromPlayer() < 1)
             {
                 currentAttack = UnityEngine.Random.Range(0, phase1.AttackCount);
-                animator.SetTrigger("Attack" + currentAttack.ToString());
-                for(int i = 0; i < phase1.AttackCount; i++)
-                {
-                    if(i != currentAttack)
-                    {
-                        animator.ResetTrigger("Attack" + i.ToString());
-                    }
-                }
+                animator.SetTrigger("Attack");
             }
         };
         p1Run.Exit += delegate
         {
-            animator.ResetTrigger("Attack" + currentAttack.ToString());
+            animator.runtimeAnimatorController = phaseController[phase].attackPatterns[currentAttack];
+            animator.ResetTrigger("Attack");
         };
 
+
+        p1Stunned.Enter += delegate
+        {
+            Debug.Log("Boss Stunned");
+        };
+        p1Stunned.Update += delegate
+        {
+
+        };
+        p1Stunned.Exit += delegate
+        {
+            Debug.Log("Boss Stun end");
+        };
 
         p1Attack1.Enter += delegate
         {
@@ -76,7 +85,7 @@ public class DummyBoss : Boss
         List<State> p1AttackStates = new List<State>();
         p1AttackStates.Add(p1Attack1);
         p1AttackStates.Add(p1Attack2);
-        phase1.AddState(p1Run, p1AttackStates);
+        phase1.AddState(p1Run, p1AttackStates, p1Stunned, false);
         phase1.minHealth = 5;
 
 
@@ -96,6 +105,7 @@ public class DummyBoss : Boss
         };
         p2Run.Exit += delegate
         {
+            animator.runtimeAnimatorController = phaseController[phase].attackPatterns[currentAttack];
             animator.ResetTrigger("Attack");
         };
 
@@ -110,6 +120,20 @@ public class DummyBoss : Boss
         p2Attack.Exit += delegate
         {
 
+        };
+
+
+        p2Stunned.Enter += delegate
+        {
+            Debug.Log("Boss Stunned");
+        };
+        p2Stunned.Update += delegate
+        {
+
+        };
+        p2Stunned.Exit += delegate
+        {
+            Debug.Log("Boss Stun end");
         };
 
         p2Death.Enter += delegate
@@ -128,7 +152,7 @@ public class DummyBoss : Boss
 
         List<State> p2AttackStates = new List<State>();
         p2AttackStates.Add(p2Attack);
-        phase2.AddState(p2Run, p2AttackStates, p2Death, true);
+        phase2.AddState(p2Run, p2AttackStates, p2Death, p2Stunned);
         phase2.minHealth = 0;
 
         Health = 10;

@@ -5,6 +5,12 @@ using Unity.Mathematics;
 using UnityEditor.Animations;
 using UnityEngine;
 
+[System.Serializable]
+public class ListWrapper
+{
+    public List<AnimatorOverrideController> attackPatterns;
+}
+
 public struct State
 {
     public State(string name, Action enter, Action exit, Action update)
@@ -65,8 +71,9 @@ public abstract class Boss : MonoBehaviour, IDamagable
     protected int currentAttack;
 
     [SerializeField]
-    protected List<AnimatorController> phaseController;
+    protected List<ListWrapper> phaseController;
 
+    public float stunTime;
     public int Health { get; set; }
     protected List<StateMachine> stateMachines = new List<StateMachine>();
     [SerializeField]
@@ -113,7 +120,10 @@ public abstract class Boss : MonoBehaviour, IDamagable
         StateMachine.StateEnter();*/
         currentAttack = 0;
         phase += 1;
-        animator.runtimeAnimatorController = phaseController[phase];
+
+        animator.runtimeAnimatorController = phaseController[phase].attackPatterns[0];
+        animator.Rebind();
+        //animator.runtimeAnimatorController = phaseController[phase];
     }
 
     protected abstract void Init();
@@ -164,6 +174,12 @@ public abstract class Boss : MonoBehaviour, IDamagable
             Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, originalPos, timer / zoomOutTime);
             Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, originalSize, timer / zoomOutTime);
         }
+    }
+
+    public void Stun(float time)
+    {
+        stunTime = time;
+        animator.SetTrigger("Stunned");
     }
 
     public void FollowPlayer(float minDistance)
