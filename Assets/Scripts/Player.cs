@@ -7,9 +7,11 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float speed;
     [SerializeField]
-    private float jumpPower;
+    private float jumpSpeed;
     [SerializeField]
-    private float rollPower;
+    private float rollSpeed;
+
+    public bool isControllable;
 
     private float horizontal;
 
@@ -20,30 +22,29 @@ public class Player : MonoBehaviour
     private Collider2D col;
     #endregion
 
-    /*private void OnEnable()
+    #region TestFunctions
+    IEnumerator Roll()
     {
-        InputHandler.inst.OnLeftKey += Move;
-        InputHandler.inst.OnRightKey += Move;
+        rb.velocity = new Vector2(rollSpeed * (GetComponent<SpriteRenderer>().flipX ? -1 : 1), rb.velocity.y);
+        Debug.Log("Roll");
+        isControllable = false;
+        yield return new WaitForSeconds(1);
+        isControllable = true;
     }
+    #endregion
 
-    private void OnDisable()
+    private void OnEnable()
     {
-        InputHandler.inst.OnLeftKey -= Move;
-        InputHandler.inst.OnRightKey -= Move;
+        Game.inst.player = transform;
     }
-
-    private void Move(Vector2 direction)
-    {
-        Vector3 moveDirection = direction;
-        transform.position += moveDirection * speed * Time.deltaTime;
-    }*/
-
 
     private bool IsGrounded()
     {
         RaycastHit2D hit = Physics2D.BoxCast(col.bounds.center, col.bounds.size, 0f, Vector2.down, col.bounds.extents.y, jumpable);
         return hit.collider != null;
     }
+
+
 
     private void Start()
     {
@@ -53,26 +54,41 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetButtonDown("Roll") && IsGrounded())
+        if(isControllable)
         {
-            rb.AddForce(new Vector2(rollPower * (GetComponent<SpriteRenderer>().flipX ? -1 : 1), 0));
+            if (Input.GetButtonDown("Roll") && IsGrounded())
+            {
+                StartCoroutine(Roll());
+            }
+            else
+            {
+                horizontal = Input.GetAxisRaw("Horizontal");
+                if (horizontal != 0)
+                {
+                    GetComponent<SpriteRenderer>().flipX = horizontal < 0;
+                }
+                if (Input.GetButtonDown("Jump") && IsGrounded())
+                {
+                    rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
+                }
+            }
         }
-        else
+
+        if(rb.velocity.y < 0)
         {
-            horizontal = Input.GetAxisRaw("Horizontal");
-            if(horizontal != 0)
-            {
-                GetComponent<SpriteRenderer>().flipX = horizontal < 0;
-            }
-            if (Input.GetButtonDown("Jump") && IsGrounded())
-            {
-                rb.velocity = new Vector2(rb.velocity.x, jumpPower);
-            }
+            rb.velocity += Vector2.up * Physics2D.gravity.y * 1.5f * Time.deltaTime;
+        }
+        else if(rb.velocity.y > 0 && !Input.GetButton("Jump"))
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * 0.5f * Time.deltaTime;
         }
     }
 
     private void FixedUpdate()
     {
-        rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        if(isControllable)
+        {
+            rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        }
     }
 }

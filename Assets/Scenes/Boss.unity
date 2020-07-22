@@ -226,7 +226,7 @@ GameObject:
   m_Component:
   - component: {fileID: 335323300}
   - component: {fileID: 335323301}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Shield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,7 +307,7 @@ GameObject:
   m_Component:
   - component: {fileID: 728102520}
   - component: {fileID: 728102521}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Weapon-Sword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -391,7 +391,7 @@ GameObject:
   - component: {fileID: 814174707}
   - component: {fileID: 814174706}
   - component: {fileID: 814174705}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Boss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -511,7 +511,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 899279150}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -573,7 +573,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1238184279}
   - component: {fileID: 1238184280}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Leg (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1440,6 +1440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8080ee1267fa5d4ebc271819a7e6d5e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
 --- !u!1 &1629279783
 GameObject:
   m_ObjectHideFlags: 0
@@ -1450,7 +1451,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1629279784}
   - component: {fileID: 1629279785}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2626,7 +2627,7 @@ PlatformEffector2D:
   m_RotationalOffset: 0
   m_UseOneWay: 1
   m_UseOneWayGrouping: 1
-  m_SurfaceArc: 180
+  m_SurfaceArc: 179
   m_UseSideFriction: 0
   m_UseSideBounce: 0
   m_SideArc: 1
@@ -2656,7 +2657,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1834224916}
   - component: {fileID: 1834224917}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Hat-Helmet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2737,7 +2738,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1911978705}
   - component: {fileID: 1911978706}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2821,7 +2822,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1937123046}
   - component: {fileID: 1937123047}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Leg
   m_TagString: Untagged
   m_Icon: {fileID: 0}

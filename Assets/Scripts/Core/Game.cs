@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class Game : SingletonBehaviour<Game>
 {
-    
+    public Transform player;
 }

@@ -185,7 +185,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
         //TODO
         if(DistanceFromPlayer() > minDistance)
         {
-            Vector3 direction = (GameObject.Find("Player").transform.position - transform.position).normalized;
+            Vector3 direction = (Game.inst.player.transform.position - transform.position).normalized;
             transform.position += direction * Time.deltaTime;
             LookPlayer();
         }
@@ -199,7 +199,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
     public float DistanceFromPlayer()
     {
         //TODO
-        return (GameObject.Find("Player").transform.position - transform.position).magnitude;
+        return (Game.inst.player.transform.position - transform.position).magnitude;
     }
 
     protected void TeleportTo(Vector3 position)
