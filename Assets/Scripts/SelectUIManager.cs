@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class SelectUIManager : UIManager
 {
+
+    public void t()
+    {
+        GameObject.Find("T1").SetActive(false);
+    }
     protected override void OnMount()
     {
         throw new System.NotImplementedException();
