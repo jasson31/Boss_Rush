@@ -7,22 +7,41 @@ public class Incline : MonoBehaviour
 {
 
     public GameObject text;
+    public GameObject backText;
+
+    Rigidbody2D rgbd;
+
+    AudioSource audio;
 
     private int TitleTextValue = 0;
+
+    void Awake()
+    {
+        rgbd = text.GetComponent<Rigidbody2D>();
+        audio = GetComponent<AudioSource>();
+    }
 
     public void Tilt()
     {
         if (TitleTextValue == 0)
         {
-            text.transform.Rotate(new Vector3(0, 0, 15));
-            text.transform.position += Vector3.down * 10;
+            rgbd.WakeUp();
+            rgbd.bodyType = RigidbodyType2D.Dynamic;
+
             TitleTextValue++;
+
+            audio.Play();
         }
         else
         {
-            text.transform.Rotate(new Vector3(0, 0, -15));
-            text.transform.position += Vector3.up * 10;
+            rgbd.bodyType = RigidbodyType2D.Static;
+
+            text.transform.rotation = Quaternion.Euler(0,0,0);
+            text.transform.position = backText.transform.position;
+
             TitleTextValue--;
+
+            audio.Stop();
         }
     }
 }
