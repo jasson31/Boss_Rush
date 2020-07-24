@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+
+    public WeaponBehaviour weaponBehav;
     [SerializeField]
     private float speed;
     [SerializeField]
@@ -20,6 +22,7 @@ public class Player : MonoBehaviour
     private LayerMask jumpable;
     private Rigidbody2D rb;
     private Collider2D col;
+
     #endregion
 
     #region TestFunctions
@@ -90,5 +93,11 @@ public class Player : MonoBehaviour
         {
             rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
         }
+    }
+
+    public void GetDamaged(int damage)
+    {
+        Debug.Log("Player hit, damage " + damage);
+        weaponBehav.GetDamaged(damage);
     }
 }
