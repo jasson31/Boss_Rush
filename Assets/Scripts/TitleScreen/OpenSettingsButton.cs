@@ -15,7 +15,10 @@ public class OpenSettingsButton : MonoBehaviour
     public void OpenSettings()
     {
         UnityEngine.Debug.Log("Open Settings!");
+
         active1.SetActive(false);
         active2.SetActive(true);
+
+        
     }
 }
