@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-
-    public WeaponBehaviour weaponBehav;
+    public WeaponBehaviour weaponBehaviour;
     [SerializeField]
     private float speed;
     [SerializeField]
@@ -98,6 +97,6 @@ public class Player : MonoBehaviour
     public void GetDamaged(int damage)
     {
         Debug.Log("Player hit, damage " + damage);
-        weaponBehav.GetDamaged(damage);
+        weaponBehaviour.GetDamaged(damage);
     }
 }
