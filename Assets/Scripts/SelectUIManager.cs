@@ -6,12 +6,12 @@ public class SelectUIManager : UIManager
 {
     protected override void OnMount()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Select On");
     }
 
     protected override void OnUnmount()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Select Off");
     }
 
     // Start is called before the first frame update

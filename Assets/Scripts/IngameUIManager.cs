@@ -37,11 +37,11 @@ public class IngameUIManager : UIManager
 
     protected override void OnMount()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Ingame On");
     }
 
     protected override void OnUnmount()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Ingame Off");
     }
 }

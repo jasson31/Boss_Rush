@@ -6,12 +6,12 @@ public class MainUIManager : UIManager
 {
     protected override void OnMount()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Main On");
     }
 
     protected override void OnUnmount()
     {
-        throw new System.NotImplementedException();
+        Debug.Log("Main Off");
     }
 
     // Start is called before the first frame update
