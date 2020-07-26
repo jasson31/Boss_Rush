@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using UnityEngine;
 
 [System.Serializable]
@@ -9,197 +10,95 @@ public class ListWrapper
     public List<AnimatorOverrideController> attackPatterns;
 }
 
-public struct State
-{
-    public State(string name, Action enter, Action exit, Action update)
-    {
-        this.name = name;
-        this.Enter = enter;
-        this.Exit = exit;
-        this.Update = update;
-    }
-
-    public string name;
-    public Action Enter;
-    public Action Exit;
-    public Action Update;
-}
-
-public class StateMachine
-{
-    public int minHealth;
-    public int AttackCount { get; private set; }
-    private Dictionary<string, State> states = new Dictionary<string, State>();
-
-
-    public State GetState(string state)
-    {
-        return states[state];
-    }
-
-    public void AddState(State runState, List<State> attackState)
-    {
-        states.Add("Run", runState);
-        AttackCount = attackState.Count;
-        for (int i = 0; i < attackState.Count; i++)
-        {
-            Debug.Log("Attack" + i.ToString());
-            states.Add("Attack" + i.ToString(), attackState[i]);
-        }
-    }
-
-    public void AddState(State runState, List<State> attackState, State additionalState, bool isDeath)
-    {
-        AddState(runState, attackState);
-        states.Add(isDeath ? "Death" : "Stunned", additionalState);
-    }
-
-    public void AddState(State runState, List<State> attackState, State deathState, State stunnedState)
-    {
-        AddState(runState, attackState, deathState, true);
-        states.Add("Stunned", stunnedState);
-    }
-
-}
-
 public abstract class Boss : MonoBehaviour, IDamagable
 {
-    public bool isInvincible = false;
+    public int Phase { get; protected set; }
+    private Coroutine currentRoutine = null;
+    private Queue<IEnumerator> nextRoutines = new Queue<IEnumerator>();
+
+    public int Health { get; private set; }
+   
     protected Animator animator;
-    protected int currentAttack;
 
-    [SerializeField]
-    protected List<ListWrapper> phaseController;
-
-    public float stunTime;
-    public int Health { get; set; }
-    protected List<StateMachine> stateMachines = new List<StateMachine>();
-    [SerializeField]
-    protected int phase = -1;
-    protected StateMachine StateMachine { get { return stateMachines[phase]; } }
+    public virtual void GetDamaged(int damage)
+    {
+        Debug.Log("Ouch");
+    }
 
     private void Start()
     {
         animator = GetComponent<Animator>();
-        Init();
     }
 
     private void Update()
     {
-        //StateMachine.Update();
-    }
-
-    public void StateEnter(string state)
-    {
-        if(state == "Attack") StateMachine.GetState(state + currentAttack.ToString()).Enter();
-        else StateMachine.GetState(state).Enter();
-    }
-
-    public void StateUpdate(string state)
-    {
-        if (state == "Attack") StateMachine.GetState(state + currentAttack.ToString()).Update();
-        else StateMachine.GetState(state).Update();
-    }
-
-    public void StateExit(string state)
-    {
-        if (state == "Attack") StateMachine.GetState(state + currentAttack.ToString()).Exit();
-        else StateMachine.GetState(state).Exit();
-    }
-
-
-    protected void ChangePhase()
-    {
-        /*if(phase != -1)
+        if (currentRoutine == null)
         {
-            StateMachine.StateExit();
-        }
-        phase += 1;
-        StateMachine.StateEnter();*/
-        currentAttack = 0;
-        phase += 1;
-
-        animator.runtimeAnimatorController = phaseController[phase].attackPatterns[0];
-        animator.Rebind();
-        //animator.runtimeAnimatorController = phaseController[phase];
-    }
-
-    protected abstract void Init();
-
-    public virtual void GetDamaged(int damage)
-    {
-        if(!isInvincible)
-        {
-            Health -= damage;
-
-            if (StateMachine.minHealth == 0 && Health <= 0)
-            {
-                animator.SetTrigger("Death");
-            }
-            else if (Health <= StateMachine.minHealth)
-            {
-                Health = StateMachine.minHealth;
-                ChangePhase();
-            }
-            Debug.Log("Ouch" + Health);
+            NextRoutine();
         }
     }
 
-    public IEnumerator CameraZoomIn(float resetTime)
+    private void NextRoutine()
     {
-        float zoomInTime = 1;
-        float zoomOutTime = 0.5f;
-
-        Vector3 originalPos = Camera.main.transform.position;
-        float originalSize = Camera.main.orthographicSize;
-
-        Vector3 destPos = new Vector3(transform.position.x, transform.position.y, Camera.main.transform.position.z);
-        float destSize = 3;
-
-        for (float timer = 0; timer <= zoomInTime; timer += Time.deltaTime)
+        if (nextRoutines.Count <= 0)
         {
+            nextRoutines = DecideNextRoutine();
+        }
+        StartCoroutineBoss(nextRoutines.Dequeue());
+    }
+
+    /// <summary>
+    /// 다음 행동 루틴들을 queue로 만들어 리턴
+    /// </summary>
+    protected abstract Queue<IEnumerator> DecideNextRoutine();
+
+    protected abstract void OnStunned();
+
+    public virtual void Stun(float time)
+    {
+        nextRoutines.Clear();
+        OnStunned();
+        StartCoroutineBoss(NewActionRoutine(StunRoutine(time)));
+    }
+
+    private void StartCoroutineBoss(IEnumerator coroutine)
+    {
+        if (currentRoutine != null)
+        {
+            StopCoroutine(currentRoutine);
+        }
+        currentRoutine = StartCoroutine(coroutine);
+    }
+
+    protected virtual IEnumerator StunRoutine(float time)
+    {
+        yield return new WaitForSeconds(time);
+    }
+
+    protected IEnumerator NewActionRoutine(IEnumerator action)
+    {
+        yield return action;
+        currentRoutine = null;
+    }
+
+
+    protected IEnumerator MoveRoutine(Vector3 destination, float time)
+    {
+        yield return MoveRoutine(destination, time, AnimationCurve.Linear(0, 0, 1, 1));
+    }
+    protected IEnumerator MoveRoutine(Vector3 destination, float time, AnimationCurve curve)
+    {
+        Vector3 startPosition = transform.position;
+        for (float t = 0; t <= time; t += Time.deltaTime)
+        {
+            transform.position = Vector3.Lerp(startPosition, destination, curve.Evaluate(t / time));
             yield return null;
-            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, destPos, timer / zoomInTime);
-            Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, destSize, timer / zoomInTime);
-        }
-
-        yield return new WaitForSeconds(resetTime - zoomInTime - zoomOutTime);
-
-
-        for (float timer = 0; timer <= zoomOutTime; timer += Time.deltaTime)
-        {
-            yield return null;
-            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, originalPos, timer / zoomOutTime);
-            Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, originalSize, timer / zoomOutTime);
         }
     }
 
-    public void Stun(float time)
+    protected IEnumerator WaitRoutine(float time)
     {
-        stunTime = time;
-        animator.SetTrigger("Stunned");
-    }
-
-    public void FollowPlayer(float minDistance)
-    {
-        //TODO
-        if(DistanceFromPlayer() > minDistance)
-        {
-            Vector3 direction = (Game.inst.player.transform.position - transform.position).normalized;
-            transform.position += direction * Time.deltaTime;
-            LookPlayer();
-        }
-    }
-
-    public void LookPlayer()
-    {
-
-    }
-
-    public float DistanceFromPlayer()
-    {
-        //TODO
-        return (Game.inst.player.transform.position - transform.position).magnitude;
+        yield return new WaitForSeconds(time);
     }
 
     protected void TeleportTo(Vector3 position)
