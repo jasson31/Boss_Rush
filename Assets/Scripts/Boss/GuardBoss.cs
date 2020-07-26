@@ -91,7 +91,6 @@ public class GuardBoss : Boss
         for (int i = 0; i < bulletCount; i++)
         {
             Instantiate(bulletPrefab, transform.position, Quaternion.identity).GetComponent<Rigidbody2D>().velocity = (playerPosition - transform.position).normalized * bulletSpeed;
-            Debug.Log(playerPosition);
             yield return new WaitForSeconds(interval);
         }
     }

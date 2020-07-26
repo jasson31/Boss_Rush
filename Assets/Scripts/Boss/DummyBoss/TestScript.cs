@@ -14,10 +14,6 @@ public class TestScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.A))
-        {
-            boss.GetDamaged(1);
-        }
         if(Input.GetKeyDown(KeyCode.S))
         {
             boss.Stun(5);

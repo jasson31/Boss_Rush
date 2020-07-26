@@ -410,6 +410,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d7e8c8c2179569469222cddd1113306, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damageTextPrefab: {fileID: 6103845031904764219, guid: 42ae5155d9c85e548b32d3fc145463eb,
+    type: 3}
   targetPositions:
   - {x: 13, y: 6, z: 0}
   - {x: -13, y: 6, z: 0}

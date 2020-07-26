@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [System.Serializable]
 public class ListWrapper
@@ -20,9 +21,55 @@ public abstract class Boss : MonoBehaviour, IDamagable
    
     protected Animator animator;
 
+    [SerializeField]
+    private GameObject damageTextPrefab;
+
+    private List<DamageText> pooledDamageTexts = new List<DamageText>();
+
+    private DamageText GetPooledDamageText()
+    {
+        DamageText damageText = null;
+        if (pooledDamageTexts.Count > 0)
+        {
+            damageText = pooledDamageTexts[pooledDamageTexts.Count - 1];
+            damageText.gameObject.SetActive(true);
+            damageText.boss = this;
+            pooledDamageTexts.RemoveAt(pooledDamageTexts.Count - 1);
+        }
+        else
+        {
+            damageText = Instantiate(damageTextPrefab).GetComponent<DamageText>();
+            damageText.boss = this;          
+        }
+        damageText.transform.position = transform.position + 2 * Vector3.up + Vector3.back;
+        return damageText;
+    }
+
+    public void RetrieveDamageText(DamageText text)
+    {
+        pooledDamageTexts.Add(text);
+    }
+
     public virtual void GetDamaged(int damage)
     {
-        Debug.Log("Ouch");
+        damage += UnityEngine.Random.Range(-1, 2);
+        GetPooledDamageText().SetText(damage.ToString());
+        StartCoroutine(DamageRoutine());
+        //Debug.Log("Ouch");
+    }
+
+    private IEnumerator DamageRoutine()
+    {
+        SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>();
+        for (float t = 0; t < 0.25f; t += Time.deltaTime)
+        {
+            foreach (var renderer in renderers)
+            {
+                renderer.color = Color.Lerp(Color.red, Color.white, t * 4);
+        }
+            yield return null;
+        }
+        
     }
 
     private void Start()
@@ -91,7 +138,8 @@ public abstract class Boss : MonoBehaviour, IDamagable
         Vector3 startPosition = transform.position;
         for (float t = 0; t <= time; t += Time.deltaTime)
         {
-            transform.position = Vector3.Lerp(startPosition, destination, curve.Evaluate(t / time));
+            transform.position =
+                Vector3.Lerp(startPosition, destination, curve.Evaluate(t / time));
             yield return null;
         }
     }
