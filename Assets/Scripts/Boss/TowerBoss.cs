@@ -4,14 +4,32 @@ using UnityEngine;
 
 public class TowerBoss : Boss
 {
+    [SerializeField]
+    private GameObject normalBullet;
+    [SerializeField]
+    private GameObject counterBullet;
+    [SerializeField]
+    private Vector3 bulletShootPos;
+
+
+    const float bulletSpeed = 20;
+
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(bulletShootPos, 1);
+    }
+
     protected override Queue<IEnumerator> DecideNextRoutine()
     {
         Queue<IEnumerator> nextRoutines = new Queue<IEnumerator>();
 
-        switch(Phase)
+        switch (Phase)
         {
             case 0:
-
+                nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(true)));
+                nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
 
                 break;
         }
@@ -23,18 +41,18 @@ public class TowerBoss : Boss
 
 
 
-    private IEnumerator ShotRoutine(int bulletCount, float interval)
+    private IEnumerator ShotRoutine(bool isNormal)
     {
         // FIXME: Get rid of FindObjectOfType
         Vector3 playerPosition = FindObjectOfType<Player>().transform.position;
-        for (int i = 0; i < bulletCount; i++)
-        {
-            Instantiate(bulletPrefab, transform.position, Quaternion.identity).GetComponent<Rigidbody2D>().velocity = (playerPosition - transform.position).normalized * bulletSpeed;
-            yield return new WaitForSeconds(interval);
-        }
+
+        GameObject bullet = Instantiate(isNormal ? normalBullet : counterBullet, bulletShootPos, Quaternion.identity);
+        bullet.GetComponent<Rigidbody2D>().velocity = (playerPosition - bulletShootPos).normalized * bulletSpeed;
+        Destroy(bullet, 3.0f);
+        yield return null;
     }
 
-    private IEnumerator IdleRoutine(float time)
+    /*private IEnumerator IdleRoutine(float time)
     {
         float moveTime;
         for (float t = 0; t < time; t += moveTime)
@@ -58,7 +76,7 @@ public class TowerBoss : Boss
             float z = Random.Range(map.min.z, map.max.z);
             yield return MoveRoutine(transform.position + direction * moveSpeed * moveTime, moveTime);
         }
-    }
+    }*/
 
     protected override void OnStunned()
     {
