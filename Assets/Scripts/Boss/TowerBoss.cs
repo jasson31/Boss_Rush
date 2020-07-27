@@ -13,6 +13,8 @@ public class TowerBoss : Boss
 
 
     const float bulletSpeed = 20;
+    const int bulletChangeTime = 5;
+    private float returnBulletShootTime = 0;
 
 
     private void OnDrawGizmosSelected()
@@ -28,7 +30,7 @@ public class TowerBoss : Boss
         switch (Phase)
         {
             case 0:
-                nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(true)));
+                nextRoutines.Enqueue(NewActionRoutine(ShotRoutine()));
                 nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
 
                 break;
@@ -39,47 +41,83 @@ public class TowerBoss : Boss
         return nextRoutines;
     }
 
-
-
-    private IEnumerator ShotRoutine(bool isNormal)
+    protected override void Init()
     {
+        base.Init();
+        returnBulletShootTime = Time.time;
+    }
+
+    private IEnumerator ShotRoutine()
+    {
+        bool isNormal = (Time.time - returnBulletShootTime < bulletChangeTime);
+
+        if(Time.time - returnBulletShootTime > bulletChangeTime)
+        {
+            returnBulletShootTime = Time.time;
+        }
+
         // FIXME: Get rid of FindObjectOfType
         Vector3 playerPosition = FindObjectOfType<Player>().transform.position;
 
         GameObject bullet = Instantiate(isNormal ? normalBullet : counterBullet, bulletShootPos, Quaternion.identity);
+        if(isNormal) bullet.AddComponent<NormalBullet>();
+        else bullet.AddComponent<ReturnBullet>();
         bullet.GetComponent<Rigidbody2D>().velocity = (playerPosition - bulletShootPos).normalized * bulletSpeed;
         Destroy(bullet, 3.0f);
         yield return null;
     }
 
-    /*private IEnumerator IdleRoutine(float time)
+    protected override IEnumerator StunRoutine(float time)
     {
-        float moveTime;
-        for (float t = 0; t < time; t += moveTime)
-        {
-            moveTime = Random.Range(0.5f, 2f);
-            if (t + moveTime > time)
-            {
-                moveTime = time - t + float.Epsilon;
-            }
-
-            Vector3 direction = Random.insideUnitCircle.normalized;
-            while (!map.Contains(transform.position + direction * moveSpeed * moveTime))
-            {
-                direction = Random.insideUnitCircle.normalized;
-            }
-
-
-
-            float x = Random.Range(map.min.x, map.max.x);
-            float y = Random.Range(map.min.y, map.max.y);
-            float z = Random.Range(map.min.z, map.max.z);
-            yield return MoveRoutine(transform.position + direction * moveSpeed * moveTime, moveTime);
-        }
-    }*/
+        yield return new WaitForSeconds(time);
+        returnBulletShootTime = Time.time;
+    }
 
     protected override void OnStunned()
     {
 
     }
 }
+
+public class NormalBullet : MonoBehaviour
+{
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Player player = collision.GetComponent<Player>();
+        if (player != null)
+        {
+            player.GetDamaged(0);
+        }
+    }
+}
+public class ReturnBullet : MonoBehaviour, IDamagable
+{
+    public int Health { get; private set; }
+
+    public void GetDamaged(int damage)
+    {
+        if(Health == 1)
+        {
+            Health--;
+            GetComponent<Rigidbody2D>().velocity = -GetComponent<Rigidbody2D>().velocity;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.GetComponent<Player>() != null)
+        {
+            collision.GetComponent<Player>().GetDamaged(0);
+        }
+        else if(collision.GetComponent<Boss>() != null)
+        {
+            collision.GetComponent<Boss>().Stun(5);
+        }
+    }
+
+    private void Start()
+    {
+        Health = 1;
+    }
+}
+

@@ -72,9 +72,15 @@ public abstract class Boss : MonoBehaviour, IDamagable
         
     }
 
+    protected virtual void Init()
+    {
+
+    }
+
     private void Start()
     {
         animator = GetComponent<Animator>();
+        Init();
     }
 
     private void Update()

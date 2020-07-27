@@ -392,6 +392,7 @@ GameObject:
   - component: {fileID: 1094720613}
   - component: {fileID: 1094720614}
   - component: {fileID: 1094720615}
+  - component: {fileID: 1094720616}
   m_Layer: 0
   m_Name: TowerBoss
   m_TagString: Untagged
@@ -481,6 +482,32 @@ MonoBehaviour:
   counterBullet: {fileID: 3539766971154645506, guid: 874bfb657f9d7d54bb4f6802a8212d69,
     type: 3}
   bulletShootPos: {x: 0, y: 3.88, z: 0}
+--- !u!61 &1094720616
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1094720612}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 4.1666665, y: 9.166667}
+    newSize: {x: 2.5, y: 5.5}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 4.1666665, y: 9.166667}
+  m_EdgeRadius: 0
 --- !u!1 &1235137826
 GameObject:
   m_ObjectHideFlags: 0
@@ -540,7 +567,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d91f1a5c2f68b14aaea96c88b8deb72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  boss: {fileID: 0}
+  boss: {fileID: 1094720615}
 --- !u!4 &1385479622
 Transform:
   m_ObjectHideFlags: 0
@@ -1881,6 +1908,18 @@ TilemapCollider2D:
   m_Offset: {x: 0, y: 0}
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0.00001
+--- !u!114 &1786735655 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2154258770348111134, guid: ed4f3eedb1e44784f89884b2a3cbdf04,
+    type: 3}
+  m_PrefabInstance: {fileID: 2154258770211997325}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82f6484dcf72ff84d8884c11bab075a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1788003907
 GameObject:
   m_ObjectHideFlags: 0
@@ -2511,5 +2550,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2154258769931172975, guid: ed4f3eedb1e44784f89884b2a3cbdf04,
+        type: 3}
+      propertyPath: weaponBehav
+      value: 
+      objectReference: {fileID: 1786735655}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed4f3eedb1e44784f89884b2a3cbdf04, type: 3}
