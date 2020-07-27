@@ -8,43 +8,43 @@ public class SelectUIManager : UIManager
 {
     private static bool[] con = new bool[10];
     public Button B0, B1, B2, B3, B4, B5;
-    public Text text;
+    public Text tutorialText, dungeonText;
+    public GameObject G1, G2, G3, dungeonUI;
   
+    public void alpha()
+    {
+        dungeonUI.gameObject.SetActive(true);
+        if (!con[1])
+        {
+            B4.gameObject.SetActive(false);
+            B5.gameObject.SetActive(false);
+        }
+    }
 
     public void t1()
     {
-        GameObject.Find("T1").SetActive(false);
-        text.gameObject.SetActive(true);
-        l1Enable();
+        
+        tutorialText.gameObject.SetActive(false);
+        alpha();
         
 }
     public void t2()
     {
-        GameObject.Find("T1").SetActive(false);
-        text.gameObject.SetActive(true);
+        tutorialText.gameObject.SetActive(false);
         Debug.Log("튜토리얼 보스");
         con[0] = true;
         B0.GetComponentInChildren<Text>().text = "클리어";
-        l1Enable();
+        alpha();
         
 }
 
-    private void l1Enable()
-    {
-        Button[] arr = { B0, B1, B2, B3 };
-        foreach (Button a in arr)
-        {
-            a.gameObject.SetActive(true);
-        }
-    }
-
     public void b0()
     {
+        
         if (!con[0])
         {
-            Debug.Log("튜토리얼 보스");
-            B0.GetComponentInChildren<Text>().text = "클리어";
-            con[0] = true;
+            tutorialText.gameObject.SetActive(true);
+            dungeonUI.gameObject.SetActive(false);
         }
     } 
     
@@ -58,6 +58,9 @@ public class SelectUIManager : UIManager
 
             B4.gameObject.SetActive(true);
             B5.gameObject.SetActive(true);
+
+            G2.gameObject.SetActive(false);
+            G3.gameObject.SetActive(false);
         }
     }
 
@@ -68,6 +71,9 @@ public class SelectUIManager : UIManager
             Debug.Log("보스2");
             B2.GetComponentInChildren<Text>().text = "클리어";
             con[2] = true;
+
+            G1.gameObject.SetActive(false);
+            G3.gameObject.SetActive(false);
         }
     }
     
@@ -78,6 +84,9 @@ public class SelectUIManager : UIManager
             Debug.Log("보스3");
             B3.GetComponentInChildren<Text>().text = "클리어";
             con[3] = true;
+
+            G1.gameObject.SetActive(false);
+            G2.gameObject.SetActive(false);
         }
     }
     
@@ -104,24 +113,20 @@ public class SelectUIManager : UIManager
     
     protected override void OnMount()
     {
-        throw new System.NotImplementedException();
+        //throw new System.NotImplementedException();
+        //Debug.Log("test2\n");
     }
 
     protected override void OnUnmount()
     {
-        throw new System.NotImplementedException();
+        //throw new System.NotImplementedException();
+        //Debug.Log("test\n"); 
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        text.gameObject.SetActive(false);
-        B0.gameObject.SetActive(false);
-        B1.gameObject.SetActive(false);
-        B2.gameObject.SetActive(false);
-        B3.gameObject.SetActive(false);
-        B4.gameObject.SetActive(false);
-        B5.gameObject.SetActive(false);
+        alpha();
     }
 
     // Update is called once per frame
