@@ -53,7 +53,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
     public virtual void GetDamaged(int damage)
     {
         damage += UnityEngine.Random.Range(-1, 2);
-        GetPooledDamageText().SetText(damage.ToString());
+        //GetPooledDamageText().SetText(damage.ToString());
         StartCoroutine(DamageRoutine());
         //Debug.Log("Ouch");
     }
@@ -70,6 +70,12 @@ public abstract class Boss : MonoBehaviour, IDamagable
             yield return null;
         }
         
+    }
+
+    protected Vector3 GetPlayerPos()
+    {
+        // FIXME: Get rid of FindObjectOfType
+        return FindObjectOfType<Player>().transform.position;
     }
 
     protected virtual void Init()
