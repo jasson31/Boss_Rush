@@ -1,7 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using UnityEditor.Experimental.GraphView;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class TowerBoss : Boss
@@ -10,6 +10,8 @@ public class TowerBoss : Boss
     private GameObject normalBullet;
     [SerializeField]
     private GameObject counterBullet;
+    [SerializeField]
+    private GameObject laserCollider;
     [SerializeField]
     private GameObject pillar;
     [SerializeField]
@@ -61,6 +63,7 @@ public class TowerBoss : Boss
         base.Init();
         returnBulletShootTime = Time.time;
         lr = GetComponent<LineRenderer>();
+        laserCollider.AddComponent<Laser>();
     }
 
     private IEnumerator ShotRoutine()
@@ -88,14 +91,28 @@ public class TowerBoss : Boss
 
         lr.enabled = true;
 
+        Vector3 lineEndPos = GetPlayerPos();
+
         lr.SetPosition(0, shootPos);
-        lr.SetPosition(1, GetPlayerPos());
+        lr.SetPosition(1, lineEndPos);
+
+        laserCollider.transform.position = (lineEndPos + shootPos) / 2;
+
+        Vector3 diff = lineEndPos - shootPos;
+        laserCollider.transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg);
+        laserCollider.transform.localScale = new Vector2(diff.magnitude, laserShootWidth);
+
+
         yield return new WaitForSeconds(waitTime);
 
         lr.startWidth = laserShootWidth;
         lr.endWidth = laserShootWidth;
+        laserCollider.SetActive(true);
+
+
         yield return new WaitForSeconds(0.5f);
-        for(float t = 0; t < 0.2f; t += Time.deltaTime)
+        laserCollider.SetActive(false);
+        for (float t = 0; t < 0.2f; t += Time.deltaTime)
         {
             float size = Mathf.Lerp(laserShootWidth, laserReadyWidth, t / 0.2f);
             lr.startWidth = size;
@@ -110,7 +127,7 @@ public class TowerBoss : Boss
 
     private IEnumerator PillarRoutine(float waitTime)
     {
-        float x = Random.Range(map.min.x, map.max.x);
+        float x = UnityEngine.Random.Range(map.min.x, map.max.x);
         float y = map.min.y;
 
         GameObject newPillar = Instantiate(pillar, new Vector2(x, y), Quaternion.identity);
@@ -121,7 +138,7 @@ public class TowerBoss : Boss
 
         for (float t = 0; t < 0.5f; t += Time.deltaTime)
         {
-            newPillar.transform.position = Vector3.Lerp(startPos, destPos, t / 0.1f);
+            newPillar.transform.position = Vector3.Lerp(startPos, destPos, t / 0.5f);
             yield return null;
         }
 
@@ -140,7 +157,10 @@ public class TowerBoss : Boss
 
     protected override void OnStunned()
     {
+        lr.startWidth = laserReadyWidth;
+        lr.endWidth = laserReadyWidth;
         lr.enabled = false;
+        laserCollider.SetActive(false);
     }
 }
 
@@ -185,6 +205,17 @@ public class ReturnBullet : MonoBehaviour, IDamagable
     }
 }
 
+public class Laser : MonoBehaviour
+{
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.GetComponent<Player>() != null)
+        {
+            collision.GetComponent<Player>().GetDamaged(0);
+        }
+    }
+}
+
 public class Pillar : MonoBehaviour, IDamagable
 {
     public Coroutine fallRoutine;
@@ -215,7 +246,6 @@ public class Pillar : MonoBehaviour, IDamagable
                 isBossAttack = true;
                 SetPlayerAttack(false);
                 isPillarFall = false;
-                if (fallRoutine != null) StopCoroutine(fallRoutine);
             }
         }
     }
@@ -230,15 +260,18 @@ public class Pillar : MonoBehaviour, IDamagable
 
     public IEnumerator PillarFallRoutine()
     {
+        Health = 0;
+
         // FIXME: Get rid of FindObjectOfType
         Vector3 playerPosition = FindObjectOfType<Player>().transform.position;
 
         bool isPlayerOnLeft = playerPosition.x - transform.position.x < 0;
+
         SetPlayerAttack(true);
 
         for (float t = 0; t < 1.0f; t += Time.deltaTime)
         {
-            transform.Rotate(new Vector3(0, 0, 1), 90 * Time.deltaTime * (isPlayerOnLeft ? 1 : -1), Space.Self);
+            transform.rotation = Quaternion.Euler(0, 0, Mathf.Lerp(0, 90 * (isPlayerOnLeft ? 1 : -1), Mathf.Pow(t, 4)));
             yield return null;
         }
 
