@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class SelectUIManager : UIManager
 {
     private static bool[] con = new bool[10];
-    public Button B0, B1, B2, B3, B4, B5;
+    public Button B0, B1, B2, B3, B4, B5, D0, D1;
     public Text tutorialText, dungeonText;
     public GameObject G1, G2, G3, dungeonUI;
   
@@ -18,6 +18,12 @@ public class SelectUIManager : UIManager
         {
             B4.gameObject.SetActive(false);
             B5.gameObject.SetActive(false);
+        }
+
+        if (!con[2])
+        {
+            D0.gameObject.SetActive(false);
+            D1.gameObject.SetActive(false);
         }
     }
 
@@ -59,8 +65,8 @@ public class SelectUIManager : UIManager
             B4.gameObject.SetActive(true);
             B5.gameObject.SetActive(true);
 
-            G2.gameObject.SetActive(false);
-            G3.gameObject.SetActive(false);
+            B2.interactable = false;
+            B3.interactable = false;
         }
     }
 
@@ -72,9 +78,38 @@ public class SelectUIManager : UIManager
             B2.GetComponentInChildren<Text>().text = "클리어";
             con[2] = true;
 
-            G1.gameObject.SetActive(false);
-            G3.gameObject.SetActive(false);
+            //G1.gameObject.SetActive(false);
+            //G3.gameObject.SetActive(false);
+
+            B1.interactable = false;
+            B3.interactable = false;
+
+            d01();
         }
+    }
+
+    private void d01()
+    {
+        float rand = Random.value;
+
+        if (rand > 0.5f)
+        {
+            D0.gameObject.SetActive(true);
+        }
+        else
+        {
+            D1.gameObject.SetActive(true);
+        }
+    }
+
+    public void d0()
+    {
+        Debug.Log("폐품상");
+    } 
+    
+    public void d1()
+    {
+        Debug.Log("대장간");
     }
     
     public void b3()
@@ -85,8 +120,11 @@ public class SelectUIManager : UIManager
             B3.GetComponentInChildren<Text>().text = "클리어";
             con[3] = true;
 
-            G1.gameObject.SetActive(false);
-            G2.gameObject.SetActive(false);
+            //G1.gameObject.SetActive(false);
+            //G2.gameObject.SetActive(false);
+
+            B1.interactable = false;
+            B2.interactable = false;
         }
     }
     
