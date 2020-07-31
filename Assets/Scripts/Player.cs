@@ -5,6 +5,18 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public WeaponBehaviour weaponBehaviour;
+
+    public bool isControllable;
+    private bool isJumpKeyDown = false;
+
+    private float horizontal;
+
+    #region Physics
+
+    [SerializeField]
+    private LayerMask jumpable;
+    private Rigidbody2D rb;
+    private Collider2D col;
     [SerializeField]
     private float speed;
     [SerializeField]
@@ -12,20 +24,9 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float rollSpeed;
 
-    public bool isControllable;
-
-    private float horizontal;
-
-    #region Physics
-    [SerializeField]
-    private LayerMask jumpable;
-    private Rigidbody2D rb;
-    private Collider2D col;
-
     #endregion
 
-    #region TestFunctions
-    IEnumerator Roll()
+    IEnumerator RollRoutine()
     {
         rb.velocity = new Vector2(rollSpeed * (GetComponent<SpriteRenderer>().flipX ? -1 : 1), rb.velocity.y);
         Debug.Log("Roll");
@@ -33,27 +34,65 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(1);
         isControllable = true;
     }
-    #endregion
 
     private void OnEnable()
     {
         Game.inst.player = transform;
+
+        InputHandler.inst.OnLeftKey += Move;
+        InputHandler.inst.OnRightKey += Move;
+        InputHandler.inst.OnUpKeyDown += Roll;
+        InputHandler.inst.OnJumpKeyDown += () => { Jump(); isJumpKeyDown = true; };
+
+        InputHandler.inst.OnLeftKeyUp += (Vector2 dir) => { horizontal = 0; };
+        InputHandler.inst.OnRightKeyUp += (Vector2 dir) => { horizontal = 0; };
+        InputHandler.inst.OnJumpKeyUp += () => { isJumpKeyDown = false; };
+    }
+
+    private void OnDisable()
+    {
+        InputHandler.inst.OnLeftKey -= Move;
+        InputHandler.inst.OnRightKey -= Move;
+        InputHandler.inst.OnUpKeyDown -= Roll;
+        InputHandler.inst.OnJumpKeyDown -= () => { Jump(); isJumpKeyDown = true; };
+
+        InputHandler.inst.OnLeftKeyUp -= (Vector2 dir) => { horizontal = 0; };
+        InputHandler.inst.OnRightKeyUp -= (Vector2 dir) => { horizontal = 0; };
+        InputHandler.inst.OnJumpKeyUp -= () => { isJumpKeyDown = false; };
     }
 
     private bool IsGrounded()
     {
-        RaycastHit2D hit = Physics2D.BoxCast(col.bounds.center, col.bounds.size, 0f, Vector2.down, 0.1f, jumpable);
-
-
         Vector3 leftFoot = col.bounds.center - new Vector3(col.bounds.size.x / 2, col.bounds.size.y / 2);
         Vector3 rightFoot = col.bounds.center - new Vector3(-col.bounds.size.x / 2, col.bounds.size.y / 2);
-
         bool isGrounded = Physics2D.Raycast(leftFoot, Vector2.down, 0.1f, jumpable) || Physics2D.Raycast(rightFoot, Vector2.down, 0.1f, jumpable);
-        //return rb.velocity.y == 0 && hit.collider != null;
-        return rb.velocity.y == 0 && isGrounded;
+        return rb.velocity.y < 0.01f && isGrounded;
     }
 
+    private void Move(Vector2 direction)
+    {
+        horizontal = direction.x;
+        if (isControllable)
+        {
+            GetComponent<SpriteRenderer>().flipX = horizontal < 0;
+        }
+    }
 
+    private void Jump()
+    {
+        if (isControllable && IsGrounded())
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
+        }
+    }
+
+    private void Roll()
+    {
+        if(isControllable)
+        {
+            StartCoroutine(RollRoutine());
+        }
+    }
 
     private void Start()
     {
@@ -61,44 +100,19 @@ public class Player : MonoBehaviour
         col = GetComponent<Collider2D>();
     }
 
-    private void Update()
-    {
-
-        if (rb.velocity.y < 0)
-        {
-            rb.velocity += Vector2.up * Physics2D.gravity.y * 1.5f * Time.deltaTime;
-        }
-        else if (rb.velocity.y > 0 && !Input.GetButton("Jump"))
-        {
-            rb.velocity += Vector2.up * Physics2D.gravity.y * 0.5f * Time.deltaTime;
-        }
-        Debug.Log(IsGrounded());
-        if (isControllable)
-        {
-            if (Input.GetButtonDown("Roll") && IsGrounded())
-            {
-                StartCoroutine(Roll());
-            }
-            else
-            {
-                horizontal = Input.GetAxisRaw("Horizontal");
-                if (horizontal != 0)
-                {
-                    GetComponent<SpriteRenderer>().flipX = horizontal < 0;
-                }
-                if (Input.GetButtonDown("Jump") && IsGrounded())
-                {
-                    rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
-                }
-            }
-        }
-    }
-
     private void FixedUpdate()
     {
         if(isControllable)
         {
             rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        }
+        if (rb.velocity.y < 0)
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * 1.5f * Time.deltaTime;
+        }
+        else if (rb.velocity.y > 0 && !isJumpKeyDown)
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * 0.5f * Time.deltaTime;
         }
     }
 
