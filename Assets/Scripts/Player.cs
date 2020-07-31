@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
 
     public bool isControllable;
     private bool isJumpKeyDown = false;
+    private bool isDoubleJump = false;
 
     private float horizontal;
 
@@ -21,6 +22,8 @@ public class Player : MonoBehaviour
     private float speed;
     [SerializeField]
     private float jumpSpeed;
+    [SerializeField]
+    private float doubleJumpSpeed;
     [SerializeField]
     private float rollSpeed;
 
@@ -80,10 +83,20 @@ public class Player : MonoBehaviour
 
     private void Jump()
     {
-        if (isControllable && IsGrounded())
+        if (isControllable)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
+            if (IsGrounded())
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
+                isDoubleJump = false;
+            }
+            else if(!isDoubleJump && !IsGrounded())
+            {
+                rb.velocity = new Vector2(rb.velocity.x, doubleJumpSpeed);
+                isDoubleJump = true;
+            }
         }
+
     }
 
     private void Roll()

@@ -99,13 +99,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f87c92c1afd1d44afa0aceac5e6149, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 7
-  jumpSpeed: 12
-  rollSpeed: 7
+  weaponBehaviour: {fileID: 0}
   isControllable: 1
   jumpable:
     serializedVersion: 2
     m_Bits: 1536
+  speed: 7
+  jumpSpeed: 12
+  doubleJumpSpeed: 10
+  rollSpeed: 7
 --- !u!50 &2154258769931172969
 Rigidbody2D:
   serializedVersion: 4
