@@ -42,8 +42,15 @@ public class Player : MonoBehaviour
 
     private bool IsGrounded()
     {
-        RaycastHit2D hit = Physics2D.BoxCast(col.bounds.center, col.bounds.size, 0f, Vector2.down, col.bounds.extents.y, jumpable);
-        return hit.collider != null;
+        RaycastHit2D hit = Physics2D.BoxCast(col.bounds.center, col.bounds.size, 0f, Vector2.down, 0.1f, jumpable);
+
+
+        Vector3 leftFoot = col.bounds.center - new Vector3(col.bounds.size.x / 2, col.bounds.size.y / 2);
+        Vector3 rightFoot = col.bounds.center - new Vector3(-col.bounds.size.x / 2, col.bounds.size.y / 2);
+
+        bool isGrounded = Physics2D.Raycast(leftFoot, Vector2.down, 0.1f, jumpable) || Physics2D.Raycast(rightFoot, Vector2.down, 0.1f, jumpable);
+        //return rb.velocity.y == 0 && hit.collider != null;
+        return rb.velocity.y == 0 && isGrounded;
     }
 
 
@@ -56,7 +63,17 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if(isControllable)
+
+        if (rb.velocity.y < 0)
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * 1.5f * Time.deltaTime;
+        }
+        else if (rb.velocity.y > 0 && !Input.GetButton("Jump"))
+        {
+            rb.velocity += Vector2.up * Physics2D.gravity.y * 0.5f * Time.deltaTime;
+        }
+        Debug.Log(IsGrounded());
+        if (isControllable)
         {
             if (Input.GetButtonDown("Roll") && IsGrounded())
             {
@@ -74,15 +91,6 @@ public class Player : MonoBehaviour
                     rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
                 }
             }
-        }
-
-        if(rb.velocity.y < 0)
-        {
-            rb.velocity += Vector2.up * Physics2D.gravity.y * 1.5f * Time.deltaTime;
-        }
-        else if(rb.velocity.y > 0 && !Input.GetButton("Jump"))
-        {
-            rb.velocity += Vector2.up * Physics2D.gravity.y * 0.5f * Time.deltaTime;
         }
     }
 
