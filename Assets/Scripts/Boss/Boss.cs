@@ -17,8 +17,9 @@ public abstract class Boss : MonoBehaviour, IDamagable
     private Coroutine currentRoutine = null;
     private Queue<IEnumerator> nextRoutines = new Queue<IEnumerator>();
 
-    public int Health { get; private set; }
-   
+    public int Health { get; protected set; }
+    public int MaxHealth { get; protected set; }
+
     protected Animator animator;
 
     [SerializeField]
@@ -55,7 +56,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
         damage += UnityEngine.Random.Range(-1, 2);
         GetPooledDamageText().SetText(damage.ToString());
         StartCoroutine(DamageRoutine());
-        //Debug.Log("Ouch");
+        Health -= damage;
     }
 
     private IEnumerator DamageRoutine()

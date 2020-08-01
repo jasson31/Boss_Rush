@@ -27,10 +27,20 @@ public class GuardBoss : Boss
 
 	private void Start()
 	{
-		Phase = 1;
+		Phase = 0;
+        MaxHealth = Health = 200;
 	}
 
-	private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Vector3 playerPosition = FindObjectOfType<Player>().transform.position;
+        Vector2 direction = playerPosition - transform.position;
+        direction.Normalize();
+        Gizmos.DrawLine(transform.position, transform.position + new Vector3(direction.x, direction.y));
+    }
+
+    private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
         foreach (var position in targetPositions)
@@ -39,6 +49,19 @@ public class GuardBoss : Boss
         }
         Gizmos.color = Color.white;
         Gizmos.DrawWireCube(map.center, map.size);
+    }
+
+    public override void GetDamaged(int damage)
+    {
+        base.GetDamaged(damage);
+        if (MaxHealth * 0.2 <= Health && Phase == 0)
+        {
+            Phase = 1;
+        }
+        if (MaxHealth * 0.05 <= MaxHealth && Phase == 1)
+        {
+            Phase = 2;
+        }
     }
 
     protected override Queue<IEnumerator> DecideNextRoutine()
@@ -65,10 +88,11 @@ public class GuardBoss : Boss
                     nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(3, 0.2f)));
                     nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(3)));
                 }
-                //else if (rand < 0.4f)
-                //{
-
-                //}
+                else if (rand < 0.4f)
+                {
+                    int idx = FindObjectOfType<Player>().transform.position.x > 0 ? 3 : 2;
+                    nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[idx], 1)));
+                }
                 else if (rand < 0.9f)
                 {
                     nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(5, 0.1f)));
@@ -86,13 +110,30 @@ public class GuardBoss : Boss
 				nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(3f)));
 				break;
 			case 1:
-				Vector3 playerPosition = FindObjectOfType<Player>().transform.position;
-				nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[4], 1)));
-				nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(3)));
-				nextRoutines.Enqueue(NewActionRoutine(ChargeRoutine()));
-				nextRoutines.Enqueue(NewActionRoutine(StunRoutine(1)));
-				nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(2.5f)));
+                rand *= 0.65f;
+                if (rand < 0.45f)
+                {
+                    nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[4], 1)));
+                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(0.5f)));
+                    nextRoutines.Enqueue(NewActionRoutine(ChargeToPlayerRoutine()));
+                    nextRoutines.Enqueue(NewActionRoutine(StunRoutine(1)));
+                    nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(2.5f)));
+                }
+                else
+                {
+                    int idx = FindObjectOfType<Player>().transform.position.x > 0 ? 3 : 2;
+                    nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[idx], 1)));
+                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(0.5f)));
+                    nextRoutines.Enqueue(NewActionRoutine(ChargeRoutine(idx == 2 ? Vector2.right : Vector2.left)));
+                }
 				break;
+            case 2:
+                for (int i = 0; i < 9; i++)
+                {
+                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(0.5f)));
+                    nextRoutines.Enqueue(NewActionRoutine(ChargeToPlayerRoutine()));
+                }
+                break;
 		}
 
 
@@ -142,17 +183,26 @@ public class GuardBoss : Boss
         yield return null;
     }
 
-	private IEnumerator ChargeRoutine()
+    private IEnumerator ChargeToPlayerRoutine()
+    {
+        Vector3 playerPosition = FindObjectOfType<Player>().transform.position;
+        Vector2 direction = playerPosition - transform.position;
+        yield return ChargeRoutine(direction);
+    }
+
+    private IEnumerator ChargeRoutine(Vector2 direction)
 	{
-		Vector3 playerPosition = FindObjectOfType<Player>().transform.position;
-		Vector2 direction = playerPosition - transform.position;
 		direction.Normalize();
+
+        var hit = Physics2D.Raycast(transform.position, direction, float.MaxValue, wallLayerMask);
 
 		Collider2D col = GetComponent<Collider2D>();
 		yield return SetCollide(true);
 		Rigidbody2D rb = GetComponent<Rigidbody2D>();
-		rb.velocity = direction * 20;
-		while (!col.IsTouchingLayers(wallLayerMask))
+		rb.velocity = direction * 50;
+        yield return new WaitForSeconds(0.1f);
+
+		while (!col.IsTouching(hit.collider))
 		{
 			yield return null;
 		}
