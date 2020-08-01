@@ -64,7 +64,7 @@ public class WeaponBehaviour : MonoBehaviour
 
     public void GetDamaged(int damage)
     {
-        Weapon.health -= damage;
+        /*Weapon.health -= damage;
         if (Weapon.health <= 0)
         {
             Weapon weapon = Weapon;
@@ -79,7 +79,7 @@ public class WeaponBehaviour : MonoBehaviour
                 weaponIndex = 0;
                 //Weapon Break Routine
             }
-        }
+        }*/
         
     }
 
