@@ -17,15 +17,23 @@ public class InputHandler : SingletonBehaviour<InputHandler>
 {
     private UserKeySetting setting;
 
-    public Action<Vector2> OnUpKey;
+    public Action OnUpKey;
     public Action<Vector2> OnDownKey;
     public Action<Vector2> OnLeftKey;
     public Action<Vector2> OnRightKey;
+    public Action OnJumpKey;
 
-    public Action<Vector2> OnUpKeyDown;
+    public Action OnUpKeyUp;
+    public Action<Vector2> OnDownKeyUp;
+    public Action<Vector2> OnLeftKeyUp;
+    public Action<Vector2> OnRightKeyUp;
+    public Action OnJumpKeyUp;
+
+    public Action OnUpKeyDown;
     public Action<Vector2> OnDownKeyDown;
     public Action<Vector2> OnLeftKeyDown;
     public Action<Vector2> OnRightKeyDown;
+    public Action OnJumpKeyDown;
 
     public Action<Vector2> OnAttackKeyDown;
 
@@ -35,7 +43,7 @@ public class InputHandler : SingletonBehaviour<InputHandler>
     {
         if (Input.GetKey(KeyCode.W))
         {
-            OnUpKey?.Invoke(Vector2.up);
+            OnUpKey?.Invoke();
         }
         if (Input.GetKey(KeyCode.S))
         {
@@ -49,9 +57,35 @@ public class InputHandler : SingletonBehaviour<InputHandler>
         {
             OnRightKey?.Invoke(Vector2.right);
         }
+        if (Input.GetKey(KeyCode.Space))
+        {
+            OnJumpKey?.Invoke();
+        }
+
+        if (Input.GetKeyUp(KeyCode.W))
+        {
+            OnUpKeyUp?.Invoke();
+        }
+        if (Input.GetKeyUp(KeyCode.S))
+        {
+            OnUpKeyUp?.Invoke();
+        }
+        if (Input.GetKeyUp(KeyCode.A))
+        {
+            OnLeftKeyUp?.Invoke(Vector2.left);
+        }
+        if (Input.GetKeyUp(KeyCode.D))
+        {
+            OnRightKeyUp?.Invoke(Vector2.right);
+        }
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            OnJumpKeyUp?.Invoke();
+        }
+
         if (Input.GetKeyDown(KeyCode.W))
         {
-            OnUpKeyDown?.Invoke(Vector2.up);
+            OnUpKeyDown?.Invoke();
         }
         if (Input.GetKeyDown(KeyCode.S))
         {
@@ -64,6 +98,10 @@ public class InputHandler : SingletonBehaviour<InputHandler>
         if (Input.GetKeyDown(KeyCode.D))
         {
             OnRightKeyDown?.Invoke(Vector2.right);
+        }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            OnJumpKeyDown?.Invoke();
         }
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
