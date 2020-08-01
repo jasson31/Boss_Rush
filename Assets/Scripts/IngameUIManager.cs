@@ -25,6 +25,9 @@ public class IngameUIManager : UIManager
     [SerializeField]
     private Slider healthBar;
 
+    [SerializeField]
+    private Slider bossHealthBar;
+
     public void SetHealthBar(int health, int maxHealth)
     {
         healthBar.value = health / maxHealth;

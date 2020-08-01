@@ -23,12 +23,15 @@ public class GuardBoss : Boss
     private bool isCollidePlayer = false;
 
     const float bulletSpeed = 20;
-    const float moveSpeed = 3;
+    const float moveSpeed = 5;
+
+    private LineRenderer lr;
 
 	private void Start()
 	{
 		Phase = 0;
         MaxHealth = Health = 200;
+        lr = GetComponent<LineRenderer>();
 	}
 
     private void OnDrawGizmos()
@@ -76,17 +79,10 @@ public class GuardBoss : Boss
                 if (rand < 0.25f)
                 {
                     nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[Random.Range(0, 2)], 2, moveCurve)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1)));
-                    nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(3, 0.2f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1)));
-                    nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(3, 0.2f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1)));
-                    nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(3, 0.2f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1)));
-                    nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(3, 0.2f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1)));
-                    nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(3, 0.2f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(3)));
+                    for (int i = 0; i < 5; i++)
+                    {
+                        nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(1f, 3, 0.2f)));
+                    }
                 }
                 else if (rand < 0.4f)
                 {
@@ -95,8 +91,7 @@ public class GuardBoss : Boss
                 }
                 else if (rand < 0.9f)
                 {
-                    nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(5, 0.1f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(3)));
+                    nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(1f, 5, 0.1f)));
                 }
                 else
                 {
@@ -140,10 +135,25 @@ public class GuardBoss : Boss
         return nextRoutines;
     }
 
-    private IEnumerator ShotRoutine(int bulletCount, float interval)
+    private IEnumerator ShotRoutine(float waitTime, int bulletCount, float interval)
     {
-        // FIXME: Get rid of FindObjectOfType
-        Vector3 playerPosition = FindObjectOfType<Player>().transform.position;
+        Player player = FindObjectOfType<Player>();
+        Vector3 playerPosition;
+
+        lr.enabled = true;
+        lr.startWidth = 0.01f;
+
+        for (float t = 0; t < waitTime; t += Time.deltaTime)
+        {
+            playerPosition = player.transform.position;  
+            lr.SetPosition(0, transform.position);
+            lr.SetPosition(1, playerPosition);
+            yield return null;
+        }
+
+        lr.enabled = false;
+        playerPosition = player.transform.position;
+
         for (int i = 0; i < bulletCount; i++)
         {
             Instantiate(bulletPrefab, transform.position, Quaternion.identity).GetComponent<Rigidbody2D>().velocity = (playerPosition - transform.position).normalized * bulletSpeed;
@@ -173,8 +183,17 @@ public class GuardBoss : Boss
             float x = Random.Range(map.min.x, map.max.x);
             float y = Random.Range(map.min.y, map.max.y);
             float z = Random.Range(map.min.z, map.max.z);
-            yield return MoveRoutine(transform.position + direction * moveSpeed * moveTime, moveTime);
+
+            yield return MoveRoutine(new Vector3(x,y,z), Vector2.Distance(transform.position, new Vector2(x,y)) / moveSpeed);
         }
+    }
+
+    private IEnumerator MeleeAttackRoutine()
+    {
+        animator.SetTrigger("Attack");
+        yield return new WaitForSeconds(1f);
+        animator.SetTrigger("Attack");
+        yield return null;
     }
 
     private IEnumerator SetCollide(bool value)
@@ -199,7 +218,7 @@ public class GuardBoss : Boss
 		Collider2D col = GetComponent<Collider2D>();
 		yield return SetCollide(true);
 		Rigidbody2D rb = GetComponent<Rigidbody2D>();
-		rb.velocity = direction * 50;
+		rb.velocity = direction * 30;
         yield return new WaitForSeconds(0.1f);
 
 		while (!col.IsTouching(hit.collider))

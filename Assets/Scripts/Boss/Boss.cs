@@ -14,7 +14,7 @@ public class ListWrapper
 public abstract class Boss : MonoBehaviour, IDamagable
 {
     public int Phase { get; protected set; }
-    private Coroutine currentRoutine = null;
+    protected Coroutine CurrentRoutine { get; private set; }
     private Queue<IEnumerator> nextRoutines = new Queue<IEnumerator>();
 
     public int Health { get; protected set; }
@@ -26,6 +26,26 @@ public abstract class Boss : MonoBehaviour, IDamagable
     private GameObject damageTextPrefab;
 
     private List<DamageText> pooledDamageTexts = new List<DamageText>();
+    protected Player player;
+    protected Collider2D col;
+    protected Rigidbody2D rb;
+
+    private void Start()
+    {
+        animator = GetComponent<Animator>();
+        player = FindObjectOfType<Player>();
+        col = GetComponent<Collider2D>();
+        rb = GetComponent<Rigidbody2D>();
+        Init();
+    }
+
+    private void Update()
+    {
+        if (CurrentRoutine == null)
+        {
+            NextRoutine();
+        }
+    }
 
     private DamageText GetPooledDamageText()
     {
@@ -84,20 +104,6 @@ public abstract class Boss : MonoBehaviour, IDamagable
 
     }
 
-    private void Start()
-    {
-        animator = GetComponent<Animator>();
-        Init();
-    }
-
-    private void Update()
-    {
-        if (currentRoutine == null)
-        {
-            NextRoutine();
-        }
-    }
-
     private void NextRoutine()
     {
         if (nextRoutines.Count <= 0)
@@ -122,11 +128,11 @@ public abstract class Boss : MonoBehaviour, IDamagable
 
     private void StartCoroutineBoss(IEnumerator coroutine)
     {
-        if (currentRoutine != null)
+        if (CurrentRoutine != null)
         {
-            StopCoroutine(currentRoutine);
+            StopCoroutine(CurrentRoutine);
         }
-        currentRoutine = StartCoroutine(coroutine);
+        CurrentRoutine = StartCoroutine(coroutine);
     }
 
     protected virtual IEnumerator StunRoutine(float time)
@@ -138,7 +144,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
     protected IEnumerator NewActionRoutine(IEnumerator action)
     {
         yield return action;
-        currentRoutine = null;
+        CurrentRoutine = null;
     }
 
 
