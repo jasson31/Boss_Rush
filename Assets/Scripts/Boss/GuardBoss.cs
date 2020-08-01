@@ -17,11 +17,20 @@ public class GuardBoss : Boss
     [SerializeField]
     private Bounds map;
 
+	[SerializeField]
+	private LayerMask wallLayerMask;
+
     private bool isCollidePlayer = false;
 
     const float bulletSpeed = 20;
     const float moveSpeed = 3;
-    private void OnDrawGizmosSelected()
+
+	private void Start()
+	{
+		Phase = 1;
+	}
+
+	private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.green;
         foreach (var position in targetPositions)
@@ -55,7 +64,6 @@ public class GuardBoss : Boss
                     nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1)));
                     nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(3, 0.2f)));
                     nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(3)));
-                    nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(3)));
                 }
                 //else if (rand < 0.4f)
                 //{
@@ -65,7 +73,6 @@ public class GuardBoss : Boss
                 {
                     nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(5, 0.1f)));
                     nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(3)));
-                    nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(3)));
                 }
                 else
                 {
@@ -75,10 +82,18 @@ public class GuardBoss : Boss
                     nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[4], 2, moveCurve)));
                     nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(destination, 2, moveCurve)));
                     nextRoutines.Enqueue(NewActionRoutine(SetCollide(false)));
-                    nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(3)));
                 }
-                break;
-        }
+				nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(3f)));
+				break;
+			case 1:
+				Vector3 playerPosition = FindObjectOfType<Player>().transform.position;
+				nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[4], 1)));
+				nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(3)));
+				nextRoutines.Enqueue(NewActionRoutine(ChargeRoutine()));
+				nextRoutines.Enqueue(NewActionRoutine(StunRoutine(1)));
+				nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(2.5f)));
+				break;
+		}
 
 
         return nextRoutines;
@@ -126,6 +141,24 @@ public class GuardBoss : Boss
         isCollidePlayer = value;
         yield return null;
     }
+
+	private IEnumerator ChargeRoutine()
+	{
+		Vector3 playerPosition = FindObjectOfType<Player>().transform.position;
+		Vector2 direction = playerPosition - transform.position;
+		direction.Normalize();
+
+		Collider2D col = GetComponent<Collider2D>();
+		yield return SetCollide(true);
+		Rigidbody2D rb = GetComponent<Rigidbody2D>();
+		rb.velocity = direction * 20;
+		while (!col.IsTouchingLayers(wallLayerMask))
+		{
+			yield return null;
+		}
+		rb.velocity = Vector2.zero;
+		yield return SetCollide(false);
+	}
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

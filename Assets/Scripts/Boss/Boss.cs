@@ -104,7 +104,6 @@ public abstract class Boss : MonoBehaviour, IDamagable
     public virtual void Stun(float time)
     {
         nextRoutines.Clear();
-        OnStunned();
         StartCoroutineBoss(NewActionRoutine(StunRoutine(time)));
     }
 
@@ -119,7 +118,8 @@ public abstract class Boss : MonoBehaviour, IDamagable
 
     protected virtual IEnumerator StunRoutine(float time)
     {
-        yield return new WaitForSeconds(time);
+		OnStunned();
+		yield return new WaitForSeconds(time);
     }
 
     protected IEnumerator NewActionRoutine(IEnumerator action)
