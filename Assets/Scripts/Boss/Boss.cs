@@ -54,7 +54,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
     public virtual void GetDamaged(int damage)
     {
         damage += UnityEngine.Random.Range(-1, 2);
-        //GetPooledDamageText().SetText(damage.ToString());
+        GetPooledDamageText().SetText(damage.ToString());
         StartCoroutine(DamageRoutine());
         Health -= damage;
     }

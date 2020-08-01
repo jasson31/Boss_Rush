@@ -25,10 +25,13 @@ public class GuardBoss : Boss
     const float bulletSpeed = 20;
     const float moveSpeed = 3;
 
+    private LineRenderer lr;
+
 	private void Start()
 	{
 		Phase = 0;
-        MaxHealth = Health = 200;
+        MaxHealth = Health = 10;
+        lr = GetComponent<LineRenderer>();
 	}
 
     private void OnDrawGizmos()
@@ -54,14 +57,16 @@ public class GuardBoss : Boss
     public override void GetDamaged(int damage)
     {
         base.GetDamaged(damage);
-        if (MaxHealth * 0.2 <= Health && Phase == 0)
+        if (MaxHealth * 0.2 >= Health && Phase == 0)
         {
             Phase = 1;
         }
-        if (MaxHealth * 0.05 <= MaxHealth && Phase == 1)
+        if (MaxHealth * 0.05 >= MaxHealth && Phase == 1)
         {
             Phase = 2;
         }
+        if (Health <= 0)
+            gameObject.SetActive(false);
     }
 
     protected override Queue<IEnumerator> DecideNextRoutine()
@@ -76,27 +81,22 @@ public class GuardBoss : Boss
                 if (rand < 0.25f)
                 {
                     nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[Random.Range(0, 2)], 2, moveCurve)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1)));
-                    nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(3, 0.2f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1)));
-                    nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(3, 0.2f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1)));
-                    nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(3, 0.2f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1)));
-                    nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(3, 0.2f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1)));
-                    nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(3, 0.2f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(3)));
+                    for (int i = 0; i < 5; i++)
+                    {
+                        nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1)));
+                        nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(3, 0.2f)));
+                    }
                 }
                 else if (rand < 0.4f)
                 {
                     int idx = FindObjectOfType<Player>().transform.position.x > 0 ? 3 : 2;
                     nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[idx], 1)));
+                    nextRoutines.Enqueue(NewActionRoutine(ShotLaserRoutine(1.5f, 2f)));
+                    nextRoutines.Enqueue(NewActionRoutine(StunRoutine(3)));
                 }
                 else if (rand < 0.9f)
                 {
                     nextRoutines.Enqueue(NewActionRoutine(ShotRoutine(5, 0.1f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(3)));
                 }
                 else
                 {
@@ -107,8 +107,8 @@ public class GuardBoss : Boss
                     nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(destination, 2, moveCurve)));
                     nextRoutines.Enqueue(NewActionRoutine(SetCollide(false)));
                 }
-				nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(3f)));
-				break;
+                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(3f)));
+                break;
 			case 1:
                 rand *= 0.65f;
                 if (rand < 0.45f)
@@ -117,7 +117,6 @@ public class GuardBoss : Boss
                     nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(0.5f)));
                     nextRoutines.Enqueue(NewActionRoutine(ChargeToPlayerRoutine()));
                     nextRoutines.Enqueue(NewActionRoutine(StunRoutine(1)));
-                    nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(2.5f)));
                 }
                 else
                 {
@@ -126,15 +125,17 @@ public class GuardBoss : Boss
                     nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(0.5f)));
                     nextRoutines.Enqueue(NewActionRoutine(ChargeRoutine(idx == 2 ? Vector2.right : Vector2.left)));
                 }
-				break;
+                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(2.5f)));
+                break;
             case 2:
                 for (int i = 0; i < 9; i++)
                 {
                     nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(0.5f)));
                     nextRoutines.Enqueue(NewActionRoutine(ChargeToPlayerRoutine()));
                 }
+                nextRoutines.Enqueue(NewActionRoutine(StunRoutine(5)));
                 break;
-		}
+        }
 
 
         return nextRoutines;
@@ -151,6 +152,21 @@ public class GuardBoss : Boss
         }
     }
 
+    private IEnumerator ShotLaserRoutine(float waitTime, float width)
+    {
+        lr.enabled = true;
+        lr.SetPosition(0, transform.position);
+        lr.SetPosition(1, transform.position + 100 * (FindObjectOfType<Player>().transform.position - transform.position).normalized);
+        lr.startWidth = 0.01f;
+        yield return new WaitForSeconds(waitTime);
+        for (float t = 0; t < 1; t += Time.deltaTime)
+        {
+            lr.startWidth = width * (1-t) * (1-t);
+            yield return null;
+        }
+        lr.enabled = false;
+    }
+
     private IEnumerator IdleRoutine(float time)
     {
         float moveTime;
@@ -162,18 +178,10 @@ public class GuardBoss : Boss
                 moveTime = time - t + float.Epsilon;
             }
 
-            Vector3 direction = Random.insideUnitCircle.normalized;
-            while (!map.Contains(transform.position + direction * moveSpeed * moveTime))
-            {
-                direction = Random.insideUnitCircle.normalized;
-            }
-            
-
-
             float x = Random.Range(map.min.x, map.max.x);
             float y = Random.Range(map.min.y, map.max.y);
             float z = Random.Range(map.min.z, map.max.z);
-            yield return MoveRoutine(transform.position + direction * moveSpeed * moveTime, moveTime);
+            yield return MoveRoutine(new Vector3(x,y,z), Vector2.Distance(transform.position, new Vector2(x,y) / moveSpeed));
         }
     }
 
