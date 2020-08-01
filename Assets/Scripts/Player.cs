@@ -6,9 +6,12 @@ public class Player : MonoBehaviour
 {
     public WeaponBehaviour weaponBehaviour;
 
+    private Animator anim;
+
     public bool isControllable;
     private bool isJumpKeyDown = false;
-    private bool isDoubleJump = false;
+    private int maxJumpCount = 2;
+    private int curJumpCount = 2;
 
     private float horizontal;
 
@@ -50,8 +53,8 @@ public class Player : MonoBehaviour
         InputHandler.inst.OnUpKeyDown += Roll;
         InputHandler.inst.OnJumpKeyDown += () => { Jump(); isJumpKeyDown = true; };
 
-        InputHandler.inst.OnLeftKeyUp += (Vector2 dir) => { horizontal = 0; };
-        InputHandler.inst.OnRightKeyUp += (Vector2 dir) => { horizontal = 0; };
+        InputHandler.inst.OnLeftKeyUp += (Vector2 dir) => { horizontal = 0; anim.SetBool("Running", false); };
+        InputHandler.inst.OnRightKeyUp += (Vector2 dir) => { horizontal = 0; anim.SetBool("Running", false); };
         InputHandler.inst.OnJumpKeyUp += () => { isJumpKeyDown = false; };
     }
 
@@ -62,8 +65,8 @@ public class Player : MonoBehaviour
         InputHandler.inst.OnUpKeyDown -= Roll;
         InputHandler.inst.OnJumpKeyDown -= () => { Jump(); isJumpKeyDown = true; };
 
-        InputHandler.inst.OnLeftKeyUp -= (Vector2 dir) => { horizontal = 0; };
-        InputHandler.inst.OnRightKeyUp -= (Vector2 dir) => { horizontal = 0; };
+        InputHandler.inst.OnLeftKeyUp -= (Vector2 dir) => { horizontal = 0; anim.SetBool("Running", false); };
+        InputHandler.inst.OnRightKeyUp -= (Vector2 dir) => { horizontal = 0; anim.SetBool("Running", false); };
         InputHandler.inst.OnJumpKeyUp -= () => { isJumpKeyDown = false; };
     }
 
@@ -77,10 +80,11 @@ public class Player : MonoBehaviour
 
     private void Move(Vector2 direction)
     {
-        horizontal = direction.x;
         if (isControllable)
         {
+            horizontal = direction.x;
             GetComponent<SpriteRenderer>().flipX = horizontal < 0;
+            anim.SetBool("Running", true);
         }
     }
 
@@ -90,16 +94,16 @@ public class Player : MonoBehaviour
         {
             if (IsGrounded())
             {
+                curJumpCount = maxJumpCount;
                 rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
-                isDoubleJump = false;
+                curJumpCount--;
             }
-            else if(!isDoubleJump && !IsGrounded())
+            else if(curJumpCount > 0 && !IsGrounded())
             {
                 rb.velocity = new Vector2(rb.velocity.x, doubleJumpSpeed);
-                isDoubleJump = true;
+                curJumpCount--;
             }
         }
-
     }
 
     private void Roll()
@@ -114,6 +118,7 @@ public class Player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
+        anim = GetComponent<Animator>();
     }
 
     private void FixedUpdate()
