@@ -31,10 +31,13 @@ public class Player : MonoBehaviour
 
     IEnumerator RollRoutine()
     {
-        rb.velocity = new Vector2(rollSpeed * (GetComponent<SpriteRenderer>().flipX ? -1 : 1), rb.velocity.y);
         Debug.Log("Roll");
-        isControllable = false;
-        yield return new WaitForSeconds(1);
+        for (float t = 0; t < 1; t += Time.deltaTime)
+        {
+            rb.velocity = new Vector2(rollSpeed * (GetComponent<SpriteRenderer>().flipX ? -1 : 1), rb.velocity.y);
+            isControllable = false;
+            yield return null;
+        }
         isControllable = true;
     }
 
