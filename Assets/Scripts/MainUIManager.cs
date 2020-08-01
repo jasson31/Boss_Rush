@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -130,6 +131,84 @@ public class MainUIManager : UIManager
             TitleInclineValue--;
 
             audio2.Stop();
+        }
+    }
+
+    //키 세팅
+    public enum KeyAction {Left,Right,Roll,Jump};
+
+    public static class KeySetting { public static Dictionary<KeyAction, KeyCode> keys = new Dictionary<KeyAction, KeyCode>();}//키 담을 곳
+
+    public Text[] keytxt;
+
+    void Start()//초기화
+    {
+        KeySetting.keys.Add(KeyAction.Left, KeyCode.A);
+        KeySetting.keys.Add(KeyAction.Right, KeyCode.D);
+        KeySetting.keys.Add(KeyAction.Roll, KeyCode.W);
+        KeySetting.keys.Add(KeyAction.Jump, KeyCode.Space);
+
+        for(int i=0;i<keytxt.Length;i++)
+        {
+            keytxt[i].text = KeySetting.keys[(KeyAction)i].ToString();
+        }
+    }
+
+    void OnGUI()//키 변경
+    {
+        Event keyEvent = Event.current;
+        if(keyEvent.isKey && key!=-1)
+        {
+            int isOverlap = 0;
+            for(int i=0;i<4;i++)
+            {
+                if (keyEvent.keyCode == KeySetting.keys[(KeyAction)i])
+                {
+                    isOverlap = 1;
+                }
+            }
+            if(isOverlap == 1)
+            {
+                UnityEngine.Debug.Log("There's same key already used!");
+                key = -1;
+            }
+            else
+            {
+                KeySetting.keys[(KeyAction)key] = keyEvent.keyCode;
+                key = -1;
+            }
+        }
+    }
+
+    int key = -1;
+    public void ChangeKey(int num)//바꿀 키 지정
+    {
+        key = num;
+    }
+
+    //키 세팅 테스트
+    void Update()
+    {
+        if(Input.GetKey(KeySetting.keys[KeyAction.Left]))
+        {
+            UnityEngine.Debug.Log("Left");
+        }
+        else if (Input.GetKey(KeySetting.keys[KeyAction.Right]))
+        {
+            UnityEngine.Debug.Log("Right");
+        }
+        if (Input.GetKey(KeySetting.keys[KeyAction.Roll]))
+        {
+            UnityEngine.Debug.Log("Roll");
+        }
+        else if (Input.GetKey(KeySetting.keys[KeyAction.Jump]))
+        {
+            UnityEngine.Debug.Log("Jump");
+        }
+
+        for (int i = 0; i < keytxt.Length; i++)
+        {
+            keytxt[i].text = KeySetting.keys[(KeyAction)i].ToString();
         }
     }
 }
