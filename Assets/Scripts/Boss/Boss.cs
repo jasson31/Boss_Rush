@@ -77,6 +77,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
         GetPooledDamageText().SetText(damage.ToString());
         StartCoroutine(DamageRoutine());
         Health -= damage;
+        IngameUIManager.inst.SetBossHealthBar(Health, MaxHealth);
     }
 
     private IEnumerator DamageRoutine()

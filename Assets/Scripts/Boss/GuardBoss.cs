@@ -58,11 +58,11 @@ public class GuardBoss : Boss
     public override void GetDamaged(int damage)
     {
         base.GetDamaged(damage);
-        if (MaxHealth * 0.2 >= Health && Phase == 0)
+        if (MaxHealth * 0.2f >= Health && Phase == 0)
         {
             Phase = 1;
         }
-        if (MaxHealth * 0.05 >= MaxHealth && Phase == 1)
+        if (MaxHealth * 0.05f >= Health && Phase == 1)
         {
             Phase = 2;
         }

@@ -20,13 +20,18 @@ public abstract class UIManager : SingletonBehaviour<UIManager>
     protected abstract void OnUnmount();
 }
 
-public class IngameUIManager : UIManager
+public class IngameUIManager : SingletonBehaviour<IngameUIManager>
 {
     [SerializeField]
     private Slider healthBar;
 
     [SerializeField]
     private Slider bossHealthBar;
+
+    public void SetBossHealthBar(int health, int maxHealth)
+    {
+        bossHealthBar.value = health / (float)maxHealth;
+    }
 
     public void SetHealthBar(int health, int maxHealth)
     {
@@ -36,15 +41,5 @@ public class IngameUIManager : UIManager
     public void OpenMenuUI()
     {
 
-    }
-
-    protected override void OnMount()
-    {
-        Debug.Log("Ingame On");
-    }
-
-    protected override void OnUnmount()
-    {
-        Debug.Log("Ingame Off");
     }
 }
