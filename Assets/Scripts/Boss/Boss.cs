@@ -30,7 +30,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
     protected Collider2D col;
     protected Rigidbody2D rb;
 
-    private void Start()
+    protected virtual void Start()
     {
         animator = GetComponent<Animator>();
         player = FindObjectOfType<Player>();
@@ -74,7 +74,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
     public virtual void GetDamaged(int damage)
     {
         damage += UnityEngine.Random.Range(-1, 2);
-        //GetPooledDamageText().SetText(damage.ToString());
+        GetPooledDamageText().SetText(damage.ToString());
         StartCoroutine(DamageRoutine());
         Health -= damage;
     }
@@ -137,8 +137,10 @@ public abstract class Boss : MonoBehaviour, IDamagable
 
     protected virtual IEnumerator StunRoutine(float time)
     {
+        animator.SetTrigger("Stunned");
 		OnStunned();
 		yield return new WaitForSeconds(time);
+        animator.SetTrigger("StunEnd");
     }
 
     protected IEnumerator NewActionRoutine(IEnumerator action)
