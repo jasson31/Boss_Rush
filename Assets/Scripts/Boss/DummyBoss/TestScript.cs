@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestScript : MonoBehaviour
+public class TestScript : SingletonBehaviour<TestScript>
 {
     public Boss boss;
+    public GameObject cursor;
     // Start is called before the first frame update
     void Start()
     {
@@ -14,9 +15,6 @@ public class TestScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.S))
-        {
-            boss.Stun(5);
-        }
+        cursor.GetComponent<RectTransform>().position = Input.mousePosition;
     }
 }

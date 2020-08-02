@@ -1,10 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     public WeaponBehaviour weaponBehaviour;
+    [SerializeField]
+    private Transform handCenter;
 
     private Animator anim;
 
@@ -35,6 +38,7 @@ public class Player : MonoBehaviour
     IEnumerator RollRoutine()
     {
         anim.SetTrigger("Roll");
+        Debug.Log("Roll");
         for (float t = 0; t < 1; t += Time.deltaTime)
         {
             rb.velocity = new Vector2(rollSpeed * (GetComponent<SpriteRenderer>().flipX ? -1 : 1), rb.velocity.y);
@@ -71,7 +75,6 @@ public class Player : MonoBehaviour
         InputHandler.inst.OnJumpKeyUp -= () => { isJumpKeyDown = false; };
     }
 
-
     private bool IsGrounded()
     {
         Vector3 leftFoot = col.bounds.center - new Vector3(col.bounds.size.x / 2, col.bounds.size.y / 2);
@@ -80,12 +83,17 @@ public class Player : MonoBehaviour
         return rb.velocity.y < 0.01f && isGrounded;
     }
 
+    private void PlayerLookAt(bool isRight)
+    {
+        GetComponent<SpriteRenderer>().flipX = !isRight;
+    }
+
     private void Move(Vector2 direction)
     {
         if (isControllable)
         {
             horizontal = direction.x;
-            GetComponent<SpriteRenderer>().flipX = horizontal < 0;
+            //PlayerLookAt(horizontal < 0);
             anim.SetBool("Running", true);
         }
     }
@@ -125,6 +133,23 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
+    private void Update()
+    {
+        //FixMe
+        Vector3 cursorDir = Camera.main.ScreenToWorldPoint(TestScript.inst.cursor.transform.position) - handCenter.position;
+        cursorDir = new Vector3(cursorDir.x, cursorDir.y, transform.position.z);
+
+        float weaponAngle = (transform.localScale.x > 0 ? 1 : -1) * Mathf.Atan2(cursorDir.y, cursorDir.x) * Mathf.Rad2Deg;
+        bool isCursorRight = weaponAngle < 90 && weaponAngle > -90;
+        handCenter.localScale = new Vector3(1, isCursorRight ? 1 : -1, 1);
+        handCenter.rotation = Quaternion.Euler(0, 0, weaponAngle);
+
+        PlayerLookAt(isCursorRight);
+
+        Debug.Log(cursorDir);
+
+
+    }
 
     private void FixedUpdate()
     {
