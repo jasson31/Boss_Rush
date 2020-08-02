@@ -10,7 +10,6 @@ public class Player : MonoBehaviour
 
     public bool isControllable;
     private bool isJumpKeyDown = false;
-    private bool isPrevGrounded = true;
     private int maxJumpCount = 2;
     private int curJumpCount = 2;
 
@@ -72,10 +71,6 @@ public class Player : MonoBehaviour
         InputHandler.inst.OnJumpKeyUp -= () => { isJumpKeyDown = false; };
     }
 
-    private void OnLand()
-    {
-        anim.SetTrigger("JumpEnd");
-    }
 
     private bool IsGrounded()
     {
@@ -104,7 +99,6 @@ public class Player : MonoBehaviour
                 curJumpCount = maxJumpCount;
                 rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
                 curJumpCount--;
-                Debug.Log("fdsa");
                 anim.SetTrigger("Jump");
             }
             else if(curJumpCount > 0 && !IsGrounded())
@@ -131,15 +125,6 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
-    private void Update()
-    {
-        if (!isPrevGrounded && IsGrounded())
-        {
-            Debug.Log("asdf");
-            OnLand();
-        }
-        isPrevGrounded = IsGrounded();
-    }
 
     private void FixedUpdate()
     {
@@ -155,6 +140,11 @@ public class Player : MonoBehaviour
         {
             rb.velocity += Vector2.up * Physics2D.gravity.y * 0.5f * Time.deltaTime;
         }
+    }
+
+    private void LateUpdate()
+    {
+        anim.SetBool("Landed", IsGrounded());
     }
 
     public void GetDamaged(int damage)
