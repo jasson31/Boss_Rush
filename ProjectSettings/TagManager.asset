@@ -20,8 +20,8 @@ TagManager:
   - Platform
   - Player
   - Boss
-  - FlyingBoss
-  - 
+  - BossCollision
+  - FlyBossCollision
   - 
   - 
   - 
