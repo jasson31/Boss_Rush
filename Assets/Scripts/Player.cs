@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
 
     public bool isControllable;
     private bool isJumpKeyDown = false;
+    private bool isPrevGrounded = true;
     private int maxJumpCount = 2;
     private int curJumpCount = 2;
 
@@ -34,7 +35,7 @@ public class Player : MonoBehaviour
 
     IEnumerator RollRoutine()
     {
-        Debug.Log("Roll");
+        anim.SetTrigger("Roll");
         for (float t = 0; t < 1; t += Time.deltaTime)
         {
             rb.velocity = new Vector2(rollSpeed * (GetComponent<SpriteRenderer>().flipX ? -1 : 1), rb.velocity.y);
@@ -42,6 +43,7 @@ public class Player : MonoBehaviour
             yield return null;
         }
         isControllable = true;
+        anim.SetTrigger("RollEnd");
     }
 
     private void OnEnable()
@@ -68,6 +70,11 @@ public class Player : MonoBehaviour
         InputHandler.inst.OnLeftKeyUp -= (Vector2 dir) => { horizontal = 0; anim.SetBool("Running", false); };
         InputHandler.inst.OnRightKeyUp -= (Vector2 dir) => { horizontal = 0; anim.SetBool("Running", false); };
         InputHandler.inst.OnJumpKeyUp -= () => { isJumpKeyDown = false; };
+    }
+
+    private void OnLand()
+    {
+        anim.SetTrigger("JumpEnd");
     }
 
     private bool IsGrounded()
@@ -97,11 +104,14 @@ public class Player : MonoBehaviour
                 curJumpCount = maxJumpCount;
                 rb.velocity = new Vector2(rb.velocity.x, jumpSpeed);
                 curJumpCount--;
+                Debug.Log("fdsa");
+                anim.SetTrigger("Jump");
             }
             else if(curJumpCount > 0 && !IsGrounded())
             {
                 rb.velocity = new Vector2(rb.velocity.x, doubleJumpSpeed);
                 curJumpCount--;
+                anim.SetTrigger("Jump");
             }
         }
     }
@@ -119,6 +129,16 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
+    }
+
+    private void Update()
+    {
+        if (!isPrevGrounded && IsGrounded())
+        {
+            Debug.Log("asdf");
+            OnLand();
+        }
+        isPrevGrounded = IsGrounded();
     }
 
     private void FixedUpdate()
