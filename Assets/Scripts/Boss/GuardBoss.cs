@@ -27,6 +27,10 @@ public class GuardBoss : Boss
 
     private LineRenderer lr;
 
+    // FIXME: Play particle with Observer e.g. OnShake += ... and move this to map related script
+    [SerializeField]
+    private ParticleSystem debrisParticle;
+
 	protected override void Start()
 	{
         base.Start();
@@ -177,6 +181,7 @@ public class GuardBoss : Boss
         yield return new WaitForSeconds(waitTime);
         animator.SetTrigger("Attack");
         CameraController.inst.ShakeCamera(0.5f, 0.5f);
+        debrisParticle.Play();
         for (float t = 0; t < 1; t += Time.deltaTime)
         {
             lr.startWidth = width * (1-t) * (1-t);
@@ -241,7 +246,8 @@ public class GuardBoss : Boss
 			yield return null;
 		}
         CameraController.inst.ShakeCamera(0.5f, 0.5f);
-		rb.velocity = Vector2.zero;
+        debrisParticle.Play();
+        rb.velocity = Vector2.zero;
 		yield return SetCollide(false);
 	}
 
