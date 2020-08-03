@@ -69,6 +69,7 @@ public class SwordAttack : IWeaponAttack
         }
     }
 }
+
 public class StabAttack : IWeaponAttack
 {
     public void Attack(Vector2 handPosition, Vector2 mousePosition, int damage, float range)
@@ -83,6 +84,52 @@ public class StabAttack : IWeaponAttack
         {
             IDamagable target = hit.GetComponent<IDamagable>();
             target?.GetDamaged(damage);
+        }
+    }
+}
+
+public class ShootAttack : IWeaponAttack
+{
+    private GameObject bullet;
+    private float speed;
+    public ShootAttack(GameObject _bullet, float _speed)
+    {
+        bullet = _bullet;
+        speed = _speed;
+    }
+
+    public void Attack(Vector2 handPosition, Vector2 mousePosition, int damage, float range)
+    {
+        Vector2 dir = (mousePosition - handPosition).normalized;
+        GameObject newBullet = GameObject.Instantiate(bullet, handPosition, Quaternion.identity);
+        newBullet.AddComponent<ShootAttackBullet>().Init(damage, handPosition, range);
+        newBullet.GetComponent<Rigidbody2D>().velocity = dir * speed;
+    }
+
+    class ShootAttackBullet : MonoBehaviour
+    {
+        public int damage;
+        public Vector2 startPos;
+        public float range;
+
+        public void Init(int _damage, Vector2 _startPos, float _range)
+        {
+            damage = _damage;
+            startPos = _startPos;
+            range = _range;
+        }
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            collision.GetComponent<IDamagable>()?.GetDamaged(damage);
+        }
+
+        private void Update()
+        {
+            if(Vector2.Distance(transform.position, startPos) > range)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

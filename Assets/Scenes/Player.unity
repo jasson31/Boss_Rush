@@ -2473,5 +2473,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 2154258770348111134, guid: ed4f3eedb1e44784f89884b2a3cbdf04,
+        type: 3}
+      propertyPath: testBullet
+      value: 
+      objectReference: {fileID: 5726434148825780474, guid: a586becccf38eac4687a4521f280927c,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed4f3eedb1e44784f89884b2a3cbdf04, type: 3}

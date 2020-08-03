@@ -20,13 +20,13 @@ public class WeaponBehaviour : MonoBehaviour
             Gizmos.DrawWireSphere(handTransform.position, Weapon.range);
         }
     }
-
+    public GameObject testBullet;
     private void Awake()
     {
         Weapon weapon = ScriptableObject.CreateInstance<Weapon>();
-        weapon.attackBehaviour = new StabAttack();
+        weapon.attackBehaviour = new ShootAttack(testBullet, 5);
         weapon.damage = 3;
-        weapon.range = 2;
+        weapon.range = 8;
         weapons.Add(weapon);
         Debug.Log(weapon.attackBehaviour);
     }
