@@ -131,7 +131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f87c92c1afd1d44afa0aceac5e6149, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponBehaviour: {fileID: 0}
+  weaponBehaviour: {fileID: 2154258770348111134}
   handCenter: {fileID: 6789303441484675182}
   isControllable: 1
   jumpable:

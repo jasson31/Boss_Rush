@@ -16,5 +16,9 @@ public class TestScript : SingletonBehaviour<TestScript>
     void Update()
     {
         cursor.GetComponent<RectTransform>().position = Input.mousePosition;
+        if(Input.GetKeyDown(KeyCode.S))
+        {
+            Game.inst.player.GetComponent<Player>().GetDamaged(0);
+        }
     }
 }

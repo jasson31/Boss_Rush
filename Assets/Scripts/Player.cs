@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     private bool isJumpKeyDown = false;
     private int maxJumpCount = 2;
     private int curJumpCount = 2;
+    private bool isInvincible = false;
 
     private bool isPlayerLookRight = true;
 
@@ -108,13 +109,13 @@ public class Player : MonoBehaviour
         }
     }
 
-    IEnumerator RollRoutine(float time)
+    IEnumerator RollRoutine(float time, bool rollDir)
     {
         anim.SetTrigger("Roll");
         Debug.Log("Roll");
         isControllable = false;
+        weaponBehaviour.gameObject.SetActive(false);
 
-        bool rollDir = isPlayerLookRight;
         for (float t = 0; t < time; t += Time.deltaTime)
         {
             rb.velocity = new Vector2(rollSpeed * (rollDir ? 1 : -1), rb.velocity.y);
@@ -122,14 +123,44 @@ public class Player : MonoBehaviour
         }
         isControllable = true;
         anim.SetTrigger("RollEnd");
+        weaponBehaviour.gameObject.SetActive(true);
     }
 
     private void Roll()
     {
         if(isControllable)
         {
-            StartCoroutine(RollRoutine(0.5f));
+            StartCoroutine(RollRoutine(0.5f, horizontal != 0 ? (horizontal > 0) : isPlayerLookRight));
         }
+    }
+
+    private IEnumerator DamagedRoutine()
+    {
+        isInvincible = true;
+
+        SpriteRenderer[] spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+
+        float startTime = Time.time;
+        while(Time.time - startTime < 1)
+        {
+            foreach (SpriteRenderer child in spriteRenderers)
+            {
+                child.color = new Color(1, 1, 1, 0);
+            }
+            yield return new WaitForSeconds(0.1f);
+
+            foreach (SpriteRenderer child in spriteRenderers)
+            {
+                child.color = new Color(1, 1, 1, 1);
+            }
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        foreach (SpriteRenderer child in spriteRenderers)
+        {
+            child.color = new Color(1, 1, 1, 1);
+        }
+        isInvincible = false;
     }
 
     private void Start()
@@ -178,7 +209,11 @@ public class Player : MonoBehaviour
 
     public void GetDamaged(int damage)
     {
-        Debug.Log("Player hit, damage " + damage);
-        weaponBehaviour.GetDamaged(damage);
+        if(!isInvincible)
+        {
+            Debug.Log("Player hit, damage " + damage);
+            weaponBehaviour.GetDamaged(damage);
+            StartCoroutine(DamagedRoutine());
+        }
     }
 }
