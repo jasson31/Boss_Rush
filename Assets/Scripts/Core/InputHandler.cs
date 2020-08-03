@@ -105,7 +105,7 @@ public class InputHandler : SingletonBehaviour<InputHandler>
         }
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            OnAttackKeyDown?.Invoke(Input.mousePosition);
+            OnAttackKeyDown?.Invoke(Camera.main.ScreenToWorldPoint(TestScript.inst.cursor.transform.position));
         }
     }
 }

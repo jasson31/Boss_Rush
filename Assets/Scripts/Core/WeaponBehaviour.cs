@@ -24,7 +24,7 @@ public class WeaponBehaviour : MonoBehaviour
     private void Awake()
     {
         Weapon weapon = ScriptableObject.CreateInstance<Weapon>();
-        weapon.attackBehaviour = new SwordAttack();
+        weapon.attackBehaviour = new StabAttack();
         weapon.damage = 3;
         weapon.range = 2;
         weapons.Add(weapon);
