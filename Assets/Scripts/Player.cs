@@ -173,7 +173,7 @@ public class Player : MonoBehaviour
     private void Update()
     {
         //FixMe
-        Vector3 cursorDir = Camera.main.ScreenToWorldPoint(TestScript.inst.cursor.transform.position) - handCenter.position;
+        Vector3 cursorDir = InputHandler.inst.CursorPos - handCenter.position;
         cursorDir = new Vector3(cursorDir.x, cursorDir.y, transform.position.z);
 
         float cursorAngle = (transform.localScale.x > 0 ? 1 : -1) * Mathf.Atan2(cursorDir.y, cursorDir.x) * Mathf.Rad2Deg;

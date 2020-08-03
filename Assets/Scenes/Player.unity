@@ -240,7 +240,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boss: {fileID: 0}
-  cursor: {fileID: 1019815337}
 --- !u!4 &247453580
 Transform:
   m_ObjectHideFlags: 0
@@ -438,7 +437,7 @@ GameObject:
   - component: {fileID: 1019815340}
   - component: {fileID: 1019815339}
   m_Layer: 5
-  m_Name: Cursor
+  m_Name: IngameCursor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

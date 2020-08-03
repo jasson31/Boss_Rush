@@ -39,8 +39,20 @@ public class InputHandler : SingletonBehaviour<InputHandler>
 
     public Action OnEscapeKeyDown;
 
+    [SerializeField]
+    public Transform cursor;
+    public Vector3 CursorPos { get { return Camera.main.ScreenToWorldPoint(cursor.transform.position); } }
+
+    private void Start()
+    {
+        //For Text
+        cursor = GameObject.Find("IngameCursor").transform;
+    }
+
     private void Update()
     {
+        cursor.GetComponent<RectTransform>().position = Input.mousePosition;
+
         if (Input.GetKey(KeyCode.W))
         {
             OnUpKey?.Invoke();
@@ -105,7 +117,7 @@ public class InputHandler : SingletonBehaviour<InputHandler>
         }
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            OnAttackKeyDown?.Invoke(Camera.main.ScreenToWorldPoint(TestScript.inst.cursor.transform.position));
+            OnAttackKeyDown?.Invoke(CursorPos);
         }
     }
 }
