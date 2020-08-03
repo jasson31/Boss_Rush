@@ -8,21 +8,23 @@ public class MainUIManager : UIManager
 {
     public Button GS, S, I, ESLarge, ESMedium, ESSmall, BGMLarge, BGMMedium, BGMMute;
     public GameObject titleButtons, settingsMenu;
-    GameObject audioObject1,audioObject2;
+    GameObject audioObject1,audioObject2,audioObject3;
     GameObject text, backText;
 
     Rigidbody2D rgbd;
 
     int TitleInclineValue = 0;
 
-    AudioSource audio1,audio2;//audio1:클릭소리, audio2:지지직소리
+    AudioSource audio1,audio2,audio3;//audio1:클릭소리, audio2:지지직소리, audio3:BGM
 
     void Awake()
     {
         audioObject1 = GameObject.Find("EffectSound1");
         audioObject2 = GameObject.Find("EffectSound2");
+        audioObject3 = GameObject.Find("BGM");
         audio1 = audioObject1.GetComponent<AudioSource>();
         audio2 = audioObject2.GetComponent<AudioSource>();
+        audio3 = audioObject3.GetComponent<AudioSource>();
 
         text = GameObject.Find("InclineTempText");
         backText = GameObject.Find("InclineBackTempText");
@@ -72,12 +74,18 @@ public class MainUIManager : UIManager
     {
         UnityEngine.Debug.Log("Adjust Effect Sound to Large!");
 
+        audio1.volume = 1.0f;
+        audio2.volume = 1.0f;
+
         audio1.Play();
     }
 
     public void AdjustEffectSoundtoMedium()
     {
         UnityEngine.Debug.Log("Adjust Effect Sound to Medium!");
+
+        audio1.volume = 0.6f;
+        audio2.volume = 0.6f;
 
         audio1.Play();
     }
@@ -86,12 +94,18 @@ public class MainUIManager : UIManager
     {
         UnityEngine.Debug.Log("Adjust Effect Sound to Small!");
 
+        audio1.volume = 0.2f;
+        audio2.volume = 0.2f;
+
         audio1.Play();
     }
 
     public void AdjustBGMSoundtoLarge()
     {
         UnityEngine.Debug.Log("Adjust BGM Sound to Large!");
+
+        audio3.mute = false;
+        audio3.volume = 1.0f;
 
         audio1.Play();
     }
@@ -100,12 +114,27 @@ public class MainUIManager : UIManager
     {
         UnityEngine.Debug.Log("Adjust BGM Sound to Medium!");
 
+        audio3.mute = false;
+        audio3.volume = 0.4f;
+
         audio1.Play();
     }
 
+    int audio3MuteVal = 0;
     public void MuteBGMSound()
     {
-        UnityEngine.Debug.Log("Mute BGM Sound!");
+        if(audio3MuteVal==0)
+        {
+            UnityEngine.Debug.Log("Mute BGM Sound!");
+            audio3.mute = true;
+            audio3MuteVal = 1;
+        }
+        else
+        {
+            UnityEngine.Debug.Log("Unmute BGM Sound!");
+            audio3.mute = false;
+            audio3MuteVal = 0;
+        }
 
         audio1.Play();
     }
