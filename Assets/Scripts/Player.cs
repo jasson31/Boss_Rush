@@ -16,6 +16,8 @@ public class Player : MonoBehaviour
     private int maxJumpCount = 2;
     private int curJumpCount = 2;
 
+    private bool isPlayerLookRight = true;
+
     private float horizontal;
 
     #region Physics
@@ -35,19 +37,6 @@ public class Player : MonoBehaviour
 
     #endregion
 
-    IEnumerator RollRoutine()
-    {
-        anim.SetTrigger("Roll");
-        Debug.Log("Roll");
-        for (float t = 0; t < 1; t += Time.deltaTime)
-        {
-            rb.velocity = new Vector2(rollSpeed * (GetComponent<SpriteRenderer>().flipX ? -1 : 1), rb.velocity.y);
-            isControllable = false;
-            yield return null;
-        }
-        isControllable = true;
-        anim.SetTrigger("RollEnd");
-    }
 
     private void OnEnable()
     {
@@ -86,6 +75,7 @@ public class Player : MonoBehaviour
     private void PlayerLookAt(bool isRight)
     {
         GetComponent<SpriteRenderer>().flipX = !isRight;
+        isPlayerLookRight = isRight;
     }
 
     private void Move(Vector2 direction)
@@ -118,11 +108,27 @@ public class Player : MonoBehaviour
         }
     }
 
+    IEnumerator RollRoutine(float time)
+    {
+        anim.SetTrigger("Roll");
+        Debug.Log("Roll");
+        isControllable = false;
+
+        bool rollDir = isPlayerLookRight;
+        for (float t = 0; t < time; t += Time.deltaTime)
+        {
+            rb.velocity = new Vector2(rollSpeed * (rollDir ? 1 : -1), rb.velocity.y);
+            yield return null;
+        }
+        isControllable = true;
+        anim.SetTrigger("RollEnd");
+    }
+
     private void Roll()
     {
         if(isControllable)
         {
-            StartCoroutine(RollRoutine());
+            StartCoroutine(RollRoutine(0.5f));
         }
     }
 
@@ -139,14 +145,12 @@ public class Player : MonoBehaviour
         Vector3 cursorDir = Camera.main.ScreenToWorldPoint(TestScript.inst.cursor.transform.position) - handCenter.position;
         cursorDir = new Vector3(cursorDir.x, cursorDir.y, transform.position.z);
 
-        float weaponAngle = (transform.localScale.x > 0 ? 1 : -1) * Mathf.Atan2(cursorDir.y, cursorDir.x) * Mathf.Rad2Deg;
-        bool isCursorRight = weaponAngle < 90 && weaponAngle > -90;
+        float cursorAngle = (transform.localScale.x > 0 ? 1 : -1) * Mathf.Atan2(cursorDir.y, cursorDir.x) * Mathf.Rad2Deg;
+        bool isCursorRight = cursorAngle < 90 && cursorAngle > -90;
         handCenter.localScale = new Vector3(1, isCursorRight ? 1 : -1, 1);
-        handCenter.rotation = Quaternion.Euler(0, 0, weaponAngle);
+        handCenter.rotation = Quaternion.Euler(0, 0, cursorAngle);
 
         PlayerLookAt(isCursorRight);
-
-        Debug.Log(cursorDir);
 
 
     }
