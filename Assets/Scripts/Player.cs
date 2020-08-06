@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    private List<IBuffable> buffables = new List<IBuffable>();
+    private List<Buffable> buffables = new List<Buffable>();
     public WeaponBehaviour weaponBehaviour;
     [SerializeField]
     private Transform handCenter;
@@ -30,6 +30,8 @@ public class Player : MonoBehaviour
     private Collider2D col;
     [SerializeField]
     public float speed;
+    [SerializeField]
+    public float originSpeed;
     [SerializeField]
     private float jumpSpeed;
     [SerializeField]
@@ -164,13 +166,9 @@ public class Player : MonoBehaviour
         isInvincible = false;
     }
 
-
-    public void AddBuffable(IBuffable buff)
+    public void AddBuffable(Buffable buff)
     {
-        /// SETUP TIME WHEN BUFF WILL FINISH (CURRENT TIME + 30 SECONDS)
-        buff.FinishTime = Time.time + 30;
         buffables.Add(buff);
-        //https://www.jonathanyu.xyz/2016/12/30/buff-system-with-scriptable-objects-for-unity/
     }
 
     private void Start()
@@ -196,10 +194,11 @@ public class Player : MonoBehaviour
 
         for (int i = 0; i < buffables.Count; i++)
         {
+            buffables[i].Tick();
             buffables[i].Apply(this);
 
             /// CHECK IF CURRENT TIME IS GREATER THEN FINISHTIME OF BUFF
-            if (Time.time >= buffables[i].FinishTime)
+            if (buffables[i].ended)
             {
                 buffables[i].EndDebuff(this);
                 buffables.Remove(buffables[i]); /// REMOVE
@@ -239,29 +238,23 @@ public class Player : MonoBehaviour
     }
 }
 
-public interface IBuffable
+public abstract class Buffable
 {
-    void Apply(Player player);
-    void EndDebuff(Player player);
+    private float duration;
+    private float timer;
+    public bool ended = false;
 
-    /// ADD FINISHTIME PROPERTY TO ALL BUFFS AND DEBUFFS
-    float FinishTime { get; set; }
-}
-
-/// Piosion buff
-public class SlowDebuff : IBuffable
-{
-    public float originSpeed;
-    public float slowSpeed;
-    public float FinishTime { get; set; }
-
-    public void Apply(Player player)
+    public void Tick()
     {
-        player.speed = slowSpeed;
+        timer += Time.deltaTime;
+        ended = timer > duration;
     }
 
-    public void EndDebuff(Player player)
+    public void Init(float _duration)
     {
-        player.speed = originSpeed;
+        duration = _duration;
     }
+
+    public abstract void Apply(Player player);
+    public abstract void EndDebuff(Player player);
 }

@@ -138,6 +138,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1536
   speed: 7
+  originSpeed: 7
   jumpSpeed: 12
   doubleJumpSpeed: 10
   rollSpeed: 7
@@ -417,3 +418,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weapons: []
   handTransform: {fileID: 2154258770234973270}
+  testBullet: {fileID: 5726434148825780474, guid: a586becccf38eac4687a4521f280927c,
+    type: 3}

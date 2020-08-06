@@ -14,9 +14,28 @@ public class TestScript : SingletonBehaviour<TestScript>
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.S))
+        if(Input.GetKeyDown(KeyCode.T))
         {
-            Game.inst.player.GetComponent<Player>().GetDamaged(0);
+            TestSlowBuff a = new TestSlowBuff();
+            a.Init(3);
+            a.slowSpeed = 3;
+           
+            Game.inst.player.GetComponent<Player>().AddBuffable(a);
         }
+    }
+}
+public class TestSlowBuff : Buffable
+{
+    public float speed;
+    public float slowSpeed;
+
+    public override void Apply(Player player)
+    {
+        player.speed = slowSpeed;
+    }
+
+    public override void EndDebuff(Player player)
+    {
+        player.speed = player.originSpeed;
     }
 }
