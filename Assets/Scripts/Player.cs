@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    private List<IBuffable> buffables = new List<IBuffable>();
     public WeaponBehaviour weaponBehaviour;
     [SerializeField]
     private Transform handCenter;
@@ -28,7 +29,7 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private Collider2D col;
     [SerializeField]
-    private float speed;
+    public float speed;
     [SerializeField]
     private float jumpSpeed;
     [SerializeField]
@@ -163,6 +164,15 @@ public class Player : MonoBehaviour
         isInvincible = false;
     }
 
+
+    public void AddBuffable(IBuffable buff)
+    {
+        /// SETUP TIME WHEN BUFF WILL FINISH (CURRENT TIME + 30 SECONDS)
+        buff.FinishTime = Time.time + 30;
+        buffables.Add(buff);
+        //https://www.jonathanyu.xyz/2016/12/30/buff-system-with-scriptable-objects-for-unity/
+    }
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -184,6 +194,17 @@ public class Player : MonoBehaviour
         PlayerLookAt(isCursorRight);
 
 
+        for (int i = 0; i < buffables.Count; i++)
+        {
+            buffables[i].Apply(this);
+
+            /// CHECK IF CURRENT TIME IS GREATER THEN FINISHTIME OF BUFF
+            if (Time.time >= buffables[i].FinishTime)
+            {
+                buffables[i].EndDebuff(this);
+                buffables.Remove(buffables[i]); /// REMOVE
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -215,5 +236,32 @@ public class Player : MonoBehaviour
             weaponBehaviour.GetDamaged(damage);
             StartCoroutine(DamagedRoutine());
         }
+    }
+}
+
+public interface IBuffable
+{
+    void Apply(Player player);
+    void EndDebuff(Player player);
+
+    /// ADD FINISHTIME PROPERTY TO ALL BUFFS AND DEBUFFS
+    float FinishTime { get; set; }
+}
+
+/// Piosion buff
+public class SlowDebuff : IBuffable
+{
+    public float originSpeed;
+    public float slowSpeed;
+    public float FinishTime { get; set; }
+
+    public void Apply(Player player)
+    {
+        player.speed = slowSpeed;
+    }
+
+    public void EndDebuff(Player player)
+    {
+        player.speed = originSpeed;
     }
 }
