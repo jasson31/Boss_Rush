@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TestScript : MonoBehaviour
+public class TestScript : SingletonBehaviour<TestScript>
 {
     public Boss boss;
     // Start is called before the first frame update
@@ -14,9 +14,28 @@ public class TestScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.S))
+        if(Input.GetKeyDown(KeyCode.T))
         {
-            boss.Stun(5);
+            TestSlowBuff a = new TestSlowBuff();
+            a.Init(3);
+            a.slowSpeed = 3;
+           
+            Game.inst.player.GetComponent<Player>().AddBuffable(a);
         }
+    }
+}
+public class TestSlowBuff : Buffable
+{
+    public float speed;
+    public float slowSpeed;
+
+    public override void Apply(Player player)
+    {
+        player.speed = slowSpeed;
+    }
+
+    public override void EndDebuff(Player player)
+    {
+        player.speed = player.originSpeed;
     }
 }

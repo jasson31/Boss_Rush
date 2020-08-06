@@ -1,10 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    private List<Buffable> buffables = new List<Buffable>();
     public WeaponBehaviour weaponBehaviour;
+    [SerializeField]
+    private Transform handCenter;
 
     private Animator anim;
 
@@ -12,6 +16,9 @@ public class Player : MonoBehaviour
     private bool isJumpKeyDown = false;
     private int maxJumpCount = 2;
     private int curJumpCount = 2;
+    private bool isInvincible = false;
+
+    private bool isPlayerLookRight = true;
 
     private float horizontal;
 
@@ -22,7 +29,9 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private Collider2D col;
     [SerializeField]
-    private float speed;
+    public float speed;
+    [SerializeField]
+    public float originSpeed;
     [SerializeField]
     private float jumpSpeed;
     [SerializeField]
@@ -32,18 +41,6 @@ public class Player : MonoBehaviour
 
     #endregion
 
-    IEnumerator RollRoutine()
-    {
-        anim.SetTrigger("Roll");
-        for (float t = 0; t < 1; t += Time.deltaTime)
-        {
-            rb.velocity = new Vector2(rollSpeed * (GetComponent<SpriteRenderer>().flipX ? -1 : 1), rb.velocity.y);
-            isControllable = false;
-            yield return null;
-        }
-        isControllable = true;
-        anim.SetTrigger("RollEnd");
-    }
 
     private void OnEnable()
     {
@@ -71,7 +68,6 @@ public class Player : MonoBehaviour
         InputHandler.inst.OnJumpKeyUp -= () => { isJumpKeyDown = false; };
     }
 
-
     private bool IsGrounded()
     {
         Vector3 leftFoot = col.bounds.center - new Vector3(col.bounds.size.x / 2, col.bounds.size.y / 2);
@@ -80,12 +76,18 @@ public class Player : MonoBehaviour
         return rb.velocity.y < 0.01f && isGrounded;
     }
 
+    private void PlayerLookAt(bool isRight)
+    {
+        GetComponent<SpriteRenderer>().flipX = !isRight;
+        isPlayerLookRight = isRight;
+    }
+
     private void Move(Vector2 direction)
     {
         if (isControllable)
         {
             horizontal = direction.x;
-            GetComponent<SpriteRenderer>().flipX = horizontal < 0;
+            //PlayerLookAt(horizontal < 0);
             anim.SetBool("Running", true);
         }
     }
@@ -110,12 +112,63 @@ public class Player : MonoBehaviour
         }
     }
 
+    IEnumerator RollRoutine(float time, bool rollDir)
+    {
+        anim.SetTrigger("Roll");
+        Debug.Log("Roll");
+        isControllable = false;
+        weaponBehaviour.gameObject.SetActive(false);
+
+        for (float t = 0; t < time; t += Time.deltaTime)
+        {
+            rb.velocity = new Vector2(rollSpeed * (rollDir ? 1 : -1), rb.velocity.y);
+            yield return null;
+        }
+        isControllable = true;
+        anim.SetTrigger("RollEnd");
+        weaponBehaviour.gameObject.SetActive(true);
+    }
+
     private void Roll()
     {
         if(isControllable)
         {
-            StartCoroutine(RollRoutine());
+            StartCoroutine(RollRoutine(0.5f, horizontal != 0 ? (horizontal > 0) : isPlayerLookRight));
         }
+    }
+
+    private IEnumerator DamagedRoutine()
+    {
+        isInvincible = true;
+
+        SpriteRenderer[] spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+
+        float startTime = Time.time;
+        while(Time.time - startTime < 1)
+        {
+            foreach (SpriteRenderer child in spriteRenderers)
+            {
+                child.color = new Color(1, 1, 1, 0);
+            }
+            yield return new WaitForSeconds(0.1f);
+
+            foreach (SpriteRenderer child in spriteRenderers)
+            {
+                child.color = new Color(1, 1, 1, 1);
+            }
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        foreach (SpriteRenderer child in spriteRenderers)
+        {
+            child.color = new Color(1, 1, 1, 1);
+        }
+        isInvincible = false;
+    }
+
+    public void AddBuffable(Buffable buff)
+    {
+        buffables.Add(buff);
     }
 
     private void Start()
@@ -125,6 +178,33 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
+    private void Update()
+    {
+        //FixMe
+        Vector3 cursorDir = InputHandler.inst.CursorPos - handCenter.position;
+        cursorDir = new Vector3(cursorDir.x, cursorDir.y, transform.position.z);
+
+        float cursorAngle = (transform.localScale.x > 0 ? 1 : -1) * Mathf.Atan2(cursorDir.y, cursorDir.x) * Mathf.Rad2Deg;
+        bool isCursorRight = cursorAngle < 90 && cursorAngle > -90;
+        handCenter.localScale = new Vector3(1, isCursorRight ? 1 : -1, 1);
+        handCenter.rotation = Quaternion.Euler(0, 0, cursorAngle);
+
+        PlayerLookAt(isCursorRight);
+
+
+        for (int i = 0; i < buffables.Count; i++)
+        {
+            buffables[i].Tick();
+            buffables[i].Apply(this);
+
+            /// CHECK IF CURRENT TIME IS GREATER THEN FINISHTIME OF BUFF
+            if (buffables[i].ended)
+            {
+                buffables[i].EndDebuff(this);
+                buffables.Remove(buffables[i]); /// REMOVE
+            }
+        }
+    }
 
     private void FixedUpdate()
     {
@@ -149,7 +229,32 @@ public class Player : MonoBehaviour
 
     public void GetDamaged(int damage)
     {
-        Debug.Log("Player hit, damage " + damage);
-        weaponBehaviour.GetDamaged(damage);
+        if(!isInvincible)
+        {
+            Debug.Log("Player hit, damage " + damage);
+            weaponBehaviour.GetDamaged(damage);
+            StartCoroutine(DamagedRoutine());
+        }
     }
+}
+
+public abstract class Buffable
+{
+    private float duration;
+    private float timer;
+    public bool ended = false;
+
+    public void Tick()
+    {
+        timer += Time.deltaTime;
+        ended = timer > duration;
+    }
+
+    public void Init(float _duration)
+    {
+        duration = _duration;
+    }
+
+    public abstract void Apply(Player player);
+    public abstract void EndDebuff(Player player);
 }
