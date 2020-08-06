@@ -76,6 +76,11 @@ public class Player : MonoBehaviour
         return rb.velocity.y < 0.01f && isGrounded;
     }
 
+    public void StopPlayer()
+    {
+        rb.velocity = Vector2.zero;
+    }
+
     private void PlayerLookAt(bool isRight)
     {
         GetComponent<SpriteRenderer>().flipX = !isRight;
@@ -117,6 +122,7 @@ public class Player : MonoBehaviour
         anim.SetTrigger("Roll");
         Debug.Log("Roll");
         isControllable = false;
+        isInvincible = true;
         weaponBehaviour.gameObject.SetActive(false);
 
         for (float t = 0; t < time; t += Time.deltaTime)
@@ -125,6 +131,7 @@ public class Player : MonoBehaviour
             yield return null;
         }
         isControllable = true;
+        isInvincible = false;
         anim.SetTrigger("RollEnd");
         weaponBehaviour.gameObject.SetActive(true);
     }
@@ -168,7 +175,11 @@ public class Player : MonoBehaviour
 
     public void AddBuffable(Buffable buff)
     {
-        buffables.Add(buff);
+        if(!isInvincible)
+        {
+            buffables.Add(buff);
+            buff.StartDebuff(this);
+        }
     }
 
     private void Start()
@@ -255,6 +266,7 @@ public abstract class Buffable
         duration = _duration;
     }
 
+    public abstract void StartDebuff(Player player);
     public abstract void Apply(Player player);
     public abstract void EndDebuff(Player player);
 }

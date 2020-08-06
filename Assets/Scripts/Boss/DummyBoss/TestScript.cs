@@ -29,6 +29,8 @@ public class TestSlowBuff : Buffable
     public float speed;
     public float slowSpeed;
 
+    public override void StartDebuff(Player player) { }
+
     public override void Apply(Player player)
     {
         player.speed = slowSpeed;
