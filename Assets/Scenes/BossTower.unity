@@ -569,6 +569,8 @@ MonoBehaviour:
   damageTextPrefab: {fileID: 0}
   normalBullet: {fileID: 5726434148825780474, guid: a586becccf38eac4687a4521f280927c,
     type: 3}
+  lightningOrb: {fileID: 5726434148825780474, guid: 3d51d844c7db42147ad82f7517cceab9,
+    type: 3}
   shootPos: {x: 0, y: 3.93, z: 0}
   laserCollider: {fileID: 0}
   map:

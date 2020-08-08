@@ -7,6 +7,8 @@ public class TowerBoss : Boss
     [SerializeField]
     private GameObject normalBullet;
     [SerializeField]
+    private GameObject lightningOrb;
+    [SerializeField]
     private Vector3 shootPos;
     [SerializeField]
     private GameObject laserCollider;
@@ -20,18 +22,15 @@ public class TowerBoss : Boss
     const float bulletSpeed = 5;
 
 
-
-
-
     protected override Queue<IEnumerator> DecideNextRoutine()
     {
         Queue<IEnumerator> nextRoutines = new Queue<IEnumerator>();
 
         float rand = Random.value;
 
-        switch (1)
+        switch (3)
         {
-            case 0:
+            case 1:
 
                 if (rand < 0.33f)
                 {
@@ -55,16 +54,16 @@ public class TowerBoss : Boss
                 nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
                 break;
 
-            case 1:
+            case 2:
 
                 Vector3 distance = shootPos - GetPlayerPos();
 
-                if(rand < 0.5f)
+                if(rand < 0.25f)
                 {
                     nextRoutines.Enqueue(NewActionRoutine(LaserRoutine(1.0f)));
                     nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
                 }
-                else
+                else if(rand < 0.5f)
                 {
                     if (distance.magnitude > 9)
                     {
@@ -77,9 +76,27 @@ public class TowerBoss : Boss
                         nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
                     }
                 }
-                
-                
+                else if(rand < 0.75f)
+                {
+                    nextRoutines.Enqueue(NewActionRoutine(OrbRoutine(7)));
+                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                }
+                else
+                {
+                    nextRoutines.Enqueue(NewActionRoutine(ThunderRoutine(0.7f)));
+                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                }
+
+                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
                 break;
+
+            case 3:
+                nextRoutines.Enqueue(NewActionRoutine(FinalRoutine(12f)));
+                nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+
+                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
+                break;
+
         }
 
         return nextRoutines;
@@ -94,7 +111,7 @@ public class TowerBoss : Boss
             {
                 Instantiate(normalBullet, shootPos + new Vector3(Mathf.Cos(j * 30 * Mathf.PI / 180), Mathf.Sin(j * 30 * Mathf.PI / 180), 0), Quaternion.identity).GetComponent<Rigidbody2D>().velocity
                     = (new Vector3(Mathf.Cos(j * 30 * Mathf.PI / 180), Mathf.Sin(j * 30 * Mathf.PI / 180), 0)).normalized * bulletSpeed;
-                //yield return null;
+                yield return null;
             }
             yield return new WaitForSeconds(interval);
 
@@ -277,6 +294,113 @@ public class TowerBoss : Boss
         lr2.startWidth = laserReadyWidth;
         lr2.endWidth = laserReadyWidth;
         lr2.enabled = false;
+    }
+
+    private IEnumerator OrbRoutine(int orbCount)
+    {
+
+        GameObject[] orbs = new GameObject[orbCount];
+
+        for (int i = 0; i < orbCount; i++)
+        {
+            Vector3 temp = new Vector3(UnityEngine.Random.Range(map.min.x, map.max.x), UnityEngine.Random.Range(map.min.y, map.max.y), 0);
+            orbs[i] = Instantiate(lightningOrb, temp, Quaternion.identity);
+            yield return new WaitForSeconds(0.4f);
+        }
+
+        yield return new WaitForSeconds(1.0f);
+
+        for(int i=0; i<orbCount; i++)
+        {
+            Vector3 temp = GetPlayerPos();
+            Vector3 slope = orbs[i].transform.position - temp;
+
+            while((orbs[i].transform.position - temp).magnitude > 0.5f)
+            {
+                orbs[i].transform.position -= slope / 100;
+                yield return new WaitForSeconds(0.005f);
+            }
+        }
+
+        yield return new WaitForSeconds(1f); 
+
+        foreach(GameObject temp in orbs)
+        {
+            Destroy(temp);
+            yield return null;
+        }
+    }
+
+    private IEnumerator ThunderRoutine(float waitTime)
+    {
+
+        for(int i=0; i<7; i++)
+        {
+            lr.enabled = true;
+
+            lr.SetPosition(0, GetPlayerPos());
+            lr.SetPosition(1, new Vector3(GetPlayerPos().x, map.max.y, 0));
+
+            yield return new WaitForSeconds(0.3f);
+
+            lr.startWidth = laserShootWidth;
+            lr.endWidth = laserShootWidth;
+
+            yield return new WaitForSeconds(0.3f);
+
+
+            for (float t = 0; t < 0.2f; t += Time.deltaTime)
+            {
+                float size = Mathf.Lerp(laserShootWidth, laserReadyWidth, t / 0.2f);
+                lr.startWidth = size;
+                lr.endWidth = size;
+
+                lr2.startWidth = size;
+                lr2.endWidth = size;
+                yield return null;
+            }
+
+            lr.startWidth = laserReadyWidth;
+            lr.endWidth = laserReadyWidth;
+            lr.enabled = false;
+
+            yield return new WaitForSeconds(waitTime);
+        }
+
+    }
+
+    private IEnumerator FinalRoutine(float count)
+    {
+
+        for(float i = 0; i < count; i ++)
+        {
+            lr.enabled = true;
+
+            Vector3 lineEndPos = new Vector3(UnityEngine.Random.Range(map.min.x, map.max.x), UnityEngine.Random.Range(map.min.y, map.max.y), 0);
+
+            lr.SetPosition(0, shootPos);
+            lr.SetPosition(1, lineEndPos);
+
+            yield return new WaitForSeconds(0.5f);
+
+            lr.startWidth = laserShootWidth;
+            lr.endWidth = laserShootWidth;
+
+            yield return new WaitForSeconds(0.5f);
+
+            for (float t = 0; t < 0.2f; t += Time.deltaTime)
+            {
+                float size = Mathf.Lerp(laserShootWidth, laserReadyWidth, t / 0.2f);
+                lr.startWidth = size;
+                lr.endWidth = size;
+                yield return null;
+            }
+
+            lr.startWidth = laserReadyWidth;
+            lr.endWidth = laserReadyWidth;
+            lr.enabled = false;
+        }
+        
     }
 
 
