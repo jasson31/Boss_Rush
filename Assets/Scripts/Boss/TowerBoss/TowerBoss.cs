@@ -28,76 +28,79 @@ public class TowerBoss : Boss
 
         float rand = Random.value;
 
-        switch (3)
-        {
-            case 1:
+        nextRoutines.Enqueue(NewActionRoutine(LaserRoutine(1.0f)));
+        nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
 
-                if (rand < 0.33f)
-                {
+        //switch (2)
+        //{
+        //    case 1:
 
-                    nextRoutines.Enqueue(NewActionRoutine(CircularShotRoutine(5, 12, 1f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+        //        if (rand < 0.33f)
+        //        {
 
-                }
-                else if (rand < 0.66f)
-                {
-                    nextRoutines.Enqueue(NewActionRoutine(StraightShotRoutine(6, 0.1f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+        //            nextRoutines.Enqueue(NewActionRoutine(CircularShotRoutine(5, 12, 1f)));
+        //            nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
 
-                }
-                else
-                {
-                    nextRoutines.Enqueue(NewActionRoutine(FanShotRoutine(5, 5, 0.7f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-                }
+        //        }
+        //        else if (rand < 0.66f)
+        //        {
+        //            nextRoutines.Enqueue(NewActionRoutine(StraightShotRoutine(3, 6, 0.7f)));
+        //            nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
 
-                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
-                break;
+        //        }
+        //        else
+        //        {
+        //            nextRoutines.Enqueue(NewActionRoutine(FanShotRoutine(5, 5, 0.7f)));
+        //            nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+        //        }
 
-            case 2:
+        //        nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
+        //        break;
 
-                Vector3 distance = shootPos - GetPlayerPos();
+        //    case 2:
 
-                if(rand < 0.25f)
-                {
-                    nextRoutines.Enqueue(NewActionRoutine(LaserRoutine(1.0f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-                }
-                else if(rand < 0.5f)
-                {
-                    if (distance.magnitude > 9)
-                    {
-                        nextRoutines.Enqueue(NewActionRoutine(LaserRoutine2(1.0f)));
-                        nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-                    }
-                    else
-                    {
-                        nextRoutines.Enqueue(NewActionRoutine(LaserRoutine2b(1.0f)));
-                        nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-                    }
-                }
-                else if(rand < 0.75f)
-                {
-                    nextRoutines.Enqueue(NewActionRoutine(OrbRoutine(7)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-                }
-                else
-                {
-                    nextRoutines.Enqueue(NewActionRoutine(ThunderRoutine(0.7f)));
-                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-                }
+        //        Vector3 distance = shootPos - GetPlayerPos();
 
-                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
-                break;
+        //        if(rand < 0.25f)
+        //        {
+        //            nextRoutines.Enqueue(NewActionRoutine(LaserRoutine(1.0f)));
+        //            nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+        //        }
+        //        else if(rand < 0.5f)
+        //        {
+        //            if (distance.magnitude > 9)
+        //            {
+        //                nextRoutines.Enqueue(NewActionRoutine(LaserRoutine2(1.0f)));
+        //                nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+        //            }
+        //            else
+        //            {
+        //                nextRoutines.Enqueue(NewActionRoutine(LaserRoutine2b(1.0f)));
+        //                nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+        //            }
+        //        }
+        //        else if(rand < 0.75f)
+        //        {
+        //            nextRoutines.Enqueue(NewActionRoutine(OrbRoutine(7)));
+        //            nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+        //        }
+        //        else
+        //        {
+        //            nextRoutines.Enqueue(NewActionRoutine(ThunderRoutine(0.7f)));
+        //            nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+        //        }
 
-            case 3:
-                nextRoutines.Enqueue(NewActionRoutine(FinalRoutine(12f)));
-                nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+        //        nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
+        //        break;
 
-                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
-                break;
+        //    case 3:
+        //        nextRoutines.Enqueue(NewActionRoutine(FinalRoutine(12f)));
+        //        nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
 
-        }
+        //        nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
+        //        break;
+
+        //}
 
         return nextRoutines;
     }
@@ -118,14 +121,21 @@ public class TowerBoss : Boss
         }
 
     }
-    private IEnumerator StraightShotRoutine(int bulletCount, float interval)
+    private IEnumerator StraightShotRoutine(int numWave, int bulletCount, float interval)
     {
 
-        for(int i=0; i < bulletCount; i++)
+        for(int n=0; n<numWave; n++)
         {
-            Instantiate(normalBullet, shootPos, Quaternion.identity).GetComponent<Rigidbody2D>().velocity = (GetPlayerPos() - shootPos).normalized * bulletSpeed * 2;
+            for (int i = 0; i < bulletCount; i++)
+            {
+                Instantiate(normalBullet, shootPos, Quaternion.identity).GetComponent<Rigidbody2D>().velocity = (GetPlayerPos() - shootPos).normalized * bulletSpeed * 2;
+                yield return new WaitForSeconds(0.1f);
+            }
+
             yield return new WaitForSeconds(interval);
+
         }
+
 
     }
 
@@ -133,10 +143,13 @@ public class TowerBoss : Boss
     {
         for(int i=0; i<numWave; i++)
         {
+            Vector3 pos = GetPlayerPos();
+
             for (int j = 0; j < bulletCount; j++)
             {
+
                 Instantiate(normalBullet, shootPos, Quaternion.identity).GetComponent<Rigidbody2D>().velocity 
-                    = (GetPlayerPos() + new Vector3(0, j-2, 0) / 0.5f * Mathf.Pow(-1, i) - shootPos).normalized * bulletSpeed * 1.5f;
+                    = (pos + new Vector3(0, j-2, 0) / 0.5f * Mathf.Pow(-1, i) - shootPos).normalized * bulletSpeed * 1.5f;
                 yield return new WaitForSeconds(0.15f);
             }
         yield return new WaitForSeconds(interval);
@@ -164,6 +177,9 @@ public class TowerBoss : Boss
 
 
         Vector3 diff = lineEndPos - shootPos;
+
+
+        lr.SetPosition(1, lineEndPos + diff);
 
 
         lr.startWidth = laserShootWidth;
