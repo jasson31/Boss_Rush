@@ -140,8 +140,6 @@ public class GuardBoss : Boss
                 nextRoutines.Enqueue(NewActionRoutine(StunRoutine(5)));
                 break;
         }
-
-
         return nextRoutines;
     }
 
