@@ -15,13 +15,16 @@ public class TowerBoss : Boss
     [SerializeField]
     private Bounds map;
     [SerializeField]
+    private LayerMask mask;
+    [SerializeField]
+    private LayerMask penMask;
+    [SerializeField]
     private LineRenderer lr, lr2;
     const float laserReadyWidth = 0.1f;
     const float laserShootWidth = 2.0f;
-
-    Ray shootRay;
-    RaycastHit shootHit;
-    public int shootableMask;
+    
+  
+    RaycastHit2D shootHit;
 
     const float bulletSpeed = 5;
 
@@ -32,79 +35,76 @@ public class TowerBoss : Boss
 
         float rand = Random.value;
 
-        nextRoutines.Enqueue(NewActionRoutine(ThunderRoutine(0.7f)));
-        nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+        switch (3)
+        {
+            case 1:
 
-        //switch (2)
-        //{
-        //    case 1:
+                if (rand < 0.33f)
+                {
 
-        //        if (rand < 0.33f)
-        //        {
+                    nextRoutines.Enqueue(NewActionRoutine(CircularShotRoutine(5, 12, 1f)));
+                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
 
-        //            nextRoutines.Enqueue(NewActionRoutine(CircularShotRoutine(5, 12, 1f)));
-        //            nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                }
+                else if (rand < 0.66f)
+                {
+                    nextRoutines.Enqueue(NewActionRoutine(StraightShotRoutine(3, 6, 0.7f)));
+                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
 
-        //        }
-        //        else if (rand < 0.66f)
-        //        {
-        //            nextRoutines.Enqueue(NewActionRoutine(StraightShotRoutine(3, 6, 0.7f)));
-        //            nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                }
+                else
+                {
+                    nextRoutines.Enqueue(NewActionRoutine(FanShotRoutine(5, 5, 0.7f)));
+                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                }
 
-        //        }
-        //        else
-        //        {
-        //            nextRoutines.Enqueue(NewActionRoutine(FanShotRoutine(5, 5, 0.7f)));
-        //            nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-        //        }
+                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
+                break;
 
-        //        nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
-        //        break;
+            case 2:
 
-        //    case 2:
+                Vector3 distance = shootPos - GetPlayerPos();
 
-        //        Vector3 distance = shootPos - GetPlayerPos();
+                if (rand < 0.25f)
+                {
+                    nextRoutines.Enqueue(NewActionRoutine(LaserRoutine(1.0f)));
+                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                }
+                else if (rand < 0.5f)
+                {
+                    if (distance.magnitude > 9)
+                    {
+                        nextRoutines.Enqueue(NewActionRoutine(LaserRoutine2(1.0f)));
+                        nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                    }
+                    else
+                    {
+                        nextRoutines.Enqueue(NewActionRoutine(LaserRoutine2b(1.0f)));
+                        nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                    }
+                }
+                else if (rand < 0.75f)
+                {
+                    nextRoutines.Enqueue(NewActionRoutine(OrbRoutine(7)));
+                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                }
+                else
+                {
+                    nextRoutines.Enqueue(NewActionRoutine(ThunderRoutine(0.7f)));
+                    nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                }
 
-        //        if(rand < 0.25f)
-        //        {
-        //            nextRoutines.Enqueue(NewActionRoutine(LaserRoutine(1.0f)));
-        //            nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-        //        }
-        //        else if(rand < 0.5f)
-        //        {
-        //            if (distance.magnitude > 9)
-        //            {
-        //                nextRoutines.Enqueue(NewActionRoutine(LaserRoutine2(1.0f)));
-        //                nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-        //            }
-        //            else
-        //            {
-        //                nextRoutines.Enqueue(NewActionRoutine(LaserRoutine2b(1.0f)));
-        //                nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-        //            }
-        //        }
-        //        else if(rand < 0.75f)
-        //        {
-        //            nextRoutines.Enqueue(NewActionRoutine(OrbRoutine(7)));
-        //            nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-        //        }
-        //        else
-        //        {
-        //            nextRoutines.Enqueue(NewActionRoutine(ThunderRoutine(0.7f)));
-        //            nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-        //        }
+                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
+                break;
 
-        //        nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
-        //        break;
+            case 3:
+                nextRoutines.Enqueue(NewActionRoutine(FinalRoutine(15f)));
+                nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
 
-        //    case 3:
-        //        nextRoutines.Enqueue(NewActionRoutine(FinalRoutine(12f)));
-        //        nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
+                break;
 
-        //        nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
-        //        break;
-
-        //}
+        }
 
         return nextRoutines;
     }
@@ -179,11 +179,10 @@ public class TowerBoss : Boss
             yield return null;
         }
 
+        shootHit = Physics2D.Raycast(shootPos, lineEndPos - shootPos, 100, penMask);
 
-        Vector3 diff = lineEndPos - shootPos;
-
-
-        lr.SetPosition(1, lineEndPos + diff * 100);
+        lr.SetPosition(1, shootHit.point);
+        
 
 
         lr.startWidth = laserShootWidth;
@@ -361,21 +360,20 @@ public class TowerBoss : Boss
         for(int i=0; i<7; i++)
         {
 
-            Vector3 playerXPos = new Vector3(GetPlayerPos().x, map.max.y, 0);
+            Vector3 playerXPos = new Vector3(GetPlayerPos().x, map.max.y - 0.01f, 0);
 
             lr.enabled = true;
             lr.SetPosition(0, playerXPos);
 
-            shootRay.origin = playerXPos;
-            shootRay.direction = Vector2.down;
+            shootHit = Physics2D.Raycast(playerXPos, Vector2.down, 100, mask);
 
-            if (Physics.Raycast(shootRay, out shootHit))
+            if (shootHit.collider.gameObject.layer != 11)
             {
                 lr.SetPosition(1, shootHit.point);
             }
             else
             {
-                lr.SetPosition(1, playerXPos);
+                lr.SetPosition(1, GetPlayerPos());
             }
 
             yield return new WaitForSeconds(0.3f);
@@ -416,14 +414,21 @@ public class TowerBoss : Boss
             Vector3 lineEndPos = new Vector3(UnityEngine.Random.Range(map.min.x, map.max.x), UnityEngine.Random.Range(map.min.y, map.max.y), 0) * 100;
 
             lr.SetPosition(0, shootPos);
-            lr.SetPosition(1, lineEndPos);
 
-            yield return new WaitForSeconds(0.5f);
+            shootHit = Physics2D.Raycast(shootPos, lineEndPos - shootPos, 100, penMask);
+
+            if (shootHit)
+            {
+                lr.SetPosition(1, shootHit.point);
+            }
+
+
+            yield return new WaitForSeconds(0.2f);
 
             lr.startWidth = laserShootWidth;
             lr.endWidth = laserShootWidth;
 
-            yield return new WaitForSeconds(0.3f);
+            yield return new WaitForSeconds(0.2f);
 
             for (float t = 0; t < 0.2f; t += Time.deltaTime)
             {

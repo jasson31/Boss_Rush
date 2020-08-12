@@ -576,9 +576,14 @@ MonoBehaviour:
   map:
     m_Center: {x: 0, y: 1.5, z: 0}
     m_Extent: {x: 13, y: 5.5, z: 0}
+  mask:
+    serializedVersion: 2
+    m_Bits: 3840
+  penMask:
+    serializedVersion: 2
+    m_Bits: 768
   lr: {fileID: 520281100}
   lr2: {fileID: 1718938805}
-  shootableMask: 10
 --- !u!61 &1094720616
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2738,12 +2743,12 @@ PrefabInstance:
     - target: {fileID: 2154258769931172972, guid: ed4f3eedb1e44784f89884b2a3cbdf04,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9.16
+      value: 2.03
       objectReference: {fileID: 0}
     - target: {fileID: 2154258769931172972, guid: ed4f3eedb1e44784f89884b2a3cbdf04,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.13
+      value: -0.14
       objectReference: {fileID: 0}
     - target: {fileID: 2154258769931172972, guid: ed4f3eedb1e44784f89884b2a3cbdf04,
         type: 3}
