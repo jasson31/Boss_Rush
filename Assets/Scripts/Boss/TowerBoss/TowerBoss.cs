@@ -28,7 +28,7 @@ public class TowerBoss : Boss
 
         float rand = Random.value;
 
-        nextRoutines.Enqueue(NewActionRoutine(LaserRoutine(1.0f)));
+        nextRoutines.Enqueue(NewActionRoutine(FinalRoutine(12f)));
         nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
 
         //switch (2)
@@ -179,7 +179,7 @@ public class TowerBoss : Boss
         Vector3 diff = lineEndPos - shootPos;
 
 
-        lr.SetPosition(1, lineEndPos + diff);
+        lr.SetPosition(1, lineEndPos + diff * 100);
 
 
         lr.startWidth = laserShootWidth;
@@ -328,14 +328,18 @@ public class TowerBoss : Boss
 
         for(int i=0; i<orbCount; i++)
         {
-            Vector3 temp = GetPlayerPos();
-            Vector3 slope = orbs[i].transform.position - temp;
+            //Vector3 temp = GetPlayerPos();
+            //Vector3 slope = orbs[i].transform.position - temp;
 
-            while((orbs[i].transform.position - temp).magnitude > 0.5f)
-            {
-                orbs[i].transform.position -= slope / 100;
-                yield return new WaitForSeconds(0.005f);
-            }
+            //while((orbs[i].transform.position - temp).magnitude > 0.5f)
+            //{
+            //    orbs[i].transform.position -= slope / 100;
+            //    yield return new WaitForSeconds(0.005f);
+            //}
+
+            orbs[i].GetComponent<Rigidbody2D>().velocity = (GetPlayerPos() - orbs[i].transform.position).normalized*10;
+
+            yield return new WaitForSeconds(0.8f);
         }
 
         yield return new WaitForSeconds(1f); 
@@ -392,7 +396,7 @@ public class TowerBoss : Boss
         {
             lr.enabled = true;
 
-            Vector3 lineEndPos = new Vector3(UnityEngine.Random.Range(map.min.x, map.max.x), UnityEngine.Random.Range(map.min.y, map.max.y), 0);
+            Vector3 lineEndPos = new Vector3(UnityEngine.Random.Range(map.min.x, map.max.x), UnityEngine.Random.Range(map.min.y, map.max.y), 0) * 100;
 
             lr.SetPosition(0, shootPos);
             lr.SetPosition(1, lineEndPos);
@@ -402,7 +406,7 @@ public class TowerBoss : Boss
             lr.startWidth = laserShootWidth;
             lr.endWidth = laserShootWidth;
 
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.3f);
 
             for (float t = 0; t < 0.2f; t += Time.deltaTime)
             {
