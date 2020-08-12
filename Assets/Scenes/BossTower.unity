@@ -578,6 +578,7 @@ MonoBehaviour:
     m_Extent: {x: 13, y: 5.5, z: 0}
   lr: {fileID: 520281100}
   lr2: {fileID: 1718938805}
+  shootableMask: 10
 --- !u!61 &1094720616
 BoxCollider2D:
   m_ObjectHideFlags: 0

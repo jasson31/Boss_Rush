@@ -19,6 +19,10 @@ public class TowerBoss : Boss
     const float laserReadyWidth = 0.1f;
     const float laserShootWidth = 2.0f;
 
+    Ray shootRay;
+    RaycastHit shootHit;
+    public int shootableMask;
+
     const float bulletSpeed = 5;
 
 
@@ -28,7 +32,7 @@ public class TowerBoss : Boss
 
         float rand = Random.value;
 
-        nextRoutines.Enqueue(NewActionRoutine(FinalRoutine(12f)));
+        nextRoutines.Enqueue(NewActionRoutine(ThunderRoutine(0.7f)));
         nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
 
         //switch (2)
@@ -356,10 +360,23 @@ public class TowerBoss : Boss
 
         for(int i=0; i<7; i++)
         {
-            lr.enabled = true;
 
-            lr.SetPosition(0, GetPlayerPos());
-            lr.SetPosition(1, new Vector3(GetPlayerPos().x, map.max.y, 0));
+            Vector3 playerXPos = new Vector3(GetPlayerPos().x, map.max.y, 0);
+
+            lr.enabled = true;
+            lr.SetPosition(0, playerXPos);
+
+            shootRay.origin = playerXPos;
+            shootRay.direction = Vector2.down;
+
+            if (Physics.Raycast(shootRay, out shootHit))
+            {
+                lr.SetPosition(1, shootHit.point);
+            }
+            else
+            {
+                lr.SetPosition(1, playerXPos);
+            }
 
             yield return new WaitForSeconds(0.3f);
 
