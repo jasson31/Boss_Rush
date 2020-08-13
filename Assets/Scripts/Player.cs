@@ -83,7 +83,9 @@ public class Player : MonoBehaviour
 
     private void PlayerLookAt(bool isRight)
     {
-        GetComponent<SpriteRenderer>().flipX = !isRight;
+        anim.SetFloat("IsRunForward", (horizontal < 0 ^ isRight) ? 1 : 0);
+        
+        GetComponent<SpriteRenderer>().flipX = horizontal < 0;
         isPlayerLookRight = isRight;
     }
 
@@ -92,7 +94,6 @@ public class Player : MonoBehaviour
         if (isControllable)
         {
             horizontal = direction.x;
-            //PlayerLookAt(horizontal < 0);
             anim.SetBool("Running", true);
         }
     }
@@ -195,13 +196,12 @@ public class Player : MonoBehaviour
         Vector3 cursorDir = InputHandler.inst.CursorPos - handCenter.position;
         cursorDir = new Vector3(cursorDir.x, cursorDir.y, transform.position.z);
 
-        float cursorAngle = (transform.localScale.x > 0 ? 1 : -1) * Mathf.Atan2(cursorDir.y, cursorDir.x) * Mathf.Rad2Deg;
+        float cursorAngle = Mathf.Atan2(cursorDir.y, cursorDir.x) * Mathf.Rad2Deg;
         bool isCursorRight = cursorAngle < 90 && cursorAngle > -90;
         handCenter.localScale = new Vector3(1, isCursorRight ? 1 : -1, 1);
         handCenter.rotation = Quaternion.Euler(0, 0, cursorAngle);
 
         PlayerLookAt(isCursorRight);
-
 
         for (int i = 0; i < buffables.Count; i++)
         {
