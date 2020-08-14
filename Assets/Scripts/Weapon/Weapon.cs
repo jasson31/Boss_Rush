@@ -125,8 +125,9 @@ public class LaserAttack : IWeaponAttack
         Vector2 dir = (mousePosition - handPosition).normalized;
         float angle = Mathf.Atan2(dir.y, dir.x);
         Vector2 endPos = handPosition + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * range;
-        LaserAttackBullet newLaser = GameObject.Instantiate(laser, (handPosition + endPos) / 2, Quaternion.Euler(0, 0, angle), Game.inst.player).GetComponent<LaserAttackBullet>();
-        Game.inst.StartCoroutine(newLaser.LaserBulletRoutine(damage, handPosition, endPos, chargeTime, shootTime));
+        Vector2 centerPos = (handPosition + endPos) / 2;
+        LaserAttackBullet newLaser = GameObject.Instantiate(laser, centerPos, Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg), Game.inst.player).GetComponent<LaserAttackBullet>();
+        Game.inst.StartCoroutine(newLaser.LaserBulletRoutine(damage, new Vector2(-0.5f, 0) * range, new Vector2(0.5f, 0) * range, chargeTime, shootTime));
     }
 
 }

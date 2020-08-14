@@ -16,10 +16,15 @@ public class LaserAttackBullet : MonoBehaviour
         damage = _damage;
 
         lr = GetComponent<LineRenderer>();
+
         lr.SetPosition(0, startPos);
         lr.SetPosition(1, endPos);
         
-        transform.localScale = new Vector2(Vector2.Distance(startPos, endPos), shootWidth);
+        GetComponent<BoxCollider2D>().size = new Vector2(Vector2.Distance(startPos, endPos), shootWidth);
+
+        LaserAttackBulletStunDebuff debuff = new LaserAttackBulletStunDebuff();
+        debuff.Init(chargeTime + shootTime);
+        Game.inst.player.GetComponent<Player>().AddBuffable(debuff);
 
         lr.startWidth = chargeWidth;
         yield return new WaitForSeconds(chargeTime);
@@ -38,5 +43,23 @@ public class LaserAttackBullet : MonoBehaviour
 
             collision.GetComponent<IDamagable>()?.GetDamaged(damage);
         }
+    }
+}
+
+public class LaserAttackBulletStunDebuff : Buffable
+{
+    public override void StartDebuff(Player player)
+    {
+        player.StopPlayer();
+    }
+
+    public override void Apply(Player player)
+    {
+        player.isControllable = false;
+    }
+
+    public override void EndDebuff(Player player)
+    {
+        player.isControllable = true;
     }
 }
