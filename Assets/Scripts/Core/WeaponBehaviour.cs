@@ -12,6 +12,9 @@ public class WeaponBehaviour : MonoBehaviour
     [SerializeField]
     private Transform handTransform;
 
+    public GameObject testBullet;
+    public GameObject testLaser;
+
     private void OnDrawGizmos()
     {
         if (Weapon)
@@ -20,11 +23,10 @@ public class WeaponBehaviour : MonoBehaviour
             Gizmos.DrawWireSphere(handTransform.position, Weapon.range);
         }
     }
-    public GameObject testBullet;
     private void Awake()
     {
         Weapon weapon = ScriptableObject.CreateInstance<Weapon>();
-        weapon.attackBehaviour = new ShootAttack(testBullet, 5);
+        weapon.attackBehaviour = new LaserAttack(testLaser, 2, 2);
         weapon.damage = 3;
         weapon.range = 8;
         weapons.Add(weapon);

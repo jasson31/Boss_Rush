@@ -107,7 +107,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 2293154438427191032, guid: b0d85959252468f45a16b1c348a821f2,
+  m_Sprite: {fileID: 6901147252099293164, guid: 520148c5c0eccc3489132cc1f38bf2e8,
     type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -116,7 +116,7 @@ SpriteRenderer:
   m_Size: {x: 1.75, y: 1.625}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &2154258769931172975
@@ -418,5 +418,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weapons: []
   handTransform: {fileID: 2154258770234973270}
-  testBullet: {fileID: 5726434148825780474, guid: a586becccf38eac4687a4521f280927c,
+  testBullet: {fileID: 2614991159716093874, guid: 2c3987ef2675ce24c8c854c460e0404f,
     type: 3}
