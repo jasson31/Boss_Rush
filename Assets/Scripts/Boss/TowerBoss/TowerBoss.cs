@@ -28,6 +28,30 @@ public class TowerBoss : Boss
 
     const float bulletSpeed = 6.5f;
 
+    protected override void Start()
+    {
+        base.Start();
+        Phase = 1;
+        MaxHealth = Health = 200;
+    }
+
+    public override void GetDamaged(int damage)
+    {
+        Debug.Log(Health);
+        Debug.Log("\n");
+        Debug.Log(damage);
+        base.GetDamaged(damage);
+        if (MaxHealth * 0.33f >= Health && Phase == 1)
+        {
+            Phase = 2;
+        }
+        if (Health <= 0 && Phase == 2)
+        {
+            Phase = 3;
+        }
+        if (Phase == 4)
+            gameObject.SetActive(false);
+    }
 
     protected override Queue<IEnumerator> DecideNextRoutine()
     {
@@ -35,7 +59,7 @@ public class TowerBoss : Boss
 
         float rand = Random.value;
 
-        switch (1)
+        switch (Phase)
         {
             case 1:
 
@@ -99,7 +123,7 @@ public class TowerBoss : Boss
 
             case 3:
                 nextRoutines.Enqueue(NewActionRoutine(FinalRoutine(15f)));
-                nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                Phase = -1;
 
                 nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
                 break;
@@ -179,44 +203,50 @@ public class TowerBoss : Boss
 
     private IEnumerator LaserRoutine(float waitTime)
     {
-        lr.enabled = true;
-
-        Vector3 lineEndPos = GetPlayerPos();
-
-        lr.SetPosition(0, shootPos);
-        lr.SetPosition(1, lineEndPos);
-
-        for (float t = 0; t < waitTime; t += Time.deltaTime)
+        for(int i=0; i<3; i++)
         {
+            lr.enabled = true;
 
-            lineEndPos = GetPlayerPos();
+            Vector3 lineEndPos = GetPlayerPos();
+
             lr.SetPosition(0, shootPos);
             lr.SetPosition(1, lineEndPos);
+
+            for (float t = 0; t < waitTime; t += Time.deltaTime)
+            {
+
+                lineEndPos = GetPlayerPos();
+                lr.SetPosition(0, shootPos);
+                lr.SetPosition(1, lineEndPos);
+                yield return null;
+            }
+
+            shootHit = Physics2D.Raycast(shootPos, lineEndPos - shootPos, 100, penMask);
+
+            lr.SetPosition(1, shootHit.point);
+
+
+
+            lr.startWidth = laserShootWidth;
+            lr.endWidth = laserShootWidth;
+
+            yield return new WaitForSeconds(0.5f);
+
+            for (float t = 0; t < 0.2f; t += Time.deltaTime)
+            {
+                float size = Mathf.Lerp(laserShootWidth, laserReadyWidth, t / 0.2f);
+                lr.startWidth = size;
+                lr.endWidth = size;
+                yield return null;
+            }
+
+            lr.startWidth = laserReadyWidth;
+            lr.endWidth = laserReadyWidth;
+            lr.enabled = false;
+
             yield return null;
         }
-
-        shootHit = Physics2D.Raycast(shootPos, lineEndPos - shootPos, 100, penMask);
-
-        lr.SetPosition(1, shootHit.point);
         
-
-
-        lr.startWidth = laserShootWidth;
-        lr.endWidth = laserShootWidth;
-
-        yield return new WaitForSeconds(0.5f);
-
-        for (float t = 0; t < 0.2f; t += Time.deltaTime)
-        {
-            float size = Mathf.Lerp(laserShootWidth, laserReadyWidth, t / 0.2f);
-            lr.startWidth = size;
-            lr.endWidth = size;
-            yield return null;
-        }
-
-        lr.startWidth = laserReadyWidth;
-        lr.endWidth = laserReadyWidth;
-        lr.enabled = false;
     }
     
     private IEnumerator LaserRoutine2(float waitTime)
@@ -381,7 +411,7 @@ public class TowerBoss : Boss
             lr.enabled = true;
             lr.SetPosition(0, playerXPos);
 
-            shootHit = Physics2D.Raycast(playerXPos, Vector2.down, 100, mask);
+            shootHit = Physics2D.Raycast(playerXPos, Vector2.down, 100, penMask);
 
             if (shootHit.collider.gameObject.layer != 11)
             {
