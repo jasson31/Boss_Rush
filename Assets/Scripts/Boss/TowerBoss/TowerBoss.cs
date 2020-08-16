@@ -37,9 +37,6 @@ public class TowerBoss : Boss
 
     public override void GetDamaged(int damage)
     {
-        Debug.Log(Health);
-        Debug.Log("\n");
-        Debug.Log(damage);
         base.GetDamaged(damage);
         if (MaxHealth * 0.33f >= Health && Phase == 1)
         {
