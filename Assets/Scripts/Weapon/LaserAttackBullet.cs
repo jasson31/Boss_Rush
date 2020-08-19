@@ -50,16 +50,16 @@ public class LaserAttackBulletStunDebuff : Buffable
 {
     public override void StartDebuff(Player player)
     {
-        player.StopPlayer();
+
     }
 
     public override void Apply(Player player)
     {
-        player.isControllable = false;
+        player.SetPlayerControllable(false);
     }
 
     public override void EndDebuff(Player player)
     {
-        player.isControllable = true;
+        player.SetPlayerControllable(true);
     }
 }

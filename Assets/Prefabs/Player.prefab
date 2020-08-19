@@ -137,8 +137,8 @@ MonoBehaviour:
   jumpable:
     serializedVersion: 2
     m_Bits: 1536
-  speed: 7
   originSpeed: 7
+  speed: 7
   jumpSpeed: 12
   doubleJumpSpeed: 10
   rollSpeed: 7
@@ -172,7 +172,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 2154258769931172973}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 6200000, guid: 745c1794201822647b092d3e00d4cd69, type: 2}
+  m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -419,4 +419,6 @@ MonoBehaviour:
   weapons: []
   handTransform: {fileID: 2154258770234973270}
   testBullet: {fileID: 2614991159716093874, guid: 2c3987ef2675ce24c8c854c460e0404f,
+    type: 3}
+  testLaser: {fileID: 3262527213003545126, guid: 620396d0332d56345a82f8c54a8d8b15,
     type: 3}

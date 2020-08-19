@@ -10,6 +10,7 @@ public interface IWeaponAttack
 public class Weapon : ScriptableObject
 {
     public int weaponID;
+    public float moveSpeed;
     public int health;
     public int MaxHealth { get; private set; }
     public int damage;
@@ -34,7 +35,8 @@ public class Weapon : ScriptableObject
 
     public void OnMountWeapon()
     {
-
+        Game.inst.player.GetComponent<Player>().originSpeed = moveSpeed;
+        Game.inst.player.GetComponent<Player>().speed = moveSpeed;
     }
 
     public void OnUnmountWeapon()
@@ -129,5 +131,4 @@ public class LaserAttack : IWeaponAttack
         LaserAttackBullet newLaser = GameObject.Instantiate(laser, centerPos, Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg), Game.inst.player).GetComponent<LaserAttackBullet>();
         Game.inst.StartCoroutine(newLaser.LaserBulletRoutine(damage, new Vector2(-0.5f, 0) * range, new Vector2(0.5f, 0) * range, chargeTime, shootTime));
     }
-
 }

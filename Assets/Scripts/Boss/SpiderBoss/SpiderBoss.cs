@@ -116,12 +116,12 @@ public class SpiderBossStunDebuff : Buffable
 
     public override void Apply(Player player)
     {
-        player.isControllable = false;
+        player.SetPlayerControllable(false);
     }
 
     public override void EndDebuff(Player player)
     {
-        player.isControllable = true;
+        player.SetPlayerControllable(true);
     }
 }
 

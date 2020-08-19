@@ -28,10 +28,8 @@ public class Player : MonoBehaviour
     private LayerMask jumpable;
     private Rigidbody2D rb;
     private Collider2D col;
-    [SerializeField]
-    public float speed;
-    [SerializeField]
     public float originSpeed;
+    public float speed;
     [SerializeField]
     private float jumpSpeed;
     [SerializeField]
@@ -76,6 +74,17 @@ public class Player : MonoBehaviour
         return rb.velocity.y < 0.01f && isGrounded;
     }
 
+    public void SetPlayerControllable(bool _isControllable)
+    {
+        isControllable = _isControllable;
+
+        if(!isControllable)
+        {
+            horizontal = 0;
+            anim.SetBool("Running", false);
+        }
+    }
+
     public void StopPlayer()
     {
         rb.velocity = Vector2.zero;
@@ -84,8 +93,11 @@ public class Player : MonoBehaviour
     private void PlayerLookAt(bool isRight)
     {
         anim.SetFloat("IsRunForward", (horizontal < 0 ^ isRight) ? 1 : 0);
-        
-        GetComponent<SpriteRenderer>().flipX = horizontal < 0;
+
+        if(horizontal == 0)
+        {
+            GetComponent<SpriteRenderer>().flipX = !isRight;
+        }
         isPlayerLookRight = isRight;
     }
 
@@ -120,9 +132,9 @@ public class Player : MonoBehaviour
 
     IEnumerator RollRoutine(float time, bool rollDir)
     {
+        SetPlayerControllable(false);
         anim.SetTrigger("Roll");
         Debug.Log("Roll");
-        isControllable = false;
         isInvincible = true;
         weaponBehaviour.gameObject.SetActive(false);
 
@@ -131,7 +143,7 @@ public class Player : MonoBehaviour
             rb.velocity = new Vector2(rollSpeed * (rollDir ? 1 : -1), rb.velocity.y);
             yield return null;
         }
-        isControllable = true;
+        SetPlayerControllable(true);
         isInvincible = false;
         anim.SetTrigger("RollEnd");
         weaponBehaviour.gameObject.SetActive(true);
@@ -192,16 +204,19 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        //FixMe
-        Vector3 cursorDir = InputHandler.inst.CursorPos - handCenter.position;
-        cursorDir = new Vector3(cursorDir.x, cursorDir.y, transform.position.z);
+        if(isControllable)
+        {
+            //FixMe
+            Vector3 cursorDir = InputHandler.inst.CursorPos - handCenter.position;
+            cursorDir = new Vector3(cursorDir.x, cursorDir.y, transform.position.z);
 
-        float cursorAngle = Mathf.Atan2(cursorDir.y, cursorDir.x) * Mathf.Rad2Deg;
-        bool isCursorRight = cursorAngle < 90 && cursorAngle > -90;
-        handCenter.localScale = new Vector3(1, isCursorRight ? 1 : -1, 1);
-        handCenter.rotation = Quaternion.Euler(0, 0, cursorAngle);
+            float cursorAngle = Mathf.Atan2(cursorDir.y, cursorDir.x) * Mathf.Rad2Deg;
+            bool isCursorRight = cursorAngle < 90 && cursorAngle > -90;
+            handCenter.localScale = new Vector3(1, isCursorRight ? 1 : -1, 1);
+            handCenter.rotation = Quaternion.Euler(0, 0, cursorAngle);
 
-        PlayerLookAt(isCursorRight);
+            PlayerLookAt(isCursorRight);
+        }
 
         for (int i = 0; i < buffables.Count; i++)
         {

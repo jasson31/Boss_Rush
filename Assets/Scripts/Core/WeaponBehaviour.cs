@@ -29,6 +29,7 @@ public class WeaponBehaviour : MonoBehaviour
         weapon.attackBehaviour = new LaserAttack(testLaser, 2, 2);
         weapon.damage = 3;
         weapon.range = 8;
+        weapon.moveSpeed = 7;
         weapons.Add(weapon);
         Debug.Log(weapon.attackBehaviour);
     }
