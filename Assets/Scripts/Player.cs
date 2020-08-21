@@ -42,8 +42,6 @@ public class Player : MonoBehaviour
 
     private void OnEnable()
     {
-        Game.inst.player = transform;
-
         InputHandler.inst.OnLeftKey += Move;
         InputHandler.inst.OnRightKey += Move;
         InputHandler.inst.OnUpKeyDown += Roll;

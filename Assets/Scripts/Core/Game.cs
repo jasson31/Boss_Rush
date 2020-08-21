@@ -25,6 +25,11 @@ public class Game : SingletonBehaviour<Game>
         CurrentView.gameObject.SetActive(true);
     }
 
+    private void Awake()
+    {
+        player = GameObject.Find("Player").transform;
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))

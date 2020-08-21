@@ -4,13 +4,12 @@ using UnityEngine;
 
 public class WeaponBehaviour : MonoBehaviour
 {
+    private Animator anim;
+
     [SerializeField]
     private List<Weapon> weapons = new List<Weapon>();
     private int weaponIndex = 0;
     private Weapon Weapon { get { return weapons.Count > weaponIndex ? weapons[weaponIndex] : null; } }
-
-    [SerializeField]
-    private Transform handTransform;
 
     public GameObject testBullet;
     public GameObject testLaser;
@@ -20,18 +19,21 @@ public class WeaponBehaviour : MonoBehaviour
         if (Weapon)
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(handTransform.position, Weapon.range);
+            Gizmos.DrawWireSphere(transform.position, Weapon.range);
         }
     }
     private void Awake()
     {
         Weapon weapon = ScriptableObject.CreateInstance<Weapon>();
-        weapon.attackBehaviour = new LaserAttack(testLaser, 2, 2);
+        //weapon.attackBehaviour = new LaserAttack(testLaser, 2, 2);
+        weapon.attackBehaviour = new StabAttack();
         weapon.damage = 3;
-        weapon.range = 8;
+        weapon.range = 1;
         weapon.moveSpeed = 7;
         weapons.Add(weapon);
         Debug.Log(weapon.attackBehaviour);
+
+        anim = GetComponent<Animator>();
     }
 
     private void OnEnable()
@@ -88,11 +90,12 @@ public class WeaponBehaviour : MonoBehaviour
 
     private void UseWeaponAttack(Vector2 mousePosition)
     {
-        Weapon?.WeaponAttack(handTransform.position, mousePosition);
+        anim.SetTrigger("Attack");
+        Weapon?.WeaponAttack(transform.position, mousePosition);
     }
 
     private void UseWeaponSkill(Vector2 mousePosition)
     {
-        Weapon?.WeaponSkill(handTransform.position, mousePosition);
+        Weapon?.WeaponSkill(transform.position, mousePosition);
     }
 }
