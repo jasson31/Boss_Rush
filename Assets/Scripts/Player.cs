@@ -91,11 +91,8 @@ public class Player : MonoBehaviour
     private void PlayerLookAt(bool isRight)
     {
         anim.SetFloat("IsRunForward", (horizontal < 0 ^ isRight) ? 1 : 0);
-
-        if(horizontal == 0)
-        {
-            GetComponent<SpriteRenderer>().flipX = !isRight;
-        }
+        
+        GetComponent<SpriteRenderer>().flipX = horizontal == 0 ? !isRight : horizontal < 0;
         isPlayerLookRight = isRight;
     }
 
