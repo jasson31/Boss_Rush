@@ -738,7 +738,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1087906126
 Transform:
   m_ObjectHideFlags: 0
@@ -886,7 +886,7 @@ MonoBehaviour:
   lightningOrb: {fileID: 5726434148825780474, guid: 3d51d844c7db42147ad82f7517cceab9,
     type: 3}
   shootPos: {x: 0, y: 3.7, z: 0}
-  laserCollider: {fileID: 0}
+  laserCollider: {fileID: 1087906125}
   map:
     m_Center: {x: 0, y: 1.5, z: 0}
     m_Extent: {x: 13, y: 5.5, z: 0}

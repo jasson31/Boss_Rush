@@ -31,6 +31,8 @@ public class TowerBoss : Boss
     protected override void Start()
     {
         base.Start();
+        normalBullet.AddComponent<NormalBullet>();
+        laserCollider.AddComponent<Laser>();
         Phase = 1;
         MaxHealth = Health = 200;
     }
@@ -55,8 +57,9 @@ public class TowerBoss : Boss
         Queue<IEnumerator> nextRoutines = new Queue<IEnumerator>();
 
         float rand = Random.value;
-
-        switch (2)
+        nextRoutines.Enqueue(NewActionRoutine(LaserRoutine(1.0f)));
+        nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+        switch (0)
         {
             case 1:
 
@@ -85,7 +88,7 @@ public class TowerBoss : Boss
 
                 Vector3 distance = shootPos - GetPlayerPos();
 
-                nextRoutines.Enqueue(NewActionRoutine(OrbRoutine(7)));
+                nextRoutines.Enqueue(NewActionRoutine(LaserRoutine(1.0f)));
 
                 //if (rand < 0.25f)
                 //{
@@ -228,10 +231,16 @@ public class TowerBoss : Boss
 
 
 
+            Vector3 diff = lineEndPos - shootPos;
+            laserCollider.transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg);
+            laserCollider.transform.localScale = new Vector2(diff.magnitude, laserShootWidth);
+
             lr.startWidth = laserShootWidth;
             lr.endWidth = laserShootWidth;
 
             yield return new WaitForSeconds(0.5f);
+
+            laserCollider.SetActive(false);
 
             for (float t = 0; t < 0.2f; t += Time.deltaTime)
             {
@@ -468,13 +477,22 @@ public class TowerBoss : Boss
                 lr.SetPosition(1, shootHit.point);
             }
 
+            laserCollider.transform.position = (lineEndPos + shootPos) / 2;
+
+            Vector3 diff = lineEndPos - shootPos;
+            laserCollider.transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg);
+            laserCollider.transform.localScale = new Vector2(diff.magnitude, laserShootWidth);
 
             yield return new WaitForSeconds(0.2f);
 
             lr.startWidth = laserShootWidth;
             lr.endWidth = laserShootWidth;
 
+            laserCollider.SetActive(true);
+
             yield return new WaitForSeconds(0.2f);
+
+            laserCollider.SetActive(false);
 
             for (float t = 0; t < 0.2f; t += Time.deltaTime)
             {
@@ -503,6 +521,32 @@ public class TowerBoss : Boss
 
     }
 
+}
+
+public class NormalBullet : MonoBehaviour
+{
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Player player = collision.GetComponent<Player>();
+        if (player != null)
+        {
+            //player.GetDamaged(0);
+            Debug.Log("Damaged\n");
+            
+        }
+    }
+}
+
+public class Laser : MonoBehaviour
+{
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.GetComponent<Player>() != null)
+        {
+            //collision.GetComponent<Player>().GetDamaged(0);
+            Debug.Log("Damaged2\n");
+        }
+    }
 }
 
 
