@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7286503600210619058}
   - component: {fileID: 3306120169122484260}
   - component: {fileID: -2968973991037242241}
-  - component: {fileID: 3733710627464793649}
+  - component: {fileID: 566867858561483412}
   m_Layer: 0
   m_Name: NormalBullet
   m_TagString: Untagged
@@ -121,7 +121,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.41
---- !u!114 &3733710627464793649
+--- !u!114 &566867858561483412
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
