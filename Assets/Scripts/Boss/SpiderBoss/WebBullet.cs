@@ -12,6 +12,8 @@ public class WebBullet : MonoBehaviour
             debuff.Init(3);
             debuff.slowSpeed = 3;
             Game.inst.player.GetComponent<Player>().AddBuffable(debuff);
+            Game.inst.player.GetComponent<Player>().GetDamaged(0.5f);
+            Destroy(gameObject);
         }
     }
 }

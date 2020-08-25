@@ -16,7 +16,7 @@ public class Player : MonoBehaviour
     private bool isJumpKeyDown = false;
     private int maxJumpCount = 2;
     private int curJumpCount = 2;
-    private bool isInvincible = false;
+    public bool isInvincible = false;
 
     private bool isPlayerLookRight = true;
 
@@ -248,7 +248,7 @@ public class Player : MonoBehaviour
         anim.SetBool("Landed", IsGrounded());
     }
 
-    public void GetDamaged(int damage)
+    public void GetDamaged(float damage)
     {
         if(!isInvincible)
         {

@@ -67,7 +67,7 @@ public class WeaponBehaviour : MonoBehaviour
         weapons.Add(StaticData.inst.CreateWeapon(weaponID));
     }
 
-    public void GetDamaged(int damage)
+    public void GetDamaged(float damage)
     {
         /*Weapon.health -= damage;
         if (Weapon.health <= 0)

@@ -6,13 +6,19 @@ public class WebTrapBullet : MonoBehaviour
 {
     [SerializeField]
     private GameObject webTrap;
+    private bool dealToPlayer = true;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Floor"))
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Floor") || collision.gameObject.layer == LayerMask.NameToLayer("Wall") || collision.gameObject.layer == LayerMask.NameToLayer("Platform"))
         {
             Destroy(Instantiate(webTrap, transform.position, Quaternion.identity).AddComponent<WebTrap>().gameObject, 10);
             Destroy(gameObject);
+        }
+        if(dealToPlayer && collision.GetComponent<Player>() != null)
+        {
+            Game.inst.player.GetComponent<Player>().GetDamaged(0.25f);
+            dealToPlayer = false;
         }
     }
 }
@@ -23,7 +29,7 @@ public class WebTrap : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.GetComponent<Player>() != null && activated)
+        if (collision.GetComponent<Player>() != null && !collision.GetComponent<Player>().isInvincible && activated)
         {
             SpiderBossStunDebuff debuff = new SpiderBossStunDebuff();
             debuff.Init(2);
