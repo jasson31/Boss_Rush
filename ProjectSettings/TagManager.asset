@@ -22,8 +22,8 @@ TagManager:
   - Boss
   - BossCollision
   - FlyBossCollision
-  - 
-  - 
+  - Projectile
+  - ProjectileV2
   - 
   - 
   - 
