@@ -2,15 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum WeaponAttack
+{
+	STAB,
+	SHOT
+}
+
 public interface IWeaponAttack
 {
     void Attack(Vector2 handPosition, Vector2 mousePosition, int damage, float range);
+}
+
+[System.Serializable]
+public class WeaponSpec
+{
+	public string weaponName;
+	public int health;
+	public int damage;
+	public float range;
+	public float coolTime;
+	public WeaponAttack attack;
 }
 
 public class Weapon : ScriptableObject
 {
     public int weaponID;
     public float moveSpeed;
+	public string weaponName;
     public int health;
     public int MaxHealth { get; private set; }
     public int damage;
