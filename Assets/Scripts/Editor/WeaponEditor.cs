@@ -45,8 +45,9 @@ public class WeaponEditorWindow : EditorWindow
 		BeginWindows();
 
 		GUILayout.Label("Weapon List", EditorStyles.boldLabel);
-		foreach (var weapon in weapons)
+		for(int i = 0; i < weapons.Count; i++)
 		{
+			var weapon = weapons[i];
 			EditorGUILayout.LabelField(weapons.IndexOf(weapon).ToString(), EditorStyles.boldLabel);
 			weapon.weaponName = EditorGUILayout.TextField("Name", weapon.weaponName);
 			weapon.damage = EditorGUILayout.IntField("Damage", weapon.damage);
@@ -54,6 +55,10 @@ public class WeaponEditorWindow : EditorWindow
 			weapon.range = EditorGUILayout.FloatField("Range", weapon.range);
 			weapon.health = EditorGUILayout.IntField("Health", weapon.health);
 			weapon.attack = (WeaponAttack)EditorGUILayout.EnumPopup("Attack Type", attack);
+			if (GUILayout.Button("Remove"))
+            {
+				weapons.Remove(weapon);
+            }
 		}
 
 		GUILayout.Label("New Weapon", EditorStyles.boldLabel);
