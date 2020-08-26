@@ -115,7 +115,7 @@ public class InputHandler : SingletonBehaviour<InputHandler>
         {
             OnJumpKeyDown?.Invoke();
         }
-        if (Input.GetKeyDown(KeyCode.Mouse0) && Game.inst.player.GetComponent<Player>().isControllable)
+        if (Input.GetKeyDown(KeyCode.Mouse0) && Game.inst.player.isControllable)
         {
             OnAttackKeyDown?.Invoke(CursorPos);
         }

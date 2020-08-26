@@ -11,8 +11,8 @@ public class WebBullet : MonoBehaviour
             SpiderBossSlowDebuff debuff = new SpiderBossSlowDebuff();
             debuff.Init(3);
             debuff.slowSpeed = 3;
-            Game.inst.player.GetComponent<Player>().AddBuffable(debuff);
-            Game.inst.player.GetComponent<Player>().GetDamaged(0.5f);
+            Game.inst.player.AddBuffable(debuff);
+            Game.inst.player.GetDamaged(0.5f);
             Destroy(gameObject);
         }
     }

@@ -24,7 +24,7 @@ public class LaserAttackBullet : MonoBehaviour
 
         LaserAttackBulletStunDebuff debuff = new LaserAttackBulletStunDebuff();
         debuff.Init(chargeTime + shootTime);
-        Game.inst.player.GetComponent<Player>().AddBuffable(debuff);
+        Game.inst.player.AddBuffable(debuff);
 
         lr.startWidth = chargeWidth;
         yield return new WaitForSeconds(chargeTime);

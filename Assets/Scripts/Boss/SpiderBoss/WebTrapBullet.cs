@@ -17,7 +17,7 @@ public class WebTrapBullet : MonoBehaviour
         }
         if(dealToPlayer && collision.GetComponent<Player>() != null)
         {
-            Game.inst.player.GetComponent<Player>().GetDamaged(0.25f);
+            Game.inst.player.GetDamaged(0.25f);
             dealToPlayer = false;
         }
     }
@@ -33,7 +33,7 @@ public class WebTrap : MonoBehaviour
         {
             SpiderBossStunDebuff debuff = new SpiderBossStunDebuff();
             debuff.Init(2);
-            Game.inst.player.GetComponent<Player>().AddBuffable(debuff);
+            Game.inst.player.AddBuffable(debuff);
             activated = false;
             Destroy(gameObject, 2);
         }

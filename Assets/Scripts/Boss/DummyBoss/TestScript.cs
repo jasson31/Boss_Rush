@@ -20,7 +20,7 @@ public class TestScript : SingletonBehaviour<TestScript>
             a.Init(3);
             a.slowSpeed = 3;
            
-            Game.inst.player.GetComponent<Player>().AddBuffable(a);
+            Game.inst.player.AddBuffable(a);
         }
     }
 }

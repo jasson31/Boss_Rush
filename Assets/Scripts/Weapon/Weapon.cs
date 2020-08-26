@@ -53,8 +53,8 @@ public class Weapon : ScriptableObject
 
     public void OnMountWeapon()
     {
-        Game.inst.player.GetComponent<Player>().originSpeed = moveSpeed;
-        Game.inst.player.GetComponent<Player>().speed = moveSpeed;
+        Game.inst.player.originSpeed = moveSpeed;
+        Game.inst.player.speed = moveSpeed;
     }
 
     public void OnUnmountWeapon()
@@ -146,7 +146,7 @@ public class LaserAttack : IWeaponAttack
         float angle = Mathf.Atan2(dir.y, dir.x);
         Vector2 endPos = handPosition + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * range;
         Vector2 centerPos = (handPosition + endPos) / 2;
-        LaserAttackBullet newLaser = GameObject.Instantiate(laser, centerPos, Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg), Game.inst.player).GetComponent<LaserAttackBullet>();
+        LaserAttackBullet newLaser = GameObject.Instantiate(laser, centerPos, Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg), Game.inst.player.transform).GetComponent<LaserAttackBullet>();
         Game.inst.StartCoroutine(newLaser.LaserBulletRoutine(damage, new Vector2(-0.5f, 0) * range, new Vector2(0.5f, 0) * range, chargeTime, shootTime));
     }
 }

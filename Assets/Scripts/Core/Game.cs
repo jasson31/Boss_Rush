@@ -15,7 +15,7 @@ public class Game : SingletonBehaviour<Game>
 
     private UIManager CurrentView { get { return view[currentView]; } }
 
-    public Transform player;
+    public Player player;
 
 
     public void ChangeView(ViewCode viewName)
@@ -23,11 +23,6 @@ public class Game : SingletonBehaviour<Game>
         CurrentView.gameObject.SetActive(false);
         currentView = (int)viewName;
         CurrentView.gameObject.SetActive(true);
-    }
-
-    private void Awake()
-    {
-        player = GameObject.Find("Player").transform;
     }
 
     private void Update()

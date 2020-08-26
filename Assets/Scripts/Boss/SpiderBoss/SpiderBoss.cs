@@ -116,7 +116,7 @@ public class SpiderBoss : Boss
     private IEnumerator WebConeShootRoutine()
     {
         float angle;
-        Vector2 playerDir = (Game.inst.player.position - transform.position).normalized;
+        Vector2 playerDir = (Game.inst.player.transform.position - transform.position).normalized;
 
         for (int i = -2; i < 3; i++)
         {
