@@ -9,6 +9,7 @@ public class CocoonLine : MonoBehaviour, IDamagable
 
     public void GetDamaged(int damage)
     {
-        StartCoroutine(spiderBoss.CocoonBreakRoutine());
+        //StartCoroutine(spiderBoss.CocoonBreakRoutine());
+        spiderBoss.Stun(0.5f);
     }
 }

@@ -23,12 +23,13 @@ public class SpiderBoss : Boss
     [SerializeField]
     private float moveSpeed = 2;
 
+    private CocoonLine curCocoonLine;
+
     [SerializeField]
     private Vector3 bitePos;
     [SerializeField]
     private float biteRange;
 
-    private bool isCocoon = false;
 
     private float biteAttackDelay = 10f;
     private float lastBiteAttackTime = -100f;
@@ -49,7 +50,7 @@ public class SpiderBoss : Boss
         switch (Phase)
         {
             case 0:
-                /*if(Vector2.Distance(bitePos + transform.position, player.transform.position) < biteRange && Time.time - lastBiteAttackTime > biteAttackDelay)
+                if(Vector2.Distance(bitePos + transform.position, player.transform.position) < biteRange && Time.time - lastBiteAttackTime > biteAttackDelay)
                 {
                     lastBiteAttackTime = Time.time;
                     nextRoutines.Enqueue(NewActionRoutine(BiteRoutine()));
@@ -59,7 +60,7 @@ public class SpiderBoss : Boss
                 {
                     if (rand < 0.4f)
                     {
-                        nextRoutines.Enqueue(NewActionRoutine(WebShootRoutine((Game.inst.player.position - transform.position).normalized)));
+                        nextRoutines.Enqueue(NewActionRoutine(WebShootRoutine((Game.inst.player.transform.position - transform.position).normalized)));
                         nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(1)));
                     }
                     else if (rand < 0.7f)
@@ -74,12 +75,12 @@ public class SpiderBoss : Boss
                     }
                     else
                     {
-
+                        nextRoutines.Enqueue(NewActionRoutine(CocoonRoutine()));
                     }
-                }*/
-                //nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(10)));
-                nextRoutines.Enqueue(NewActionRoutine(CocoonRoutine()));
-                nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(2)));
+                }
+                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(10)));
+                break;
+            case 1:
                 break;
         }
 
@@ -87,6 +88,7 @@ public class SpiderBoss : Boss
         return nextRoutines;
     }
 
+    #region Phase1
     private IEnumerator WebShootRoutine(Vector3 dir)
     {
         StartCoroutine(WebShootRoutine(dir, webBulletSpeed));
@@ -137,17 +139,16 @@ public class SpiderBoss : Boss
         yield return null;
     }
 
-    private Coroutine cocoonRoutine;
-
     public IEnumerator CocoonRoutine()
     {
-        isCocoon = true;
+        yield return StartCoroutine(MoveRoutine(map.center, Vector3.Distance(map.center, transform.position) / moveSpeed));
         //Heal();
-        Instantiate(cocoonLine, (new Vector3(map.center.x, map.max.y) + map.center) / 2, Quaternion.identity, transform);
+        curCocoonLine = Instantiate(cocoonLine, (new Vector3(map.center.x, map.max.y) + map.center) / 2, Quaternion.identity, transform);
+        curCocoonLine.spiderBoss = this;
         while(true)
         {
             yield return new WaitForSeconds(3);
-            List<Transform> posCands = cocoonSpikePos;
+            List<Transform> posCands = new List<Transform>(cocoonSpikePos);
             for (int i = 0; i < 6; i++)
             {
                 int rand = Random.Range(0, posCands.Count);
@@ -155,17 +156,10 @@ public class SpiderBoss : Boss
                 posCands.RemoveAt(rand);
 
                 Vector3 spikeDir = (spikePos - transform.position).normalized;
-                Destroy(Instantiate(cocoonSpike, spikePos, Quaternion.Euler(spikeDir), transform), 2);
+                Destroy(Instantiate(cocoonSpike, spikePos, Quaternion.Euler(0, 0, Mathf.Atan2(spikeDir.y, spikeDir.x) * Mathf.Rad2Deg), transform), 2);
 
             }
         }
-    }
-
-    public IEnumerator CocoonBreakRoutine()
-    {
-        isCocoon = false;
-        StopCoroutine(cocoonRoutine);
-        yield return null;
     }
 
     private IEnumerator IdleRoutine(float time)
@@ -192,11 +186,16 @@ public class SpiderBoss : Boss
             yield return MoveRoutine(dest, moveTime);
         }
     }
+    #endregion
 
 
     protected override void OnStunned()
     {
-
+        Destroy(curCocoonLine.gameObject);
+        foreach(var child in GetComponentsInChildren<CocoonSpike>())
+        {
+            Destroy(child.gameObject);
+        }
     }
 }
 
