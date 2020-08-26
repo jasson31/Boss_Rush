@@ -22,7 +22,6 @@ public class SpiderBoss : Boss
     private List<Transform> cocoonSpikePos;
     [SerializeField]
     private float moveSpeed = 2;
-
     private CocoonLine curCocoonLine;
 
     [SerializeField]
@@ -30,9 +29,12 @@ public class SpiderBoss : Boss
     [SerializeField]
     private float biteRange;
 
-
     private float biteAttackDelay = 10f;
     private float lastBiteAttackTime = -100f;
+
+
+    [SerializeField]
+    private LineRenderer fallRoutineShadow;
 
 
     private void OnDrawGizmosSelected()
@@ -50,7 +52,7 @@ public class SpiderBoss : Boss
         switch (Phase)
         {
             case 0:
-                if(Vector2.Distance(bitePos + transform.position, player.transform.position) < biteRange && Time.time - lastBiteAttackTime > biteAttackDelay)
+                /*if(Vector2.Distance(bitePos + transform.position, player.transform.position) < biteRange && Time.time - lastBiteAttackTime > biteAttackDelay)
                 {
                     lastBiteAttackTime = Time.time;
                     nextRoutines.Enqueue(NewActionRoutine(BiteRoutine()));
@@ -78,14 +80,31 @@ public class SpiderBoss : Boss
                         nextRoutines.Enqueue(NewActionRoutine(CocoonRoutine()));
                     }
                 }
-                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(10)));
+                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(10)));*/
+                nextRoutines.Enqueue(NewActionRoutine(FallRoutine()));
+                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(1)));
                 break;
             case 1:
+
                 break;
         }
 
 
         return nextRoutines;
+    }
+
+    public override void GetDamaged(int damage)
+    {
+        base.GetDamaged(damage);
+        if (MaxHealth * 0.1f >= Health && Phase == 0)
+        {
+
+            Phase = 1;
+        }
+        if (Health <= 0)
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     #region Phase1
@@ -187,6 +206,48 @@ public class SpiderBoss : Boss
         }
     }
     #endregion
+
+    #region Phase2
+
+    private IEnumerator LegRoutine()
+    {
+        yield return null;
+    }
+
+
+    private bool isFallRoutine = false;
+    private IEnumerator FallRoutine()
+    {
+        yield return MoveRoutine(new Vector2(transform.position.x, map.max.y + 5), 1);
+        yield return new WaitForSeconds(0.5f);
+        fallRoutineShadow.gameObject.SetActive(true);
+        Vector2 fallPos = new Vector2(Random.Range(map.min.x, map.max.x), map.min.y);
+        transform.position = new Vector2(fallPos.x, map.max.y);
+        fallRoutineShadow.SetPosition(1, transform.position);
+        fallRoutineShadow.SetPosition(0, fallPos);
+        yield return new WaitForSeconds(2);
+        isFallRoutine = true;
+        fallRoutineShadow.gameObject.SetActive(false);
+        yield return MoveRoutine(fallPos, 0.2f);
+        isFallRoutine = false;
+    }
+
+    #endregion
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(Phase == 1 && collision.GetComponent<Player>() != null)
+        {
+            if(isFallRoutine)
+            {
+                Game.inst.player.GetDamaged(0.75f);
+            }
+            else
+            {
+                Game.inst.player.GetDamaged(0.25f);
+            }
+        }
+    }
 
 
     protected override void OnStunned()
