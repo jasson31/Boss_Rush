@@ -41,7 +41,6 @@ public class SpiderBoss : Boss
         switch (Phase)
         {
             case 0:
-                nextRoutines.Enqueue(NewActionRoutine(WebConeShootRoutine()));
                 /*if(Vector2.Distance(bitePos + transform.position, player.transform.position) < biteRange && Time.time - lastBiteAttackTime > biteAttackDelay)
                 {
                     lastBiteAttackTime = Time.time;
@@ -62,7 +61,8 @@ public class SpiderBoss : Boss
                     }
                     else if (rand < 0.95f)
                     {
-
+                        nextRoutines.Enqueue(NewActionRoutine(WebConeShootRoutine()));
+                        nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(1)));
                     }
                     else
                     {
