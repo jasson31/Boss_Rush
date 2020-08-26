@@ -8,6 +8,8 @@ public class SpiderBoss : Boss
     [SerializeField]
     private Bounds map;
 
+    private float webBulletSpeed = 10;
+    private float webConeBulletSpeed = 5;
     [SerializeField]
     private WebBullet webBullet;
     [SerializeField]
@@ -36,10 +38,10 @@ public class SpiderBoss : Boss
         Queue<IEnumerator> nextRoutines = new Queue<IEnumerator>();
         float rand = Random.value;
 
-
         switch (Phase)
         {
             case 0:
+                nextRoutines.Enqueue(NewActionRoutine(WebConeShootRoutine()));
                 /*if(Vector2.Distance(bitePos + transform.position, player.transform.position) < biteRange && Time.time - lastBiteAttackTime > biteAttackDelay)
                 {
                     lastBiteAttackTime = Time.time;
@@ -50,7 +52,7 @@ public class SpiderBoss : Boss
                 {
                     if (rand < 0.4f)
                     {
-                        nextRoutines.Enqueue(NewActionRoutine(WebShootRoutine()));
+                        nextRoutines.Enqueue(NewActionRoutine(WebShootRoutine((Game.inst.player.position - transform.position).normalized)));
                         nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(1)));
                     }
                     else if (rand < 0.7f)
@@ -67,7 +69,8 @@ public class SpiderBoss : Boss
 
                     }
                 }*/
-                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(10)));
+                //nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(10)));
+                nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(2)));
                 break;
         }
 
@@ -75,13 +78,17 @@ public class SpiderBoss : Boss
         return nextRoutines;
     }
 
-    private IEnumerator WebShootRoutine()
+    private IEnumerator WebShootRoutine(Vector3 dir)
     {
-        float webBulletSpeed = 10;
-        Vector3 dir = (Game.inst.player.position - transform.position).normalized;
+        StartCoroutine(WebShootRoutine(dir, webBulletSpeed));
+        yield return null;
+    }
+
+    private IEnumerator WebShootRoutine(Vector3 dir, float speed)
+    {
         WebBullet newWebBullet = Instantiate(webBullet, transform.position, Quaternion.identity);
-        newWebBullet.GetComponent<Rigidbody2D>().velocity = dir * webBulletSpeed;
-        Destroy(newWebBullet, 5);
+        newWebBullet.GetComponent<Rigidbody2D>().velocity = dir * speed;
+        Destroy(newWebBullet.gameObject, 4);
         yield return null;
     }
 
@@ -106,6 +113,20 @@ public class SpiderBoss : Boss
         yield return new WaitForSeconds(1);
     }
 
+    private IEnumerator WebConeShootRoutine()
+    {
+        float angle;
+        Vector2 playerDir = (Game.inst.player.position - transform.position).normalized;
+
+        for (int i = -2; i < 3; i++)
+        {
+            angle = 7 * i * Mathf.Deg2Rad;               
+            Vector2 curDir = new Vector2(playerDir.x * Mathf.Cos(angle) - playerDir.y * Mathf.Sin(angle),
+                                            playerDir.x * Mathf.Sin(angle) + playerDir.y * Mathf.Cos(angle)).normalized;
+            StartCoroutine(WebShootRoutine(curDir, webConeBulletSpeed));
+        }
+        yield return null;
+    }
 
     private IEnumerator IdleRoutine(float time)
     {

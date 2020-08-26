@@ -6,7 +6,7 @@ public class WebBullet : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.GetComponent<Player>() != null)
+        if (collision.GetComponent<Player>() != null && !collision.GetComponent<Player>().isInvincible)
         {
             SpiderBossSlowDebuff debuff = new SpiderBossSlowDebuff();
             debuff.Init(3);
