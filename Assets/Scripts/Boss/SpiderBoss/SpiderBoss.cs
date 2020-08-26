@@ -15,12 +15,20 @@ public class SpiderBoss : Boss
     [SerializeField]
     private WebTrapBullet webTrapBullet;
     [SerializeField]
+    private CocoonLine cocoonLine;
+    [SerializeField]
+    private GameObject cocoonSpike;
+    [SerializeField]
+    private List<Transform> cocoonSpikePos;
+    [SerializeField]
     private float moveSpeed = 2;
 
     [SerializeField]
     private Vector3 bitePos;
     [SerializeField]
     private float biteRange;
+
+    private bool isCocoon = false;
 
     private float biteAttackDelay = 10f;
     private float lastBiteAttackTime = -100f;
@@ -70,6 +78,7 @@ public class SpiderBoss : Boss
                     }
                 }*/
                 //nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(10)));
+                nextRoutines.Enqueue(NewActionRoutine(CocoonRoutine()));
                 nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(2)));
                 break;
         }
@@ -125,6 +134,37 @@ public class SpiderBoss : Boss
                                             playerDir.x * Mathf.Sin(angle) + playerDir.y * Mathf.Cos(angle)).normalized;
             StartCoroutine(WebShootRoutine(curDir, webConeBulletSpeed));
         }
+        yield return null;
+    }
+
+    private Coroutine cocoonRoutine;
+
+    public IEnumerator CocoonRoutine()
+    {
+        isCocoon = true;
+        //Heal();
+        Instantiate(cocoonLine, (new Vector3(map.center.x, map.max.y) + map.center) / 2, Quaternion.identity, transform);
+        while(true)
+        {
+            yield return new WaitForSeconds(3);
+            List<Transform> posCands = cocoonSpikePos;
+            for (int i = 0; i < 6; i++)
+            {
+                int rand = Random.Range(0, posCands.Count);
+                Vector3 spikePos = posCands[rand].position;
+                posCands.RemoveAt(rand);
+
+                Vector3 spikeDir = (spikePos - transform.position).normalized;
+                Destroy(Instantiate(cocoonSpike, spikePos, Quaternion.Euler(spikeDir), transform), 2);
+
+            }
+        }
+    }
+
+    public IEnumerator CocoonBreakRoutine()
+    {
+        isCocoon = false;
+        StopCoroutine(cocoonRoutine);
         yield return null;
     }
 
