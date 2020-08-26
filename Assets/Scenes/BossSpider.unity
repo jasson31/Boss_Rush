@@ -349,6 +349,10 @@ MonoBehaviour:
   bitePos: {x: 0, y: 0, z: 0}
   biteRange: 2
   fallRoutineShadow: {fileID: 163582923}
+  legSpikeAlert: {fileID: 2158922565800034898, guid: b76486b16dbe3ae42901d594ddc9a534,
+    type: 3}
+  legSpike: {fileID: 5233103251385555141, guid: 5730fcca1fd76564693f0123113687fd,
+    type: 3}
 --- !u!95 &78025201
 Animator:
   serializedVersion: 3
