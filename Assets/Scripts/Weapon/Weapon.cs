@@ -40,6 +40,7 @@ public class Weapon : ScriptableObject
     public Skill skill;
 
     public Sprite sprite;
+    public AnimatorOverrideController controller;
 
     private void OnDestroy()
     {
@@ -55,6 +56,7 @@ public class Weapon : ScriptableObject
     {
         Game.inst.player.originSpeed = moveSpeed;
         Game.inst.player.speed = moveSpeed;
+        GameObject.Find("Weapon").GetComponent<Animator>().runtimeAnimatorController = controller;
     }
 
     public void OnUnmountWeapon()
