@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SwordDance
+  m_Name: DashStab_1
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20,10 +20,13 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: 5299924407541326493, guid: 804ab34b6a4e7664a80fb7494f85c0fa,
+      value: {fileID: 2925355259982630063, guid: 18d553d32362d334aa51e060c80d002f,
         type: 3}
-    - time: 0.06666667
-      value: {fileID: -5240999155821118788, guid: 804ab34b6a4e7664a80fb7494f85c0fa,
+    - time: 0.2
+      value: {fileID: 671463138697342046, guid: 18d553d32362d334aa51e060c80d002f,
+        type: 3}
+    - time: 0.21666667
+      value: {fileID: 3382912553810313835, guid: 18d553d32362d334aa51e060c80d002f,
         type: 3}
     attribute: m_Sprite
     path: 
@@ -44,14 +47,15 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: 5299924407541326493, guid: 804ab34b6a4e7664a80fb7494f85c0fa, type: 3}
-    - {fileID: -5240999155821118788, guid: 804ab34b6a4e7664a80fb7494f85c0fa, type: 3}
+    - {fileID: 2925355259982630063, guid: 18d553d32362d334aa51e060c80d002f, type: 3}
+    - {fileID: 671463138697342046, guid: 18d553d32362d334aa51e060c80d002f, type: 3}
+    - {fileID: 3382912553810313835, guid: 18d553d32362d334aa51e060c80d002f, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.083333336
+    m_StopTime: 0.23333333
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0

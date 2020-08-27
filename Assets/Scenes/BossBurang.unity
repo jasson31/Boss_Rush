@@ -262,6 +262,7 @@ MonoBehaviour:
   WFPLayerMask:
     serializedVersion: 2
     m_Bits: 2816
+  NearDist: 2
 --- !u!50 &391144784
 Rigidbody2D:
   serializedVersion: 4

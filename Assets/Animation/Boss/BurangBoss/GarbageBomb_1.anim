@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SwordDance
+  m_Name: GarbageBomb_1
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -20,10 +20,13 @@ AnimationClip:
   m_PPtrCurves:
   - curve:
     - time: 0
-      value: {fileID: 5299924407541326493, guid: 804ab34b6a4e7664a80fb7494f85c0fa,
+      value: {fileID: 8979553518591789167, guid: 0ab4fe711fd64404ba4a45e27f744d20,
         type: 3}
-    - time: 0.06666667
-      value: {fileID: -5240999155821118788, guid: 804ab34b6a4e7664a80fb7494f85c0fa,
+    - time: 0.15
+      value: {fileID: -6665738830265979938, guid: 0ab4fe711fd64404ba4a45e27f744d20,
+        type: 3}
+    - time: 0.2
+      value: {fileID: 1175018265525667789, guid: 0ab4fe711fd64404ba4a45e27f744d20,
         type: 3}
     attribute: m_Sprite
     path: 
@@ -44,19 +47,20 @@ AnimationClip:
       customType: 23
       isPPtrCurve: 1
     pptrCurveMapping:
-    - {fileID: 5299924407541326493, guid: 804ab34b6a4e7664a80fb7494f85c0fa, type: 3}
-    - {fileID: -5240999155821118788, guid: 804ab34b6a4e7664a80fb7494f85c0fa, type: 3}
+    - {fileID: 8979553518591789167, guid: 0ab4fe711fd64404ba4a45e27f744d20, type: 3}
+    - {fileID: -6665738830265979938, guid: 0ab4fe711fd64404ba4a45e27f744d20, type: 3}
+    - {fileID: 1175018265525667789, guid: 0ab4fe711fd64404ba4a45e27f744d20, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.083333336
+    m_StopTime: 0.21666667
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
     m_HasAdditiveReferencePose: 0
-    m_LoopTime: 0
+    m_LoopTime: 1
     m_LoopBlend: 0
     m_LoopBlendOrientation: 0
     m_LoopBlendPositionY: 0
