@@ -4,8 +4,20 @@ using UnityEngine;
 
 public enum WeaponAttack
 {
+	CUT,
 	STAB,
-	SHOT
+	PROJECTILE,
+	HIT,
+	LASER,
+}
+
+public enum WeaponMoveSpeed
+{
+	VERYSLOW,
+	SLOW,
+	MEDIUM,
+	FAST,
+	VERYFAST
 }
 
 public interface IWeaponAttack
@@ -16,12 +28,21 @@ public interface IWeaponAttack
 [System.Serializable]
 public class WeaponSpec
 {
+	public int id;
 	public string weaponName;
 	public int health;
 	public int damage;
 	public float range;
 	public float coolTime;
 	public WeaponAttack attack;
+	public WeaponMoveSpeed speed;
+
+	//For Projectile
+	public string projectileName;
+
+	//For Laser
+	public float chargeTime;
+	public float shotTime;
 }
 
 public class Weapon : ScriptableObject
