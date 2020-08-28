@@ -31,6 +31,18 @@ public class BurangBoss : Boss
     private GameObject BurangBossCol;
 
     [SerializeField]
+    private GameObject DashKnife;
+
+    [SerializeField]
+    private GameObject DiagonalDashKnife;
+
+    [SerializeField]
+    private GameObject NearAttack;
+
+    [SerializeField]
+    private GameObject Blood;
+
+    [SerializeField]
     private LayerMask wallfloorLayerMask;
 
     [SerializeField]
@@ -54,11 +66,15 @@ public class BurangBoss : Boss
     private int FirstPhase2;//페이즈 시작 특별 패턴
     private int FirstPhase3;
 
+    [HideInInspector]
+    public float BossDamage;
+
     protected override void Start()
     {
         base.Start();
         Phase = 0;
-        MaxHealth = Health = 200;
+        MaxHealth = 200;
+        Health = 100;
         Parent = GameObject.Find("BurangBoss").GetComponent<Transform>();
         PlayerParent = GameObject.Find("Player").GetComponent<Transform>();
         ani = GetComponent<Animator>();
@@ -66,6 +82,7 @@ public class BurangBoss : Boss
         rend.flipX = false;
         FirstPhase2 = 1;
         FirstPhase3 = 1;
+        BossDamage = 0.25f;
     }
 
     private float XDist()
@@ -78,10 +95,18 @@ public class BurangBoss : Boss
         return GetPlayerPos().y - transform.position.y;
     }
 
-    private void BossDir()
+    private bool BossDir()
     {
-        if (XDist() >= 0) rend.flipX = false;
-        else rend.flipX = true;
+        if (XDist() >= 0)
+        {
+            rend.flipX = false;
+            return true;
+        }
+        else
+        {
+            rend.flipX = true;
+            return false;
+        }
     }
 
     public override void GetDamaged(int damage)
@@ -91,17 +116,20 @@ public class BurangBoss : Boss
         if (MaxHealth * 0.1f >= Health && Phase == 0)
         {
             Phase = 1;
-            Health = 200;
+            Health = 60;
         }
         if (MaxHealth * 0.1f >= Health && Phase == 1)
         {
             Phase = 2;
-            Health = 200;
+            Health = 40;
         }
         if (Health <= 0 && Phase == 2) //dead
         {
             UnityEngine.Debug.Log("Boss Defeated!");
             gameObject.SetActive(false);
+            int i;
+            for(i = 10; i*4 > Health; i--)
+            BossDamage = 0.25f + 0.25f * (10-i);
         }
     }
 
@@ -129,7 +157,7 @@ public class BurangBoss : Boss
                 {
                     if(dist.magnitude < NearDist)
                     {
-                        nextRoutines.Enqueue(NewActionRoutine(ChargeTripleStab(0.5f, 0.1f)));
+                        nextRoutines.Enqueue(NewActionRoutine(ChargeTripleStab(0.5f)));
                     }
                     else
                     {
@@ -159,9 +187,8 @@ public class BurangBoss : Boss
                         }
                         else if(rand < 0.75f)
                         {
-                            nextRoutines.Enqueue(NewActionRoutine(ShadowTeleportStab(0.5f,0.5f)));
-                            nextRoutines.Enqueue(NewActionRoutine(ShadowTeleportStab(0.5f,0.5f)));
-                            nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1f)));
+                            nextRoutines.Enqueue(NewActionRoutine(DashStab(0.5f, 50f, 0.25f)));
+                            nextRoutines.Enqueue(NewActionRoutine(DashStab(0.5f, 50f, 0.25f)));
                         }
                         else
                         {
@@ -260,14 +287,18 @@ public class BurangBoss : Boss
 
         ani.SetBool("DashStab", true);
 
-        BossDir();
+        bool bDir = BossDir();
 
         Vector2 direction = new Vector2(XDist(), 0);
 
-        //찌르기 모션 수정 필요
-        GameObject child = Instantiate(knifePrefab, transform.position, Quaternion.identity) as GameObject;
-        child.transform.parent = Parent;
         yield return new WaitForSeconds(waitTime);//경고 동작
+
+        GameObject child = Instantiate(DashKnife, transform.position, Quaternion.identity) as GameObject;
+        if(!bDir)
+        {
+            child.transform.localScale = new Vector3(-1, 1, 1);
+        }
+        child.transform.parent = Parent;
 
         ani.SetTrigger("DashStab_1");
 
@@ -297,11 +328,17 @@ public class BurangBoss : Boss
 
         yield return new WaitForSeconds(jumpTime);
 
-        //찌르기 모션 수정 필요
-        GameObject child = Instantiate(knifePrefab, transform.position, Quaternion.identity) as GameObject;
+        GameObject child = Instantiate(DiagonalDashKnife, transform.position, Quaternion.identity) as GameObject;
+        if (BossDir())
+        {
+            child.transform.rotation = Quaternion.Euler(0, 0, -37.64f);
+        }
+        else
+        {
+            child.transform.rotation = Quaternion.Euler(0, 0, 37.64f);
+            child.transform.localScale = new Vector3(-1, 1, 1);
+        }
         child.transform.parent = Parent;
-
-        BossDir();
 
         Vector2 direction;
         if(XDist()>=0)
@@ -329,11 +366,11 @@ public class BurangBoss : Boss
         ani.SetBool("DiagonalStab", false);
     }
 
-    private IEnumerator ChargeTripleStab(float waitTime, float interval)
+    private IEnumerator ChargeTripleStab(float waitTime)
     {
         UnityEngine.Debug.Log("ChargeTripleStab");
 
-        BossDir();
+        bool bDir = BossDir();
 
         ani.SetBool("ChargeTripleStab", true);
 
@@ -341,17 +378,26 @@ public class BurangBoss : Boss
 
         ani.SetTrigger("ChargeTripleStab_1");
         //찌르기 모션 수정 필요
-        GameObject child1 = Instantiate(knifePrefab, transform.position, Quaternion.Euler(0,0,30)) as GameObject;
-        child1.transform.parent = Parent;
-        yield return new WaitForSeconds(interval);
+        GameObject child1 = Instantiate(NearAttack, transform.position, Quaternion.identity) as GameObject;
+        if(!bDir)
+        {
+            child1.transform.localScale = new Vector3(-1, 1, 1);
+        }
+        yield return new WaitForSeconds(0.2f);
         Destroy(child1);
-        GameObject child2 = Instantiate(knifePrefab, transform.position, Quaternion.identity) as GameObject;
-        child2.transform.parent = Parent;
-        yield return new WaitForSeconds(interval);
+        GameObject child2 = Instantiate(NearAttack, transform.position, Quaternion.identity) as GameObject;
+        if (!bDir)
+        {
+            child2.transform.localScale = new Vector3(-1, 1, 1);
+        }
+        yield return new WaitForSeconds(0.2f);
         Destroy(child2);
-        GameObject child3 = Instantiate(knifePrefab, transform.position, Quaternion.Euler(0,0,-30)) as GameObject;
-        child3.transform.parent = Parent;
-        yield return new WaitForSeconds(interval);
+        GameObject child3 = Instantiate(NearAttack, transform.position, Quaternion.identity) as GameObject;
+        if (!bDir)
+        {
+            child3.transform.localScale = new Vector3(-1, 1, 1);
+        }
+        yield return new WaitForSeconds(0.2f);
         Destroy(child3);
 
         ani.SetBool("ChargeTripleStab", false);
@@ -396,7 +442,10 @@ public class BurangBoss : Boss
 
         for(int i = 0; i < count; i++)
         {
-            Destroy(prefab[i]);
+            if(prefab[i] != null)
+            {
+                Destroy(prefab[i]);
+            }
             yield return new WaitForSeconds(intervalTime);
         }
     }
@@ -422,14 +471,20 @@ public class BurangBoss : Boss
         Destroy(shadowExit);
 
         Invincible = false;
-        BossDir();
+        bool bDir = BossDir();
         //찌르기 모션 수정 필요
-        GameObject child1 = Instantiate(knifePrefab, transform.position, Quaternion.Euler(0, 0, 15)) as GameObject;
-        child1.transform.parent = Parent;
+        GameObject child1 = Instantiate(NearAttack, transform.position, Quaternion.identity) as GameObject;
+        if(!bDir)
+        {
+            child1.transform.localScale = new Vector3(-1, 1, 1);
+        }
         yield return new WaitForSeconds(0.1f);
         Destroy(child1);
-        GameObject child2 = Instantiate(knifePrefab, transform.position, Quaternion.Euler(0,0,-15)) as GameObject;
-        child2.transform.parent = Parent;
+        GameObject child2 = Instantiate(NearAttack, transform.position, Quaternion.identity) as GameObject;
+        if (!bDir)
+        {
+            child2.transform.localScale = new Vector3(-1, 1, 1);
+        }
         yield return new WaitForSeconds(0.1f);
         Destroy(child2);
 
@@ -470,14 +525,22 @@ public class BurangBoss : Boss
 
         Invincible = false;
 
-        BossDir();
+        bool bDir = BossDir();
         GetComponent<Rigidbody2D>().gravityScale = 0.0f;
         yield return new WaitForSeconds(0.5f);
+        rend.flipX = false;
+
+        GameObject child = Instantiate(DashKnife, transform.position, Quaternion.identity) as GameObject;
+        child.transform.parent = Parent;
+
+        transform.rotation = Quaternion.FromToRotation(new Vector3(0, 0, 0), new Vector3(XDist(), YDist(), 0));
 
         Vector2 dashDir = new Vector2(XDist(), YDist()).normalized;
         GetComponent<Rigidbody2D>().velocity = dashDir * dashSpeed;
         yield return new WaitForSeconds(dashTime);
         GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+
+        Destroy(child);
 
         ani.SetBool("ThrowTeleportDashStab", false);
 
@@ -499,7 +562,7 @@ public class BurangBoss : Boss
         {
             if(IsHit)
             {
-                //FindObjectOfType<Player>().GetComponent<Player>().GetDamaged(1);
+                //Game.inst.GetComponent<Player>().GetDamaged(BossDamage);
                 break;
             }
             yield return new WaitForSeconds(0.1f);
@@ -509,7 +572,7 @@ public class BurangBoss : Boss
         if (IsHit)
         {
             GetDamaged(10);
-            //Stun(3f);
+            yield return StunRoutine(3f);
         }
         IsHit = false;
         bombArmor = false;
@@ -558,11 +621,11 @@ public class BurangBoss : Boss
                 yield return new WaitForSeconds(explodeTime);
                 if (!FindObjectOfType<Player>().GetComponent<Player>().isControllable)
                 {
-                    //FindObjectOfType<Player>().GetComponent<Player>().GetDamaged(1);
+                    //Game.inst.GetComponent<Player>().GetDamaged(BossDamage);
                 }
                 else
                 {
-                    //FindObjectOfType<Player>().GetComponent<Player>().GetDamaged(1);
+                    //Game.inst.GetComponent<Player>().GetDamaged(BossDamage);
                     //플레이어 스턴 추가 필요
                 }
                 Destroy(prefab2);
@@ -610,7 +673,7 @@ public class BurangBoss : Boss
         GameObject[] prefab = new GameObject[90];
         for (int i = 0; i < 90; i++)
         {
-            prefab[i] = Instantiate(garbagePrefab, transform.position, Quaternion.identity) as GameObject;
+            prefab[i] = Instantiate(Blood, transform.position, Quaternion.identity) as GameObject;
             float radian = (dirD + i * dir) * Mathf.Deg2Rad;
             prefab[i].GetComponent<Rigidbody2D>().velocity = new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)) * bloodSpeed;
             yield return new WaitForSeconds(0.05f);
@@ -621,6 +684,7 @@ public class BurangBoss : Boss
         {
             Destroy(prefab[i]);
         }
+
         ani.SetBool("BloodVomit", false);
     }
 
@@ -628,12 +692,21 @@ public class BurangBoss : Boss
     {
         UnityEngine.Debug.Log("SwordDance");
 
-        BossDir();
+        bool bDir = BossDir();
 
         ani.SetBool("SwordDance", true);
         yield return new WaitForSeconds(waitTime);
         ani.SetTrigger("SwordDance_1");
-        yield return new WaitForSeconds(time);
+        for(int i = 0;i<16;i++)
+        {
+            GameObject prefab = Instantiate(NearAttack, transform.position, Quaternion.identity) as GameObject;
+            if(!bDir)
+            {
+                prefab.transform.localScale = new Vector3(-1, 1, 1);
+            }
+            yield return new WaitForSeconds(0.1f);
+            Destroy(prefab);
+        }
         ani.SetBool("SwordDance", false);
     }
 
@@ -641,7 +714,7 @@ public class BurangBoss : Boss
     {
         UnityEngine.Debug.Log("UpperCut");
 
-        BossDir();
+        bool bDir = BossDir();
         ani.SetBool("UpperCut", true);
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         rb.velocity = new Vector2(XDist(), 0).normalized * dashSpeed;
@@ -653,7 +726,17 @@ public class BurangBoss : Boss
         rb.velocity = Vector2.zero;
 
         ani.SetTrigger("UpperCut_1");
+
+        GameObject prefab = Instantiate(NearAttack, transform.position, Quaternion.identity) as GameObject;
+        if (!bDir)
+        {
+            prefab.transform.localScale = new Vector3(-1, 1, 1);
+        }
+
         yield return new WaitForSeconds(0.5f);
+
+        Destroy(prefab);
+
         ani.SetBool("UpperCut", false);
     }
 
@@ -661,7 +744,7 @@ public class BurangBoss : Boss
     {
         UnityEngine.Debug.Log("WallThump");
 
-        BossDir();
+        bool bDir = BossDir();
         ani.SetBool("WallThump", true);
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         Vector2 direction = new Vector2(XDist(), 0);
@@ -690,7 +773,7 @@ public class BurangBoss : Boss
         rb.velocity = Vector2.zero;
         if (col.IsTouching(hit1.collider))//플레이어에 닿았으면
         {
-            FindObjectOfType<Player>().GetComponent<Player>().isControllable = false;
+            FindObjectOfType<Player>().GetComponent<Player>().isControllable = false;//플레이어 스턴 추가 필요
             FindObjectOfType<Player>().GetComponent<Rigidbody2D>().velocity = direction.normalized * dashSpeed;
             var hit2 = Physics2D.Raycast(FindObjectOfType<Player>().transform.position, direction, float.MaxValue, WLayerMask.value);
             Collider2D col2 = FindObjectOfType<Player>().GetComponent<Collider2D>();
@@ -712,8 +795,19 @@ public class BurangBoss : Boss
 
             ani.SetTrigger("WallThump_3");
 
-            yield return new WaitForSeconds(0.3f);
-            FindObjectOfType<Player>().GetComponent<Player>().isControllable = true;
+            yield return new WaitForSeconds(0.1f);
+
+            GameObject child = Instantiate(NearAttack, transform.position, Quaternion.identity) as GameObject;
+            if (!bDir)
+            {
+                child.transform.localScale = new Vector3(-1, 1, 1);
+            }
+
+            yield return new WaitForSeconds(0.2f);
+
+            Destroy(child);
+
+            FindObjectOfType<Player>().GetComponent<Player>().isControllable = true;//플레이어 스턴 해제 필요
         }
         ani.SetBool("WallThump", false);
     }
@@ -730,11 +824,6 @@ public class BurangBoss : Boss
             yield return MoveRoutine (transform.position + new Vector3(direction.x * interval * speed,0,0), interval);
         }
         ani.SetBool("Phase1Walk", false);
-    }
-
-    private void OnCollisionEnter2D(Collision2D col)
-    {
-        
     }
 
     protected override void OnStunned()

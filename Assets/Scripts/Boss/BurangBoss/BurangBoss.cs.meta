@@ -1,0 +1,34 @@
+fileFormatVersion: 2
+guid: 8bb5424180805cb4a993ded1be0e777a
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - damageTextPrefab: {fileID: 6103845031904764219, guid: 42ae5155d9c85e548b32d3fc145463eb,
+      type: 3}
+  - knifePrefab: {fileID: 4516597867572687060, guid: 9255c396073a6a947a74274e88daa6ff,
+      type: 3}
+  - ThrowingknifePrefab: {fileID: 2305370399308298145, guid: d0d99948c1f775249afd8fd3ea85fe14,
+      type: 3}
+  - garbagePrefab: {fileID: 3104099088749748763, guid: d7a22d7964b8be9419437b869b733ec7,
+      type: 3}
+  - garbagePrefabV2: {fileID: 8747638199740386195, guid: e3925a515c4003448be94db1486e6180,
+      type: 3}
+  - garbageAttachedPrefab: {fileID: 4860345923679522354, guid: e54d81fdf8ef3e045b8cab9a6f4ff408,
+      type: 3}
+  - shadowPrefab: {fileID: 9216229884953379742, guid: cc742e9fd952c764fb9edc9dfa2a8b80,
+      type: 3}
+  - BurangBossCol: {fileID: 2446029599420473739, guid: c0ff70092d4a15249b286630a4ea5ee4,
+      type: 3}
+  - DashKnife: {fileID: 8707827905135713522, guid: 7016b603df0bc2443894376f5be24a3a,
+      type: 3}
+  - DiagonalDashKnife: {fileID: 9195574284051758674, guid: 8ac2a75149f581e468c850415fb7d228,
+      type: 3}
+  - NearAttack: {fileID: 315473611020653980, guid: 08e87223f13a14642948d87864f3721f,
+      type: 3}
+  - Blood: {fileID: 1009651683621457264, guid: 9ba0a795c9bdef045896b50eddf84a84, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
