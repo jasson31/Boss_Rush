@@ -39,8 +39,10 @@ public class WeaponSpec
 
 	//For Projectile
 	public string projectileName;
+	public float projectileSpeed;
 
 	//For Laser
+	public string laserName;
 	public float chargeTime;
 	public float shotTime;
 }
