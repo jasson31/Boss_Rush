@@ -10,9 +10,6 @@ using UnityEngine;
 public class BurangBoss : Boss
 {
     [SerializeField]
-    private GameObject knifePrefab;
-
-    [SerializeField]
     private GameObject ThrowingknifePrefab;
 
     [SerializeField]
@@ -20,6 +17,9 @@ public class BurangBoss : Boss
 
     [SerializeField]
     private GameObject garbagePrefabV2;
+
+    [SerializeField]
+    private GameObject garbagePrefabV3;
 
     [SerializeField]
     private GameObject garbageAttachedPrefab;
@@ -57,6 +57,9 @@ public class BurangBoss : Boss
     
     bool IsHit = false;
 
+    [HideInInspector]
+    public bool IsRollDodgeable = false;
+
     Animator ani;
     SpriteRenderer rend;
 
@@ -83,6 +86,7 @@ public class BurangBoss : Boss
         FirstPhase2 = 1;
         FirstPhase3 = 1;
         BossDamage = 0.25f;
+        ani.SetInteger("Phase", 0);
     }
 
     private float XDist()
@@ -116,11 +120,13 @@ public class BurangBoss : Boss
         if (MaxHealth * 0.1f >= Health && Phase == 0)
         {
             Phase = 1;
+            ani.SetInteger("Phase", 1);
             Health = 60;
         }
         if (MaxHealth * 0.1f >= Health && Phase == 1)
         {
             Phase = 2;
+            ani.SetInteger("Phase", 2);
             Health = 40;
         }
         if (Health <= 0 && Phase == 2) //dead
@@ -207,19 +213,19 @@ public class BurangBoss : Boss
                     }
                     else
                     {
-                        if(playerPos.x <= -13 && playerPos.x >= 13)
+                        if(playerPos.x <= -8 || playerPos.x >= 8)
                         {
-                            if(rand < 0.25f)
+                            if (rand < 0.25f)
                             {
-                                nextRoutines.Enqueue(NewActionRoutine(AttachGarbageBomb(0.1f,50f,50f,2f)));
+                                nextRoutines.Enqueue(NewActionRoutine(AttachGarbageBomb(0.1f, 50f, 50f, 2f)));
                             }
-                            else if(rand < 0.5f)
+                            else if (rand < 0.5f)
                             {
                                 nextRoutines.Enqueue(NewActionRoutine(BloodVomit(30f)));
                             }
-                            else if(rand < 0.75f)
+                            else if (rand < 0.75f)
                             {
-                                if(dist.magnitude < NearDist)
+                                if (dist.magnitude < NearDist)
                                 {
                                     nextRoutines.Enqueue(NewActionRoutine(SwordDance(0.1f, 1.5f)));
                                 }
@@ -283,7 +289,7 @@ public class BurangBoss : Boss
 
     private IEnumerator DashStab(float waitTime, float dashSpeed, float dashTime)
     {
-        UnityEngine.Debug.Log("DashStab!");
+        IsRollDodgeable = true;
 
         ani.SetBool("DashStab", true);
 
@@ -313,11 +319,13 @@ public class BurangBoss : Boss
         Destroy(child);
 
         ani.SetBool("DashStab", false);
+
+        IsRollDodgeable = false;
     }
 
     private IEnumerator DiagonalStab(float waitTime, float jumpSpeed, float jumpTime, float dashSpeed)
     {
-        UnityEngine.Debug.Log("DiagonalStab!");
+        IsRollDodgeable = true;
 
         yield return new WaitForSeconds(waitTime);//점프 준비 동작
 
@@ -364,12 +372,12 @@ public class BurangBoss : Boss
         Destroy(child);
 
         ani.SetBool("DiagonalStab", false);
+
+        IsRollDodgeable = false;
     }
 
     private IEnumerator ChargeTripleStab(float waitTime)
     {
-        UnityEngine.Debug.Log("ChargeTripleStab");
-
         bool bDir = BossDir();
 
         ani.SetBool("ChargeTripleStab", true);
@@ -405,8 +413,6 @@ public class BurangBoss : Boss
 
     private IEnumerator GarbageBomb(float waitTime, int count, float ArriveTime, float intervalTime, float intervalDistance, float ExplodeTime)
     {
-        UnityEngine.Debug.Log("GarbageBomb");
-
         BossDir();
 
         ani.SetBool("GarbageBomb", true);
@@ -452,8 +458,6 @@ public class BurangBoss : Boss
 
     private IEnumerator ShadowTeleportStab(float waitTime, float teleportTime)
     {
-        UnityEngine.Debug.Log("ShadowTeleportStab");
-
         GetComponent<Rigidbody2D>().gravityScale = 0.0f;
 
         Invincible = true;
@@ -495,8 +499,6 @@ public class BurangBoss : Boss
 
     private IEnumerator ThrowTeleportDashStab(float waitTime, float knifeSpeed, float dashSpeed, float dashTime)
     {
-        UnityEngine.Debug.Log("ThrowTeleportDashStab");
-
         Invincible = true;
         yield return new WaitForSeconds(waitTime);
 
@@ -550,8 +552,6 @@ public class BurangBoss : Boss
 
     private IEnumerator GarbageBombArmor(float invincibleTime)
     {
-        UnityEngine.Debug.Log("GarbageBombArmor");
-
         BossDir();
 
         ani.SetBool("GarbageBombArmor", true);
@@ -569,7 +569,7 @@ public class BurangBoss : Boss
         }
         Invincible = false;
         ani.SetBool("GarbageBombArmor", false);
-        if (IsHit)
+        if (!IsHit)
         {
             GetDamaged(10);
             yield return StunRoutine(3f);
@@ -580,8 +580,6 @@ public class BurangBoss : Boss
 
     private IEnumerator AttachGarbageBomb(float waitTime, float dashSpeed, float bombSpeed, float explodeTime)
     {
-        UnityEngine.Debug.Log("AttachGarbageBomb");
-
         yield return new WaitForSeconds(waitTime);
         ani.SetBool("AttachGarbageBomb", true);
         yield return new WaitForSeconds(0.5f);
@@ -590,7 +588,7 @@ public class BurangBoss : Boss
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         rb.velocity = new Vector2(XDist(), 0).normalized * dashSpeed;
 
-        while(XDist() > 1 || XDist() < -1)
+        while(XDist() > 2 || XDist() < -2)
         {
             yield return null;
         }
@@ -632,7 +630,7 @@ public class BurangBoss : Boss
             }
             else//구르는 중
             {
-                GameObject prefab1 = Instantiate(garbagePrefab, prefab.transform.position, Quaternion.identity) as GameObject;
+                GameObject prefab1 = Instantiate(garbagePrefabV3, prefab.transform.position, Quaternion.identity) as GameObject;
                 Destroy(prefab);
                 prefab1.GetComponent<Rigidbody2D>().velocity = direction.normalized * bombSpeed;
                 Collider2D col1 = prefab1.GetComponent<Collider2D>();
@@ -654,8 +652,6 @@ public class BurangBoss : Boss
 
     private IEnumerator BloodVomit(float bloodSpeed)
     {
-        UnityEngine.Debug.Log("BloodVomit");
-
         BossDir();
         ani.SetBool("BloodVomit", true);
         yield return new WaitForSeconds(0.5f);
@@ -690,8 +686,6 @@ public class BurangBoss : Boss
 
     private IEnumerator SwordDance(float waitTime, float time)
     {
-        UnityEngine.Debug.Log("SwordDance");
-
         bool bDir = BossDir();
 
         ani.SetBool("SwordDance", true);
@@ -712,8 +706,6 @@ public class BurangBoss : Boss
 
     private IEnumerator Uppercut(float dashSpeed)
     {
-        UnityEngine.Debug.Log("UpperCut");
-
         bool bDir = BossDir();
         ani.SetBool("UpperCut", true);
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
@@ -742,8 +734,6 @@ public class BurangBoss : Boss
 
     private IEnumerator WallThump(float dashSpeed)
     {
-        UnityEngine.Debug.Log("WallThump");
-
         bool bDir = BossDir();
         ani.SetBool("WallThump", true);
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
@@ -792,6 +782,8 @@ public class BurangBoss : Boss
                 yield return null;
             }
             rb.velocity = Vector2.zero;
+
+            Destroy(prefab);
 
             ani.SetTrigger("WallThump_3");
 

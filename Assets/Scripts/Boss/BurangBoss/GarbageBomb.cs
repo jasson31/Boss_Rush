@@ -6,10 +6,10 @@ public class GarbageBomb : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.gameObject == GameObject.Find("Player"))
+        if (col.GetComponent<Player>() != null)
         {
             float damage = GameObject.Find("BurangBoss").GetComponent<BurangBoss>().BossDamage;
-            Game.inst.player.GetDamaged(damage);
+            //Game.inst.player.GetDamaged(damage);
             Destroy(transform.parent.gameObject);
             Destroy(gameObject);
         }
