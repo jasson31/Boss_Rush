@@ -76,8 +76,7 @@ public class BurangBoss : Boss
     {
         base.Start();
         Phase = 0;
-        MaxHealth = 200;
-        Health = 100;
+        //Health = MaxHealth * 0.5f;
         Parent = GameObject.Find("BurangBoss").GetComponent<Transform>();
         PlayerParent = GameObject.Find("Player").GetComponent<Transform>();
         ani = GetComponent<Animator>();
@@ -121,21 +120,24 @@ public class BurangBoss : Boss
         {
             Phase = 1;
             ani.SetInteger("Phase", 1);
-            Health = 60;
+            //Health = MaxHealth * 0.3f;
         }
         if (MaxHealth * 0.1f >= Health && Phase == 1)
         {
             Phase = 2;
             ani.SetInteger("Phase", 2);
-            Health = 40;
+            //Health = MaxHealth * 0.2f;
+        }
+        if(Phase == 2)
+        {
+            int i;
+            for (i = 10; Health < (MaxHealth * 0.2f) / 10 * i; i--)
+            BossDamage = 0.25f + 0.25f * (10 - i);
         }
         if (Health <= 0 && Phase == 2) //dead
         {
             UnityEngine.Debug.Log("Boss Defeated!");
             gameObject.SetActive(false);
-            int i;
-            for(i = 10; i*4 > Health; i--)
-            BossDamage = 0.25f + 0.25f * (10-i);
         }
     }
 
@@ -148,7 +150,7 @@ public class BurangBoss : Boss
         Vector3 playerPos = GetPlayerPos();
         Vector3 dist = BossPos - playerPos;
 
-        switch (Phase)
+        switch (1)
         {
             case 0:
                 if(rand < 0.33f)
@@ -271,20 +273,24 @@ public class BurangBoss : Boss
     }
     private IEnumerator Phase1to2()
     {
+        Invincible = true;
         ani.SetBool("Phase1to2", true);
         BossDir();
         yield return new WaitForSeconds(2f);
         ani.SetBool("Phase1to2", false);
         FirstPhase2 = 0;
+        Invincible = false;
     }
 
     private IEnumerator Phase2to3()
     {
+        Invincible = true;
         ani.SetTrigger("Phase2to3");
         BossDir();
         yield return new WaitForSeconds(3f);
         ani.SetTrigger("Phase3Idle");
         FirstPhase3 = 0;
+        Invincible = false;
     }
 
     private IEnumerator DashStab(float waitTime, float dashSpeed, float dashTime)
@@ -509,6 +515,7 @@ public class BurangBoss : Boss
         Vector2 direction = new Vector2(XDist(), YDist()).normalized;
         prefab.GetComponent<Rigidbody2D>().velocity = direction * knifeSpeed;
 
+
         var hit = Physics2D.Raycast(prefab.transform.position, direction, float.MaxValue, wallfloorLayerMask);
         Collider2D col = prefab.GetComponent<Collider2D>();
 
@@ -522,7 +529,24 @@ public class BurangBoss : Boss
 
         ani.SetTrigger("ThrowTeleportDashStabCol");
         yield return new WaitForSeconds(0.1f);
-        transform.position = prefab.transform.position + new Vector3(0, 1.5f, 0);
+        Vector3 Pos = Vector3.zero;
+        if(prefab.transform.position.y >= 6)
+        {
+            Pos += new Vector3(0, -1.5f, 0);
+        }
+        else
+        {
+            Pos += new Vector3(0, 1.5f, 0);
+        }
+        if(prefab.transform.position.x > 13)
+        {
+            Pos += new Vector3(-1f, 0, 0);
+        }
+        else if(prefab.transform.position.x < -13)
+        {
+            Pos += new Vector3(1f, 0, 0);
+        }
+        transform.position = prefab.transform.position + Pos;
         Destroy(prefab);
 
         Invincible = false;
@@ -666,17 +690,17 @@ public class BurangBoss : Boss
             dirD = 210f;
             dir = -1;
         }
-        GameObject[] prefab = new GameObject[90];
-        for (int i = 0; i < 90; i++)
+        GameObject[] prefab = new GameObject[45];
+        for (int i = 0; i < 45; i++)
         {
             prefab[i] = Instantiate(Blood, transform.position, Quaternion.identity) as GameObject;
-            float radian = (dirD + i * dir) * Mathf.Deg2Rad;
+            float radian = (dirD + 2 * i * dir) * Mathf.Deg2Rad;
             prefab[i].GetComponent<Rigidbody2D>().velocity = new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)) * bloodSpeed;
             yield return new WaitForSeconds(0.05f);
         }
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
 
-        for (int i = 0; i < 90; i++)
+        for (int i = 0; i < 45; i++)
         {
             Destroy(prefab[i]);
         }
