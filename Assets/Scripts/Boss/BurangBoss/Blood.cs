@@ -4,6 +4,19 @@ using UnityEngine;
 
 public class Blood : MonoBehaviour
 {
+    private void Update()
+    {
+        Vector2 direction = GetComponent<Rigidbody2D>().velocity;
+        if(direction.x >= 0)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(new Vector2(0, -1), direction));
+        }
+        else
+        {
+            transform.rotation = Quaternion.Euler(0, 0, -1 * Vector2.Angle(new Vector2(0, -1), direction));
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D col)
     {
         if (col.GetComponent<Player>() != null)

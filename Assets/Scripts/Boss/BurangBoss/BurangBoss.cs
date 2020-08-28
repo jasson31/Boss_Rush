@@ -43,6 +43,9 @@ public class BurangBoss : Boss
     private GameObject Blood;
 
     [SerializeField]
+    private GameObject Explosion;
+
+    [SerializeField]
     private LayerMask wallfloorLayerMask;
 
     [SerializeField]
@@ -112,9 +115,9 @@ public class BurangBoss : Boss
         }
     }
 
-    public override void GetDamaged(int damage)
+    /*public override void GetDamaged(float damage)
     {
-        /*if (!Invincible) { base.GetDamaged(damage); }
+        if (!Invincible) { base.GetDamaged(damage); }
         else if(bombArmor){ IsHit = true; }
         if (MaxHealth * 0.1f >= Health && Phase == 0)
         {
@@ -138,8 +141,8 @@ public class BurangBoss : Boss
         {
             UnityEngine.Debug.Log("Boss Defeated!");
             gameObject.SetActive(false);
-        }*/
-    }
+        }
+    }*/
 
     protected override Queue<IEnumerator> DecideNextRoutine()
     {
@@ -150,7 +153,7 @@ public class BurangBoss : Boss
         Vector3 playerPos = GetPlayerPos();
         Vector3 dist = BossPos - playerPos;
 
-        switch (1)
+        switch (Phase)
         {
             case 0:
                 ani.SetInteger("Phase", 0);
@@ -182,13 +185,13 @@ public class BurangBoss : Boss
                     if (FirstPhase2 == 1)//특별 패턴
                     {
                         nextRoutines.Enqueue(NewActionRoutine(Phase1to2()));
-                        nextRoutines.Enqueue(NewActionRoutine(ShadowTeleportStab(0,0.5f)));
+                        nextRoutines.Enqueue(NewActionRoutine(ShadowTeleportStab(0)));
                     }
                     else
                     {
                         if(rand < 0.25f)
                         {
-                            nextRoutines.Enqueue(NewActionRoutine(ShadowTeleportStab(0.5f,0.5f)));
+                            nextRoutines.Enqueue(NewActionRoutine(ShadowTeleportStab(0.5f)));
                             nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1f)));
                         }
                         else if(rand < 0.5f)
@@ -461,12 +464,14 @@ public class BurangBoss : Boss
             if(prefab[i] != null)
             {
                 Destroy(prefab[i]);
+                GameObject explode = Instantiate(Explosion, prefab[i].transform.position, Quaternion.identity) as GameObject;
+                Destroy(explode, 0.5f);
             }
             yield return new WaitForSeconds(intervalTime);
         }
     }
 
-    private IEnumerator ShadowTeleportStab(float waitTime, float teleportTime)
+    private IEnumerator ShadowTeleportStab(float waitTime)
     {
         GetComponent<Rigidbody2D>().gravityScale = 0.0f;
 
@@ -478,10 +483,13 @@ public class BurangBoss : Boss
 
         ani.SetBool("ShadowTeleportStab", true);
 
-        yield return new WaitForSeconds(teleportTime);
+        yield return new WaitForSeconds(0.25f);
+        shadowEnter.GetComponent<Animator>().SetTrigger("ShadowEnd");
+        yield return new WaitForSeconds(0.25f);
         transform.position = teleportPos + new Vector3(0,1.2f,0);
         Destroy(shadowEnter);
-        yield return new WaitForSeconds(teleportTime - 0.3f);
+        shadowExit.GetComponent<Animator>().SetTrigger("ShadowEnd");
+        yield return new WaitForSeconds(0.2f);
         Destroy(shadowExit);
 
         Invincible = false;
@@ -615,13 +623,22 @@ public class BurangBoss : Boss
         {
             if(IsHit)
             {
-                //Game.inst.GetComponent<Player>().GetDamaged(BossDamage);
+                GameObject explode = Instantiate(Explosion, GetPlayerPos(), Quaternion.identity) as GameObject;
+                Destroy(explode, 0.5f);
                 break;
             }
             yield return new WaitForSeconds(0.1f);
         }
         Invincible = false;
         ani.SetBool("GarbageBombArmor", false);
+
+        GameObject explode1 = Instantiate(Explosion, transform.position, Quaternion.identity) as GameObject;
+        Destroy(explode1, 0.5f);
+        GameObject explode2 = Instantiate(Explosion, transform.position + new Vector3(-0.6f, -0.3f, 0), Quaternion.identity) as GameObject;
+        Destroy(explode2, 0.5f);
+        GameObject explode3 = Instantiate(Explosion, transform.position + new Vector3(0.6f, -0.3f, 0), Quaternion.identity) as GameObject;
+        Destroy(explode3, 0.5f);
+
         if (!IsHit)
         {
             //GetDamaged(10);
@@ -629,7 +646,6 @@ public class BurangBoss : Boss
         }
         IsHit = false;
         bombArmor = false;
-        yield return null;
     }
 
     private IEnumerator AttachGarbageBomb(float waitTime, float dashSpeed, float bombSpeed, float explodeTime)
@@ -671,15 +687,12 @@ public class BurangBoss : Boss
                 GameObject prefab2 = Instantiate(garbageAttachedPrefab,GetPlayerPos(),Quaternion.identity) as GameObject;
                 prefab2.transform.parent = PlayerParent;
                 yield return new WaitForSeconds(explodeTime);
-                if (!FindObjectOfType<Player>().GetComponent<Player>().isControllable)
+                if (FindObjectOfType<Player>().GetComponent<Player>().isControllable)
                 {
-                    //Game.inst.GetComponent<Player>().GetDamaged(BossDamage);
-                }
-                else
-                {
-                    //Game.inst.GetComponent<Player>().GetDamaged(BossDamage);
                     //플레이어 스턴 추가 필요
                 }
+                GameObject explode = Instantiate(Explosion, prefab2.transform.position, Quaternion.identity) as GameObject;
+                Destroy(explode, 0.5f);
                 Destroy(prefab2);
             }
             else//구르는 중
@@ -699,6 +712,8 @@ public class BurangBoss : Boss
         else//벽, 땅에 닿음
         {
             prefab.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            GameObject explode = Instantiate(Explosion, prefab.transform.position, Quaternion.identity) as GameObject;
+            Destroy(explode, 0.5f);
             Destroy(prefab);
         }
         ani.SetBool("AttachGarbageBomb", false);

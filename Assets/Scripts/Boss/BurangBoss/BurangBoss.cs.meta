@@ -27,6 +27,8 @@ MonoImporter:
   - NearAttack: {fileID: 315473611020653980, guid: 08e87223f13a14642948d87864f3721f,
       type: 3}
   - Blood: {fileID: 1009651683621457264, guid: 9ba0a795c9bdef045896b50eddf84a84, type: 3}
+  - Explosion: {fileID: 3658829820901521388, guid: f36f6f6ae3ec6624f93329ffae89e0ae,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
