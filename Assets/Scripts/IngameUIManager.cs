@@ -30,6 +30,9 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
     public Image[] hearts;
     public Sprite fullHeart;
     public Sprite emptyHeart;
+    
+    public Image[] weaponsImage;
+    public WeaponBehaviour weapon;
 
    
 
@@ -45,6 +48,10 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
     public void SetHealthBar(int health, int maxHealth)
     {
         //healthBar.value = health / maxHealth;
+    }
+
+    public void SetWeaponSprites()
+    {
     }
 
     public void OpenMenuUI()
