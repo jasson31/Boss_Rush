@@ -114,19 +114,19 @@ public class BurangBoss : Boss
 
     public override void GetDamaged(int damage)
     {
-        if (!Invincible) { base.GetDamaged(damage); }
+        /*if (!Invincible) { base.GetDamaged(damage); }
         else if(bombArmor){ IsHit = true; }
         if (MaxHealth * 0.1f >= Health && Phase == 0)
         {
             Phase = 1;
             ani.SetInteger("Phase", 1);
-            //Health = MaxHealth * 0.3f;
+            Health = MaxHealth * 0.3f;
         }
         if (MaxHealth * 0.1f >= Health && Phase == 1)
         {
             Phase = 2;
             ani.SetInteger("Phase", 2);
-            //Health = MaxHealth * 0.2f;
+            Health = MaxHealth * 0.2f;
         }
         if(Phase == 2)
         {
@@ -138,7 +138,7 @@ public class BurangBoss : Boss
         {
             UnityEngine.Debug.Log("Boss Defeated!");
             gameObject.SetActive(false);
-        }
+        }*/
     }
 
     protected override Queue<IEnumerator> DecideNextRoutine()
@@ -153,7 +153,8 @@ public class BurangBoss : Boss
         switch (1)
         {
             case 0:
-                if(rand < 0.33f)
+                ani.SetInteger("Phase", 0);
+                if (rand < 0.33f)
                 {
                     nextRoutines.Enqueue(NewActionRoutine(DashStab(0.5f, 50f, 0.25f)));
                 }
@@ -176,6 +177,7 @@ public class BurangBoss : Boss
                 nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(idleTime1,3f)));
                 break;
             case 1:
+                ani.SetInteger("Phase", 1);
                 {
                     if (FirstPhase2 == 1)//특별 패턴
                     {
@@ -196,6 +198,7 @@ public class BurangBoss : Boss
                         else if(rand < 0.75f)
                         {
                             nextRoutines.Enqueue(NewActionRoutine(DashStab(0.5f, 50f, 0.25f)));
+                            nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(0.1f)));
                             nextRoutines.Enqueue(NewActionRoutine(DashStab(0.5f, 50f, 0.25f)));
                         }
                         else
@@ -208,6 +211,7 @@ public class BurangBoss : Boss
                 }
                 break;
             case 2:
+                ani.SetInteger("Phase", 2);
                 {
                     if (FirstPhase3 == 1)//특별 패턴
                     {
@@ -513,6 +517,18 @@ public class BurangBoss : Boss
         yield return new WaitForSeconds(0.1f);
         GameObject prefab = Instantiate(ThrowingknifePrefab, transform.position, Quaternion.identity);
         Vector2 direction = new Vector2(XDist(), YDist()).normalized;
+
+        float ang = Vector2.Angle(new Vector2(1,0),direction);
+        if (ang>90 && ang<270)
+        {
+            prefab.transform.localScale = new Vector3(-2, 2, 1);
+            prefab.transform.rotation = Quaternion.Euler(0, 0,-45 + Vector2.Angle(new Vector2(-1, 0), direction));
+        }
+        else
+        {
+            prefab.transform.rotation = Quaternion.Euler(0, 0,45 + Vector2.Angle(new Vector2(1, 0), direction));
+        }
+
         prefab.GetComponent<Rigidbody2D>().velocity = direction * knifeSpeed;
 
 
@@ -551,17 +567,28 @@ public class BurangBoss : Boss
 
         Invincible = false;
 
-        bool bDir = BossDir();
+        BossDir();
         GetComponent<Rigidbody2D>().gravityScale = 0.0f;
         yield return new WaitForSeconds(0.5f);
-        rend.flipX = false;
+        bool bDir = BossDir();
 
         GameObject child = Instantiate(DashKnife, transform.position, Quaternion.identity) as GameObject;
+        if(!bDir)
+        {
+            child.transform.localScale = new Vector3(-1, 1, 1);
+        }
         child.transform.parent = Parent;
 
-        transform.rotation = Quaternion.FromToRotation(new Vector3(0, 0, 0), new Vector3(XDist(), YDist(), 0));
-
         Vector2 dashDir = new Vector2(XDist(), YDist()).normalized;
+        if (bDir)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(new Vector2(1, 0),dashDir));
+        }
+        else
+        {
+            transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(new Vector2(-1, 0),dashDir));
+        }
+        
         GetComponent<Rigidbody2D>().velocity = dashDir * dashSpeed;
         yield return new WaitForSeconds(dashTime);
         GetComponent<Rigidbody2D>().velocity = Vector2.zero;
@@ -569,6 +596,8 @@ public class BurangBoss : Boss
         Destroy(child);
 
         ani.SetBool("ThrowTeleportDashStab", false);
+
+        transform.rotation = Quaternion.identity;
 
         GetComponent<Rigidbody2D>().gravityScale = 1.0f;
         yield return new WaitForSeconds(0.5f);
@@ -595,11 +624,12 @@ public class BurangBoss : Boss
         ani.SetBool("GarbageBombArmor", false);
         if (!IsHit)
         {
-            GetDamaged(10);
+            //GetDamaged(10);
             yield return StunRoutine(3f);
         }
         IsHit = false;
         bombArmor = false;
+        yield return null;
     }
 
     private IEnumerator AttachGarbageBomb(float waitTime, float dashSpeed, float bombSpeed, float explodeTime)
