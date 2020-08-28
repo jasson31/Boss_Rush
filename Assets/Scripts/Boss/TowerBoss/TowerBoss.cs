@@ -60,7 +60,6 @@ public class TowerBoss : Boss
         Queue<IEnumerator> nextRoutines = new Queue<IEnumerator>();
 
         float rand = Random.value;
-
         switch (Phase)
         {
             case 1:
@@ -429,12 +428,12 @@ public class TowerBoss : Boss
     {
         animator.SetTrigger("Attack");
         GameObject[] orbs = new GameObject[orbCount];
-
+        yield return new WaitForSeconds(0.4f);
         for (int i = 0; i < orbCount; i++)
         {
             Vector3 temp = new Vector3(UnityEngine.Random.Range(map.min.x, map.max.x), UnityEngine.Random.Range(map.min.y, map.max.y), 0);
             orbs[i] = Instantiate(lightningOrb, temp, Quaternion.identity);
-            yield return new WaitForSeconds(0.4f);
+            //yield return new WaitForSeconds(0.4f);
         }
 
         yield return new WaitForSeconds(1.0f);
@@ -450,7 +449,7 @@ public class TowerBoss : Boss
             //    yield return new WaitForSeconds(0.005f);
             //}
 
-            orbs[i].GetComponent<Rigidbody2D>().velocity = (GetPlayerPos() - orbs[i].transform.position).normalized * 10;
+            orbs[i].GetComponent<Rigidbody2D>().velocity = (GetPlayerPos() - orbs[i].transform.position).normalized * 13;
             Destroy(orbs[i], 3.5f);
 
             yield return new WaitForSeconds(0.8f);
