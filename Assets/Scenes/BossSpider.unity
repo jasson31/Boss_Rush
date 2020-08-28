@@ -345,9 +345,10 @@ MonoBehaviour:
   - {fileID: 1833647984}
   - {fileID: 1707900952}
   - {fileID: 1100816066}
-  moveSpeed: 2
+  phase1MoveSpeed: 2
   bitePos: {x: 0, y: 0, z: 0}
   biteRange: 2
+  phase2MoveSpeed: 1
   fallRoutineShadow: {fileID: 163582923}
   legSpikeAlert: {fileID: 2158922565800034898, guid: b76486b16dbe3ae42901d594ddc9a534,
     type: 3}
@@ -363,7 +364,7 @@ Animator:
   m_GameObject: {fileID: 78025196}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 92a94eca71f79e544aede4ad32bc3f82, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1246,7 +1247,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -1915,7 +1916,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -2441,7 +2442,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
