@@ -24,20 +24,4 @@ public class Game : SingletonBehaviour<Game>
         currentView = (int)viewName;
         CurrentView.gameObject.SetActive(true);
     }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            ChangeView(ViewCode.MainScreen);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            ChangeView(ViewCode.DungeonSelect);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            ChangeView(ViewCode.Ingame);
-        }
-    }
 }

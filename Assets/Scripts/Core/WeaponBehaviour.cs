@@ -6,6 +6,10 @@ public class WeaponBehaviour : MonoBehaviour
 {
     private Animator anim;
 
+    private float prevWeaponChangedTime = -100;
+    private float weaponChangeCoolTime = 2;
+
+
     [SerializeField]
     private List<Weapon> weapons = new List<Weapon>();
     private int weaponIndex = 0;
@@ -13,6 +17,9 @@ public class WeaponBehaviour : MonoBehaviour
 
     public GameObject testBullet;
     public GameObject testLaser;
+
+    public Sprite testImage1, testImage2;
+    public AnimatorOverrideController testController1, testController2;
 
     private void OnDrawGizmos()
     {
@@ -30,8 +37,20 @@ public class WeaponBehaviour : MonoBehaviour
         weapon.damage = 3;
         weapon.range = 1;
         weapon.moveSpeed = 7;
+        weapon.sprite = testImage1;
+        weapon.controller = testController1;
         weapons.Add(weapon);
         Debug.Log(weapon.attackBehaviour);
+
+        Weapon weapon2 = ScriptableObject.CreateInstance<Weapon>();
+        weapon2.attackBehaviour = new SwordAttack();
+        weapon2.damage = 3;
+        weapon2.range = 1.2f;
+        weapon2.moveSpeed = 7;
+        weapon2.sprite = testImage2;
+        weapon2.controller = testController2;
+        weapons.Add(weapon2);
+        Debug.Log(weapon2.attackBehaviour);
 
         anim = GetComponent<Animator>();
     }
@@ -53,13 +72,28 @@ public class WeaponBehaviour : MonoBehaviour
     private void Update()
     {
         Weapon.Update();
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            ChangeWeapon(0);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            ChangeWeapon(1);
+        }
     }
 
     public void ChangeWeapon(int index)
     {
-        Weapon.OnUnmountWeapon();
-        weaponIndex = index;
-        Weapon.OnMountWeapon();
+        if(index != weaponIndex)
+        {
+            if(Time.time - prevWeaponChangedTime > weaponChangeCoolTime)
+            {
+                Weapon.OnUnmountWeapon();
+                weaponIndex = index;
+                Weapon.OnMountWeapon();
+                prevWeaponChangedTime = Time.time;
+            }
+        }
     }
 
     public void AddWeapon(int weaponID)
@@ -91,6 +125,7 @@ public class WeaponBehaviour : MonoBehaviour
     private void UseWeaponAttack(Vector2 mousePosition)
     {
         anim.SetTrigger("Attack");
+
         Weapon?.WeaponAttack(transform.position, mousePosition);
     }
 
