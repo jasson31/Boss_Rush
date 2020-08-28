@@ -490,21 +490,12 @@ MonoBehaviour:
     type: 3}
   BurangBossCol: {fileID: 2446029599420473739, guid: c0ff70092d4a15249b286630a4ea5ee4,
     type: 3}
-  DashKnife: {fileID: 8707827905135713522, guid: 7016b603df0bc2443894376f5be24a3a,
-    type: 3}
-  DiagonalDashKnife: {fileID: 9195574284051758674, guid: 8ac2a75149f581e468c850415fb7d228,
-    type: 3}
-  NearAttack: {fileID: 315473611020653980, guid: 08e87223f13a14642948d87864f3721f,
-    type: 3}
-  Blood: {fileID: 1009651683621457264, guid: 9ba0a795c9bdef045896b50eddf84a84, type: 3}
   wallfloorLayerMask:
     serializedVersion: 2
     m_Bits: 768
   WFPLayerMask:
     serializedVersion: 2
     m_Bits: 2816
-  NearDist: 2
-  BossDamage: 0
 --- !u!50 &391144784
 Rigidbody2D:
   serializedVersion: 4
@@ -686,7 +677,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   view: []
-  player: {fileID: 0}
+  player: {fileID: 1838003283}
 --- !u!1 &721690730
 GameObject:
   m_ObjectHideFlags: 0
@@ -2356,6 +2347,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1838003281}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1838003283 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2154258769931172975, guid: ed4f3eedb1e44784f89884b2a3cbdf04,
+    type: 3}
+  m_PrefabInstance: {fileID: 1838003281}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f87c92c1afd1d44afa0aceac5e6149, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1888550427
 GameObject:
   m_ObjectHideFlags: 0

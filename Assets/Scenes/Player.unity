@@ -2555,34 +2555,5 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 2154258770348111134, guid: ed4f3eedb1e44784f89884b2a3cbdf04,
-        type: 3}
-      propertyPath: testImage2
-      value: 
-      objectReference: {fileID: 7542057674116630311, guid: c8276b01e47ed0d40b025dac2e0017c9,
-        type: 3}
-    - target: {fileID: 2154258770348111134, guid: ed4f3eedb1e44784f89884b2a3cbdf04,
-        type: 3}
-      propertyPath: testImage1
-      value: 
-      objectReference: {fileID: 7716366486842137135, guid: c8276b01e47ed0d40b025dac2e0017c9,
-        type: 3}
-    - target: {fileID: 2154258770348111134, guid: ed4f3eedb1e44784f89884b2a3cbdf04,
-        type: 3}
-      propertyPath: testController2
-      value: 
-      objectReference: {fileID: 22100000, guid: 213fb3f0a72b58a488f377575e5bfe6d,
-        type: 2}
-    - target: {fileID: 2154258770348111134, guid: ed4f3eedb1e44784f89884b2a3cbdf04,
-        type: 3}
-      propertyPath: testController1
-      value: 
-      objectReference: {fileID: 22100000, guid: cf240de830c003b46880518d8e77bfb1,
-        type: 2}
-    - target: {fileID: 4738336718953002638, guid: ed4f3eedb1e44784f89884b2a3cbdf04,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed4f3eedb1e44784f89884b2a3cbdf04, type: 3}

@@ -151,7 +151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   view: []
-  player: {fileID: 0}
+  player: {fileID: 1945440378}
 --- !u!4 &149090129
 Transform:
   m_ObjectHideFlags: 0
@@ -2161,6 +2161,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed4f3eedb1e44784f89884b2a3cbdf04, type: 3}
+--- !u!114 &1945440378 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2154258769931172975, guid: ed4f3eedb1e44784f89884b2a3cbdf04,
+    type: 3}
+  m_PrefabInstance: {fileID: 1945440377}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27f87c92c1afd1d44afa0aceac5e6149, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2110463719192839659
 PrefabInstance:
   m_ObjectHideFlags: 0

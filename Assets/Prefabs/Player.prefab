@@ -134,6 +134,7 @@ MonoBehaviour:
   weaponBehaviour: {fileID: 2154258770348111134}
   handCenter: {fileID: 6789303441484675182}
   isControllable: 1
+  isInvincible: 0
   jumpable:
     serializedVersion: 2
     m_Bits: 1536
@@ -392,6 +393,12 @@ MonoBehaviour:
     type: 3}
   testLaser: {fileID: 3262527213003545126, guid: 620396d0332d56345a82f8c54a8d8b15,
     type: 3}
+  testImage1: {fileID: 7716366486842137135, guid: c8276b01e47ed0d40b025dac2e0017c9,
+    type: 3}
+  testImage2: {fileID: 7542057674116630311, guid: c8276b01e47ed0d40b025dac2e0017c9,
+    type: 3}
+  testController1: {fileID: 22100000, guid: cf240de830c003b46880518d8e77bfb1, type: 2}
+  testController2: {fileID: 22100000, guid: 213fb3f0a72b58a488f377575e5bfe6d, type: 2}
 --- !u!95 &4738336718953002638
 Animator:
   serializedVersion: 3

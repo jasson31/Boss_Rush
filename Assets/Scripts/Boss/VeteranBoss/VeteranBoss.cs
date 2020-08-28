@@ -27,20 +27,21 @@ public class VeteranBoss : Boss
                 }
                 else if(rand < 0.6f)
                 {
-                    nextRoutines.Enqueue(NewActionRoutine(BayonetRoutine()));
+                    //nextRoutines.Enqueue(NewActionRoutine(BayonetRoutine()));
                 }
                 else if(rand < 0.8f)
                 {
-                    nextRoutines.Enqueue(NewActionRoutine(GrenadeRoutine()));
+                    //nextRoutines.Enqueue(NewActionRoutine(GrenadeRoutine()));
                 }
                 else if(rand < 0.9f)
                 {
-                    nextRoutines.Enqueue(NewActionRoutine(SmokeRoutine()));
+                    //nextRoutines.Enqueue(NewActionRoutine(SmokeRoutine()));
                 }
                 else
                 {
-                    nextRoutines.Enqueue(NewActionRoutine(FlareRoutine()));
+                    //nextRoutines.Enqueue(NewActionRoutine(FlareRoutine()));
                 }
+                break;
 
         }
 
@@ -56,6 +57,7 @@ public class VeteranBoss : Boss
     private IEnumerator SniperRoutine()
     {
 
+        yield return null;
     }
     
     public override void GetDamaged(int damage)
@@ -69,7 +71,7 @@ public class VeteranBoss : Boss
             gameObject.SetActive(false);
     }
 
-    protected override OnStunned()
+    protected override void OnStunned()
     {
 
     }
