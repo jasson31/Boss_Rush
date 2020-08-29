@@ -16,6 +16,7 @@ public class WeaponFactory
 	{
 		if (weaponSpecs == null)
 		{
+			weaponSpecs = new Dictionary<int, WeaponSpec>();
 			var json = Resources.Load<TextAsset>("Weapons");
 			foreach(var newWeaponSpec in JsonParser<WeaponSpecsContainer>.FromJson(json.text).weapons)
 			{
