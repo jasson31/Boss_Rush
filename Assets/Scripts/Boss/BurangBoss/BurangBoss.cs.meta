@@ -6,13 +6,13 @@ MonoImporter:
   defaultReferences:
   - damageTextPrefab: {fileID: 6103845031904764219, guid: 42ae5155d9c85e548b32d3fc145463eb,
       type: 3}
-  - knifePrefab: {fileID: 4516597867572687060, guid: 9255c396073a6a947a74274e88daa6ff,
-      type: 3}
   - ThrowingknifePrefab: {fileID: 2305370399308298145, guid: d0d99948c1f775249afd8fd3ea85fe14,
       type: 3}
   - garbagePrefab: {fileID: 3104099088749748763, guid: d7a22d7964b8be9419437b869b733ec7,
       type: 3}
   - garbagePrefabV2: {fileID: 8747638199740386195, guid: e3925a515c4003448be94db1486e6180,
+      type: 3}
+  - garbagePrefabV3: {fileID: 9201701921901786890, guid: 886693aca4c2c6341a30174ca3680ce0,
       type: 3}
   - garbageAttachedPrefab: {fileID: 4860345923679522354, guid: e54d81fdf8ef3e045b8cab9a6f4ff408,
       type: 3}
@@ -27,6 +27,8 @@ MonoImporter:
   - NearAttack: {fileID: 315473611020653980, guid: 08e87223f13a14642948d87864f3721f,
       type: 3}
   - Blood: {fileID: 1009651683621457264, guid: 9ba0a795c9bdef045896b50eddf84a84, type: 3}
+  - Explosion: {fileID: 3658829820901521388, guid: f36f6f6ae3ec6624f93329ffae89e0ae,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
