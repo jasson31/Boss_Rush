@@ -6,7 +6,7 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: DaggerAnim
+  m_Name: Dagger
   m_Controller: {fileID: 9100000, guid: bbc6ba18781445f4bb399f421e374708, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: e43ea89993686a84bbd5f8515f6b9672, type: 2}

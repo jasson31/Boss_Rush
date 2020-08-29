@@ -6,10 +6,10 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SpiderWebAnim
+  m_Name: Knuckle
   m_Controller: {fileID: 9100000, guid: bbc6ba18781445f4bb399f421e374708, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: e43ea89993686a84bbd5f8515f6b9672, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: d797fcc1e1ab31a44b546c37eb1a7ee4, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: e43ea89993686a84bbd5f8515f6b9672, type: 2}
   - m_OriginalClip: {fileID: 7400000, guid: 134292306a3b03f41888218e070b8e87, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 27c84e766a6aead40b00440fae0345e2, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 134292306a3b03f41888218e070b8e87, type: 2}

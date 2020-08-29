@@ -6,10 +6,10 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ChargeLaserAnim
+  m_Name: Rebar
   m_Controller: {fileID: 9100000, guid: bbc6ba18781445f4bb399f421e374708, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: e43ea89993686a84bbd5f8515f6b9672, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: e000c4c17bd70164d8caf358f82432c4, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: d94bdd9fa4f663e48b3e768139541e8f, type: 2}
   - m_OriginalClip: {fileID: 7400000, guid: 134292306a3b03f41888218e070b8e87, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: fc6cb5a97981be541a709909900a428e, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 8098c9b1751aa9e49a19d6c00f961589, type: 2}

@@ -6,10 +6,10 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SwingAnim
+  m_Name: AutoRifle
   m_Controller: {fileID: 9100000, guid: bbc6ba18781445f4bb399f421e374708, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: e43ea89993686a84bbd5f8515f6b9672, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 61257bd16c3826e49af87c5fdf2e2a73, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 7ece91812963f00408de87751191e562, type: 2}
   - m_OriginalClip: {fileID: 7400000, guid: 134292306a3b03f41888218e070b8e87, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 2024fe8dd5503aa42b7f9d4ef1df8a13, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: b6e9eced86f2db44ca3d6e13cf948b90, type: 2}

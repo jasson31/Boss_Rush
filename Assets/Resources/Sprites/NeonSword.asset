@@ -6,7 +6,7 @@ Sprite:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\uAD11\uC120\uAC80, \uC8FC\uBA39_0"
+  m_Name: NeonSword
   m_Rect:
     serializedVersion: 2
     x: 0
@@ -22,7 +22,7 @@ Sprite:
   m_AtlasName: 
   m_PackingTag: 
   m_RenderDataKey:
-    c8276b01e47ed0d40b025dac2e0017c9: 7542057674116630311
+    cfe0a98e73e62a3418b51a7bff3a82a0: 21300000
   m_AtlasTags: []
   m_SpriteAtlas: {fileID: 0}
   m_RD:

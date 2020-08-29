@@ -6,10 +6,10 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TaserAnim
+  m_Name: Hammer
   m_Controller: {fileID: 9100000, guid: bbc6ba18781445f4bb399f421e374708, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: 7400000, guid: e43ea89993686a84bbd5f8515f6b9672, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 47544c0f87df8324284876ce08d9371c, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 18f9f42fa80301149bf502591ee5afee, type: 2}
   - m_OriginalClip: {fileID: 7400000, guid: 134292306a3b03f41888218e070b8e87, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 6e100693bfb0cdc4b90f41650cd091d8, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: aff5dd84ca91bb34abd83f6d098df112, type: 2}

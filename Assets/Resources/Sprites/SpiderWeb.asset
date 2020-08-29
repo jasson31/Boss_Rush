@@ -6,7 +6,7 @@ Sprite:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\uBC29\uC801\uB3CC\uAE30"
+  m_Name: SpiderWeb
   m_Rect:
     serializedVersion: 2
     x: 0
@@ -22,7 +22,7 @@ Sprite:
   m_AtlasName: 
   m_PackingTag: 
   m_RenderDataKey:
-    8b4073c0394f2064696f6a537adb5e69: 21300000
+    f504b176159b8654282fabdf4529f450: 21300000
   m_AtlasTags: []
   m_SpriteAtlas: {fileID: 0}
   m_RD:
