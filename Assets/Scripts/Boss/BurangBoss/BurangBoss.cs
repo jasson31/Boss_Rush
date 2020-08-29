@@ -61,6 +61,9 @@ public class BurangBoss : Boss
     bool IsHit = false;
 
     [HideInInspector]
+    public bool IsBloodVomitHit = false;
+
+    [HideInInspector]
     public bool IsRollDodgeable = false;
 
     Animator ani;
@@ -737,12 +740,17 @@ public class BurangBoss : Boss
         }
         GetDamaged(MaxHealth * 0.03);
         GameObject[] prefab = new GameObject[45];
+        IsBloodVomitHit = false;
         for (int i = 0; i < 45; i++)
         {
             prefab[i] = Instantiate(Blood, transform.position, Quaternion.identity) as GameObject;
             float radian = (dirD + 2 * i * dir) * Mathf.Deg2Rad;
             prefab[i].GetComponent<Rigidbody2D>().velocity = new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)) * bloodSpeed;
             yield return new WaitForSeconds(0.05f);
+            if(i == 10 || i == 20 || i == 30)
+            {
+                IsBloodVomitHit = false;
+            }
         }
         yield return new WaitForSeconds(1f);
 
@@ -750,6 +758,8 @@ public class BurangBoss : Boss
         {
             Destroy(prefab[i]);
         }
+
+        IsBloodVomitHit = false;
 
         ani.SetBool("BloodVomit", false);
     }
