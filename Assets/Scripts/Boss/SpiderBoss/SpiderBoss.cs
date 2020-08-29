@@ -8,6 +8,8 @@ public class SpiderBoss : Boss
     [SerializeField]
     private Bounds map;
 
+    private bool isInvincible;
+
     #region Phase1 Variables
     [SerializeField]
     private Vector3 shootPos;
@@ -45,6 +47,11 @@ public class SpiderBoss : Boss
 
     [SerializeField]
     private Spiderling spiderling;
+    public List<Spiderling> spiderlings = new List<Spiderling>();
+
+    [SerializeField]
+    private float rushSpeed = 10;
+    private bool isRush = false;
 
     [SerializeField]
     private LineRenderer fallRoutineShadow;
@@ -97,20 +104,20 @@ public class SpiderBoss : Boss
                         nextRoutines.Enqueue(NewActionRoutine(CocoonRoutine()));
                     }
                 }
-                nextRoutines.Enqueue(NewActionRoutine(Phase1IdleRoutine(0.5f)));
+                nextRoutines.Enqueue(NewActionRoutine(Phase1IdleRoutine(4)));
                 break;
             case 1:
-                /*if (rand < 0.3f)
+                if (rand < 0.3f)
                 {
-
+                    nextRoutines.Enqueue(NewActionRoutine(SpawnSpiderlingRoutine(10)));
                 }
                 else if (rand < 0.45f)
                 {
-
+                    nextRoutines.Enqueue(NewActionRoutine(ScreamRoutine()));
                 }
                 else if (rand < 0.7f)
                 {
-
+                    nextRoutines.Enqueue(NewActionRoutine(RushRoutine()));
                 }
                 else if (rand < 0.9f)
                 {
@@ -119,9 +126,8 @@ public class SpiderBoss : Boss
                 else
                 {
                     nextRoutines.Enqueue(NewActionRoutine(FallRoutine()));
-                }*/
-                nextRoutines.Enqueue(NewActionRoutine(SpawnSpiderlingRoutine(10)));
-                nextRoutines.Enqueue(NewActionRoutine(Phase2IdleRoutine(2)));
+                }
+                nextRoutines.Enqueue(NewActionRoutine(Phase2IdleRoutine(4)));
 
                 break;
         }
@@ -132,27 +138,36 @@ public class SpiderBoss : Boss
 
     public override void GetDamaged(float damage)
     {
-        base.GetDamaged(damage);
-
-
-        if (MaxHealth * 0.1f >= Health && Phase == 0)
+        if(!isInvincible)
         {
-            StartCoroutine(PhaseChangeRoutine());
-        }
-        if (Health <= 0)
-        {
-            gameObject.SetActive(false);
+            base.GetDamaged(damage);
+
+            if (MaxHealth * 0.2f >= Health && Phase == 0)
+            {
+                StartCoroutine(PhaseChangeRoutine());
+            }
+            if (Health <= 0)
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 
     private IEnumerator PhaseChangeRoutine()
     {
-        Stun(3);
+        Stun(5);
+        isInvincible = true;
+        animator.SetTrigger("Phase1To2");
+        yield return new WaitForSeconds(0.46f);
 
+        MaxHealth = 200;
+        Health = MaxHealth;
+        IngameUIManager.inst.SetBossHealthBar(Health, MaxHealth);
         StartCoroutine(MoveRoutine(new Vector2(map.center.x, map.min.y), 3));
         yield return new WaitForSeconds(3);
-        animator.SetTrigger("Phase1To2");
+        animator.SetTrigger("Phase1To2End");
         Phase = 1;
+        isInvincible = false;
     }
 
     #region Phase1
@@ -175,7 +190,7 @@ public class SpiderBoss : Boss
     {
         animator.SetTrigger("WebShoot");
         float webTrapBulletSpeed = 5;
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < trapCount; i++)
         {
             float randPosX = Random.Range(map.min.x, map.max.x);
             float randPosY = Random.Range(map.min.y, map.max.y / 2);
@@ -221,7 +236,8 @@ public class SpiderBoss : Boss
         animator.SetTrigger("CocoonEnter");
         curCocoonLine = Instantiate(cocoonLine, (new Vector3(map.center.x, map.max.y) + map.center) / 2, Quaternion.identity, transform);
         curCocoonLine.spiderBoss = this;
-        while(true)
+        isInvincible = true;
+        while (true)
         {
             yield return new WaitForSeconds(3);
             List<Transform> posCands = new List<Transform>(cocoonSpikePos);
@@ -265,18 +281,68 @@ public class SpiderBoss : Boss
     #endregion
 
     #region Phase2
-
     private IEnumerator SpawnSpiderlingRoutine(int count)
     {
-
-
         for(int i = -count / 2; i < count / 2; i++)
         {
             Vector2 spawnPoint = new Vector2(transform.position.x + i * 0.5f, transform.position.y);
-            Instantiate(spiderling, spawnPoint, Quaternion.identity);
-            yield return null;
-
+            spiderlings.Add(Instantiate(spiderling, spawnPoint, Quaternion.identity));
+            yield return new WaitForSeconds(0.1f);
         }
+    }
+
+    private IEnumerator ScreamRoutine()
+    {
+        animator.SetTrigger("Scream");
+        List<Spiderling> curSpiderlings = new List<Spiderling>(spiderlings);
+        yield return new WaitForSeconds(0.21f);
+        foreach (var child in curSpiderlings)
+        {
+            child.HearScream();
+        }
+    }
+
+    private IEnumerator RushRoutine()
+    {
+        Vector2 dest;
+        if (GetPlayerPos().x - transform.position.x > 0)
+        {
+            dest = new Vector3(map.max.x - GetComponent<Collider2D>().bounds.size.x / 2, transform.position.y);
+            transform.localScale = new Vector2(1, 1);
+        }
+        else
+        {
+            dest = new Vector3(map.min.x + GetComponent<Collider2D>().bounds.size.x / 2, transform.position.y);
+            transform.localScale = new Vector2(-1, 1);
+        }
+
+        animator.SetTrigger("Rush");
+        isRush = true;
+
+        float moveTime = Vector2.Distance(dest, transform.position) / rushSpeed;
+        float spiderlingSpawnTime = 0.5f;
+        float spiderlingSpawnDelay = 0.5f;
+
+        Vector3 startPosition = transform.position;
+        for (float t = 0; t <= moveTime; t += Time.deltaTime)
+        {
+            if(t - spiderlingSpawnTime > spiderlingSpawnDelay)
+            {
+                Spiderling newSpiderling = Instantiate(spiderling, transform.position, Quaternion.identity);
+                newSpiderling.isStopped = true;
+                newSpiderling.GetComponent<Animator>().speed = 0;
+                spiderlings.Add(newSpiderling);
+
+                spiderlingSpawnTime = t;
+            }
+            transform.position = Vector3.Lerp(startPosition, dest, t / moveTime);
+            yield return null;
+        }
+        transform.position = dest;
+
+        yield return new WaitForSeconds(0.1f);
+        animator.SetTrigger("RushEnd");
+        isRush = false;
     }
 
     private IEnumerator LegSpikeRoutine()
@@ -346,6 +412,11 @@ public class SpiderBoss : Boss
             {
                 Game.inst.player.GetDamaged(0.75f);
             }
+            else if(isRush && !Game.inst.player.isInvincible && (GetPlayerPos().x - transform.position.x > 0 ^ transform.localScale.x < 0))
+            {
+                Game.inst.player.GetComponent<Rigidbody2D>().AddForce(new Vector2(0, 1000));
+            }
+
         }
     }
 
@@ -363,7 +434,9 @@ public class SpiderBoss : Boss
 
     protected override void OnStunned()
     {
-        if(curCocoonLine != null)
+        isInvincible = false;
+        animator.SetTrigger("CocoonExit");
+        if (curCocoonLine != null)
         {
             Destroy(curCocoonLine.gameObject);
         }
@@ -377,12 +450,14 @@ public class SpiderBoss : Boss
             legSpikeAlerts.Remove(lr);
             Destroy(lr);
         }
+        isFallRoutine = false;
+        isRush = false;
     }
 
     private void Awake()
     {
-        MaxHealth = 100;
-        Health = 100;
+        MaxHealth = 300;
+        Health = MaxHealth;
     }
 }
 

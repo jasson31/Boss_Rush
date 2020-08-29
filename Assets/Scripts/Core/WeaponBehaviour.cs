@@ -79,7 +79,7 @@ public class WeaponBehaviour : MonoBehaviour
 
     private void Update()
     {
-        Weapon.Update();
+        Weapon?.Update();
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             ChangeWeapon(0);
@@ -92,7 +92,7 @@ public class WeaponBehaviour : MonoBehaviour
 
     public void ChangeWeapon(int index)
     {
-        if(index != weaponIndex)
+        if(index != weaponIndex && index < weapons.Count)
         {
             if(Time.time - prevWeaponChangedTime > weaponChangeCoolTime)
             {
@@ -118,13 +118,15 @@ public class WeaponBehaviour : MonoBehaviour
             check = false;
             weapons.Remove(weapon);
             Destroy(weapon);
+            Debug.Log(weapons.Count);
             if (weapons.Count <= 0)
             {
                 //Game Over Routine
             }
-            else if(weaponIndex >= weapons.Count)
+            else
             {
                 weaponIndex = 0;
+                Weapon.OnMountWeapon();
                 //Weapon Break Routine
             }
         }

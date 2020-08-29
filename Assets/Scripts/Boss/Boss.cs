@@ -12,6 +12,13 @@ public class ListWrapper
     public List<AnimatorOverrideController> attackPatterns;
 }
 
+[System.Serializable]
+struct DropInfo
+{
+	public int weaponId;
+	public float probability;
+}
+
 public abstract class Boss : MonoBehaviour, IDamagable
 {
     public int Phase { get; protected set; }
@@ -30,6 +37,9 @@ public abstract class Boss : MonoBehaviour, IDamagable
     protected Player player;
     protected Collider2D col;
     protected Rigidbody2D rb;
+
+	[SerializeField]
+	private List<DropInfo> dropInfos;
 
     protected virtual void Start()
     {
@@ -81,6 +91,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
         IngameUIManager.inst.SetBossHealthBar(Health, MaxHealth);
         if(Health < 0)
         {
+            FindObjectOfType<ClearChecker>().isClear = true;
             SceneManager.LoadScene("SelectScreen");
         }
     }
@@ -112,6 +123,21 @@ public abstract class Boss : MonoBehaviour, IDamagable
     {
 
     }
+
+	private void DropItem()
+	{
+		float rand = UnityEngine.Random.value;
+		float sum = 0;
+		foreach (var dropInfo in dropInfos)
+		{
+			sum += dropInfo.probability;
+			if (sum > rand)
+			{
+				FindObjectOfType<WeaponBehaviour>().AddWeapon(dropInfo.weaponId);
+				break;
+			}
+		}
+	}
 
     private void NextRoutine()
     {
@@ -166,12 +192,14 @@ public abstract class Boss : MonoBehaviour, IDamagable
     protected IEnumerator MoveRoutine(Vector3 destination, float time, AnimationCurve curve)
     {
         Vector3 startPosition = transform.position;
+		Debug.Log(startPosition);
         for (float t = 0; t <= time; t += Time.deltaTime)
         {
             transform.position =
                 Vector3.Lerp(startPosition, destination, curve.Evaluate(t / time));
             yield return null;
         }
+        transform.position = destination;
     }
 
     protected IEnumerator WaitRoutine(float time)
@@ -179,7 +207,21 @@ public abstract class Boss : MonoBehaviour, IDamagable
         yield return new WaitForSeconds(time);
     }
 
-    protected void TeleportTo(Vector3 position)
+	protected void StartPhaseTransition(float time, int nextPhase)
+	{
+		nextRoutines.Clear();
+		StartCoroutineBoss(NewActionRoutine(PhaseTransitionRoutine(time, nextPhase)));
+	}
+
+	protected virtual IEnumerator PhaseTransitionRoutine(float time, int phase)
+	{
+		col.enabled = false;
+		yield return new WaitForSeconds(time);
+		col.enabled = true;
+		Phase = phase;
+	}
+
+	protected void TeleportTo(Vector3 position)
     {
         transform.position = position;
     }

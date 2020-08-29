@@ -290,20 +290,23 @@ public class SelectUIManager : UIManager
         clearChecker = FindObjectOfType<ClearChecker>();
         if (clearChecker != null)
         {
-            switch(clearChecker.clearIndex)
+            if(clearChecker.isClear)
             {
-                case 0: ClearTutorial(); break;
+                switch (clearChecker.clearIndex)
+                {
+                    case 0: ClearTutorial(); break;
 
-                case 1: Clearb1(); break;
-                case 2: Clearb2(); break;
-                case 3: Clearb3(); break;
+                    case 1: Clearb1(); break;
+                    case 2: Clearb2(); break;
+                    case 3: Clearb3(); break;
 
-                case 4: Clearb4(); break;
-                case 5: Clearb5(); break;
+                    case 4: Clearb4(); break;
+                    case 5: Clearb5(); break;
 
-                case 6: Clearb6(); break;
-                case 7: Clearb7(); break;
-                case 8: Clearb8(); break;
+                    case 6: Clearb6(); break;
+                    case 7: Clearb7(); break;
+                    case 8: Clearb8(); break;
+                }
             }
             Destroy(clearChecker.gameObject);
         }
@@ -317,4 +320,5 @@ public class SelectUIManager : UIManager
 public class ClearChecker : MonoBehaviour
 {
     public int clearIndex;
+    public bool isClear = false;
 }

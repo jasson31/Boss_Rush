@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public abstract class UIManager : SingletonBehaviour<UIManager>
 {
@@ -116,7 +117,10 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
     {
         int a = weapon.weaponIndex;
         int numWeapons = weapon.weapons.Count;
-        weaponImage[0].sprite = weapon.weapons[weapon.weaponIndex].sprite;
+        if(numWeapons > 0)
+        {
+            weaponImage[0].sprite = weapon.weapons[weapon.weaponIndex].sprite;
+        }
         int index = 1;
         if (numWeapons < 3)
         {
@@ -161,16 +165,20 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
 
         SetWeaponSprites();
 
-        health = weapon.weapons[weapon.weaponIndex].health;
-        maxHealth = weapon.weapons[weapon.weaponIndex].maxHealth;
+
+        if (weapon.weapons.Count > 0)
+        {
+            health = weapon.weapons[weapon.weaponIndex].health;
+            maxHealth = weapon.weapons[weapon.weaponIndex].maxHealth;
+        }
 
         SetHealthBar(health, maxHealth);
 
         if(!weapon.check)
         {
             gameCursor.SetActive(false);
-            boss.gameObject.SetActive(false);
             player.SetPlayerControllable(false);
+            player.isInvincible = true;
             panel.SetActive(true);
             yes.gameObject.SetActive(true);
             no.gameObject.SetActive(true);
@@ -181,10 +189,23 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
 
     public void continueButton()
     {
+        gameCursor.SetActive(true);
+        player.SetPlayerControllable(true);
+        player.isInvincible = false;
+        panel.SetActive(false);
+        yes.gameObject.SetActive(false);
+        no.gameObject.SetActive(false);
+
+        health = weapon.weapons[weapon.weaponIndex].health;
+        maxHealth = weapon.weapons[weapon.weaponIndex].maxHealth;
+        SetHealthBar(health, maxHealth);
+
+        weapon.check = true;
         Debug.Log("이어서 전투");
     }
     public void abandonButton()
     {
         Debug.Log("포기하기");
+        SceneManager.LoadScene("SelectScreen");
     }
 }
