@@ -83,7 +83,7 @@ public class BurangBoss : Boss
         base.Start();
         Phase = 0;
         MaxHealth = 400;
-        Health = MaxHealth * 0.5f;
+        Health = MaxHealth / 2;
         Parent = GameObject.Find("BurangBoss").GetComponent<Transform>();
         PlayerParent = GameObject.Find("Player").GetComponent<Transform>();
         ani = GetComponent<Animator>();
@@ -739,7 +739,7 @@ public class BurangBoss : Boss
             dirD = 210f;
             dir = -1;
         }
-        GetDamaged(MaxHealth * 0.03);
+        GetDamaged(MaxHealth * 0.03f);
         GameObject[] prefab = new GameObject[45];
         IsBloodVomitHit = false;
         for (int i = 0; i < 45; i++)
