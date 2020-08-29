@@ -8,6 +8,8 @@ public class SpiderBoss : Boss
     [SerializeField]
     private Bounds map;
 
+    private bool isInvincible;
+
     #region Phase1 Variables
     [SerializeField]
     private Vector3 shootPos;
@@ -102,7 +104,7 @@ public class SpiderBoss : Boss
                         nextRoutines.Enqueue(NewActionRoutine(CocoonRoutine()));
                     }
                 }
-                nextRoutines.Enqueue(NewActionRoutine(Phase1IdleRoutine(10)));
+                nextRoutines.Enqueue(NewActionRoutine(Phase1IdleRoutine(4)));
                 break;
             case 1:
                 if (rand < 0.3f)
@@ -125,7 +127,7 @@ public class SpiderBoss : Boss
                 {
                     nextRoutines.Enqueue(NewActionRoutine(FallRoutine()));
                 }
-                nextRoutines.Enqueue(NewActionRoutine(Phase2IdleRoutine(10)));
+                nextRoutines.Enqueue(NewActionRoutine(Phase2IdleRoutine(4)));
 
                 break;
         }
@@ -136,21 +138,25 @@ public class SpiderBoss : Boss
 
     public override void GetDamaged(float damage)
     {
-        base.GetDamaged(damage);
+        if(!isInvincible)
+        {
+            base.GetDamaged(damage);
 
-        if (MaxHealth * 0.1f >= Health && Phase == 0)
-        {
-            StartCoroutine(PhaseChangeRoutine());
-        }
-        if (Health <= 0)
-        {
-            gameObject.SetActive(false);
+            if (MaxHealth * 0.1f >= Health && Phase == 0)
+            {
+                StartCoroutine(PhaseChangeRoutine());
+            }
+            if (Health <= 0)
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 
     private IEnumerator PhaseChangeRoutine()
     {
         Stun(5);
+        isInvincible = true;
         animator.SetTrigger("Phase1To2");
         yield return new WaitForSeconds(0.46f);
 
@@ -158,6 +164,7 @@ public class SpiderBoss : Boss
         yield return new WaitForSeconds(3);
         animator.SetTrigger("Phase1To2End");
         Phase = 1;
+        isInvincible = false;
     }
 
     #region Phase1
@@ -226,7 +233,8 @@ public class SpiderBoss : Boss
         animator.SetTrigger("CocoonEnter");
         curCocoonLine = Instantiate(cocoonLine, (new Vector3(map.center.x, map.max.y) + map.center) / 2, Quaternion.identity, transform);
         curCocoonLine.spiderBoss = this;
-        while(true)
+        isInvincible = true;
+        while (true)
         {
             yield return new WaitForSeconds(3);
             List<Transform> posCands = new List<Transform>(cocoonSpikePos);
@@ -423,6 +431,7 @@ public class SpiderBoss : Boss
 
     protected override void OnStunned()
     {
+        isInvincible = false;
         animator.SetTrigger("CocoonExit");
         if (curCocoonLine != null)
         {
@@ -444,8 +453,8 @@ public class SpiderBoss : Boss
 
     private void Awake()
     {
-        MaxHealth = 100;
-        Health = 100;
+        MaxHealth = 300;
+        Health = MaxHealth;
     }
 }
 
