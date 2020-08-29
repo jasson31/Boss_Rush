@@ -322,6 +322,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageTextPrefab: {fileID: 6103845031904764219, guid: 42ae5155d9c85e548b32d3fc145463eb,
     type: 3}
+  dropInfos:
+  - weaponId: 303
+    probability: 0.65
+  - weaponId: 102
+    probability: 0.25
+  - weaponId: 312
+    probability: 0.1
   map:
     m_Center: {x: 0, y: 1.5, z: 0}
     m_Extent: {x: 14, y: 5.5, z: 0}
