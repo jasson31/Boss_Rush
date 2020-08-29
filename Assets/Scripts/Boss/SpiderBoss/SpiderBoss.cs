@@ -100,20 +100,27 @@ public class SpiderBoss : Boss
                 nextRoutines.Enqueue(NewActionRoutine(Phase1IdleRoutine(0.5f)));
                 break;
             case 1:
-                if (rand < 0.4f)
+                /*if (rand < 0.3f)
                 {
-                    //nextRoutines.Enqueue(NewActionRoutine(FallRoutine()));
+
+                }
+                else if (rand < 0.45f)
+                {
+
                 }
                 else if (rand < 0.7f)
                 {
+
                 }
-                else if (rand < 0.95f)
+                else if (rand < 0.9f)
                 {
+                    nextRoutines.Enqueue(NewActionRoutine(LegSpikeRoutine()));
                 }
                 else
                 {
-                }
-                nextRoutines.Enqueue(NewActionRoutine(LegSpikeRoutine()));
+                    nextRoutines.Enqueue(NewActionRoutine(FallRoutine()));
+                }*/
+                nextRoutines.Enqueue(NewActionRoutine(SpawnSpiderlingRoutine(10)));
                 nextRoutines.Enqueue(NewActionRoutine(Phase2IdleRoutine(2)));
 
                 break;
@@ -257,9 +264,14 @@ public class SpiderBoss : Boss
 
     private IEnumerator SpawnSpiderlingRoutine(int count)
     {
-        for(int i = 0; i < count; i++)
+
+
+        for(int i = -count / 2; i < count / 2; i++)
         {
+            Vector2 spawnPoint = new Vector2(transform.position.x + i * 0.5f, transform.position.y);
+            Instantiate(spiderling, spawnPoint, Quaternion.identity);
             yield return null;
+
         }
     }
 
@@ -315,6 +327,7 @@ public class SpiderBoss : Boss
             Vector3 playerDir = GetPlayerPos() - transform.position;
             playerDir.y = 0;
             transform.position += playerDir.normalized * phase2MoveSpeed * Time.deltaTime;
+            transform.localScale = new Vector2(1 * (playerDir.x > 0 ? 1 : -1), 1);
             yield return null;
         }
     }
