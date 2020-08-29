@@ -7,34 +7,53 @@ using UnityEngine.UI;
 public class SelectUIManager : UIManager
 {
     private static bool[] con = new bool[10];
-    public Button B0, B1, B2, B3, B4, B5, D0, D1;
+    public Button B0, B1, B2, B3, B4, B5, B6, B7, B8;
     public Text tutorialText, dungeonText;
-    public GameObject G1, G2, G3, dungeonUI;
+    public GameObject dungeonUI;
   
     public void alpha()
     {
         dungeonUI.gameObject.SetActive(true);
-        if (!con[1])
+        if (!con[0])
+        {
+            B1.gameObject.SetActive(false);
+            B2.gameObject.SetActive(false);
+            B3.gameObject.SetActive(false);
+        }
+        else
+        {
+            B1.gameObject.SetActive(true);
+            B2.gameObject.SetActive(true);
+            B3.gameObject.SetActive(true);
+        }
+        if (!con[1] && !con[2] && !con[3])
         {
             B4.gameObject.SetActive(false);
             B5.gameObject.SetActive(false);
         }
 
-        if (!con[2])
+        if(!con[4] && !con[5])
         {
-            D0.gameObject.SetActive(false);
-            D1.gameObject.SetActive(false);
+            B6.gameObject.SetActive(false);
+            B7.gameObject.SetActive(false);
+            B8.gameObject.SetActive(false);
         }
+
+        //if (!con[2])
+        //{
+        //    D0.gameObject.SetActive(false);
+        //    D1.gameObject.SetActive(false);
+        //}
     }
 
-    public void t1()
+    public void tutorialNo()
     {
         
         tutorialText.gameObject.SetActive(false);
         alpha();
         
 }
-    public void t2()
+    public void tutorialYes()
     {
         tutorialText.gameObject.SetActive(false);
         Debug.Log("튜토리얼 보스");
@@ -78,39 +97,38 @@ public class SelectUIManager : UIManager
             B2.GetComponentInChildren<Text>().text = "클리어";
             con[2] = true;
 
-            //G1.gameObject.SetActive(false);
-            //G3.gameObject.SetActive(false);
+            B4.gameObject.SetActive(true);
+            B5.gameObject.SetActive(true);
 
             B1.interactable = false;
             B3.interactable = false;
 
-            d01();
         }
     }
 
-    private void d01()
-    {
-        float rand = Random.value;
+    //private void d01()
+    //{
+    //    float rand = Random.value;
 
-        if (rand > 0.5f)
-        {
-            D0.gameObject.SetActive(true);
-        }
-        else
-        {
-            D1.gameObject.SetActive(true);
-        }
-    }
+    //    if (rand > 0.5f)
+    //    {
+    //        D0.gameObject.SetActive(true);
+    //    }
+    //    else
+    //    {
+    //        D1.gameObject.SetActive(true);
+    //    }
+    //}
 
-    public void d0()
-    {
-        Debug.Log("폐품상");
-    } 
+    //public void d0()
+    //{
+    //    Debug.Log("폐품상");
+    //} 
     
-    public void d1()
-    {
-        Debug.Log("대장간");
-    }
+    //public void d1()
+    //{
+    //    Debug.Log("대장간");
+    //}
     
     public void b3()
     {
@@ -120,8 +138,8 @@ public class SelectUIManager : UIManager
             B3.GetComponentInChildren<Text>().text = "클리어";
             con[3] = true;
 
-            //G1.gameObject.SetActive(false);
-            //G2.gameObject.SetActive(false);
+            B4.gameObject.SetActive(true);
+            B5.gameObject.SetActive(true);
 
             B1.interactable = false;
             B2.interactable = false;
@@ -135,6 +153,12 @@ public class SelectUIManager : UIManager
             Debug.Log("보스4");
             B4.GetComponentInChildren<Text>().text = "클리어";
             con[4] = true;
+
+            B6.gameObject.SetActive(true);
+            B7.gameObject.SetActive(true);
+            B8.gameObject.SetActive(true);
+
+            B5.interactable = false;
         }
     }
     
@@ -145,18 +169,60 @@ public class SelectUIManager : UIManager
             Debug.Log("보스5");
             B5.GetComponentInChildren<Text>().text = "클리어";
             con[5] = true;
+
+            B6.gameObject.SetActive(true);
+            B7.gameObject.SetActive(true);
+            B8.gameObject.SetActive(true);
+
+            B4.interactable = false;
+        }
+    }
+     public void b6()
+    {
+        if (!con[6])
+        {
+            Debug.Log("보스6");
+            B5.GetComponentInChildren<Text>().text = "클리어";
+            con[6] = true;
+
+            B7.interactable = false;
+            B8.interactable = false;
+        }
+    }
+     public void b7()
+    {
+        if (!con[7])
+        {
+            Debug.Log("보스7");
+            B5.GetComponentInChildren<Text>().text = "클리어";
+            con[7] = true;
+
+            B6.interactable = false;
+            B8.interactable = false;
+        }
+    }
+     public void b8()
+    {
+        if (!con[8])
+        {
+            Debug.Log("보스8");
+            B5.GetComponentInChildren<Text>().text = "클리어";
+            con[8] = true;
+
+            B6.interactable = false;
+            B7.interactable = false;
         }
     }
 
     
     protected override void OnMount()
     {
-        Debug.Log("Select On");
+        //Debug.Log("Select On");
     }
 
     protected override void OnUnmount()
     {
-        Debug.Log("Select Off");
+        //Debug.Log("Select Off");
     }
 
     // Start is called before the first frame update
