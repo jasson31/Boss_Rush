@@ -22,14 +22,15 @@ public abstract class UIManager : SingletonBehaviour<UIManager>
 
 public class IngameUIManager : SingletonBehaviour<IngameUIManager>
 {
-    [SerializeField]
     private int health;
-    [SerializeField]
-    private int numHearts;
+    private int maxHealth;
 
     public Image[] hearts;
     public Sprite fullHeart;
     public Sprite emptyHeart;
+    
+    public Image[] weaponImage;
+    private WeaponBehaviour weapon;
 
    
 
@@ -44,20 +45,9 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
 
     public void SetHealthBar(int health, int maxHealth)
     {
-        //healthBar.value = health / maxHealth;
-    }
-
-    public void OpenMenuUI()
-    {
-        
-    }
-
-    private void Update()
-    {
-
-        if (health > numHearts)
+        if (health > maxHealth)
         {
-            health = numHearts;
+            health = maxHealth;
         }
 
         for (int i = 0; i < hearts.Length; i++)
@@ -71,7 +61,7 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
                 hearts[i].sprite = emptyHeart;
             }
 
-            if (i < numHearts)
+            if (i < maxHealth)
             {
                 hearts[i].enabled = true;
             }
@@ -80,5 +70,58 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
                 hearts[i].enabled = false;
             }
         }
+    }
+
+    public void SetWeaponSprites()
+    {
+        int a = weapon.weaponIndex;
+        int numWeapons = weapon.weapons.Count;
+        weaponImage[0].sprite = weapon.weapons[weapon.weaponIndex].sprite;
+        int index = 1;
+        if (numWeapons < 3)
+        {
+            for(int i = numWeapons; i < 3; i++)
+            {
+                weaponImage[i].gameObject.SetActive(false);
+            }
+        }
+
+        for (int i = 0; i < numWeapons; i++)
+        {
+            if (i == weapon.weaponIndex) continue;
+            weaponImage[index++].sprite = weapon.weapons[i].sprite;
+        }
+ 
+        
+    }
+
+    public void OpenMenuUI()
+    {
+        
+    }
+
+    private void Start()
+    {
+        weapon = GameObject.Find("Weapon").GetComponent<WeaponBehaviour>();
+
+        SetWeaponSprites();
+
+        health = weapon.weapons[weapon.weaponIndex].health;
+        maxHealth = weapon.weapons[weapon.weaponIndex].MaxHealth;
+
+        SetHealthBar(health, maxHealth);
+
+    }
+    private void Update()
+    {
+
+        SetWeaponSprites();
+
+        health = weapon.weapons[weapon.weaponIndex].health;
+        maxHealth = weapon.weapons[weapon.weaponIndex].MaxHealth;
+
+        SetHealthBar(health, maxHealth);
+
+
     }
 }
