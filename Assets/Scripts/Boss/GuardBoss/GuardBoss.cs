@@ -75,7 +75,8 @@ public class GuardBoss : Boss
 		}
         if (MaxHealth * 0.05f >= Health && Phase == 1)
         {
-			StartPhaseTransition(2f, 2);
+            animator.SetTrigger("Phase2To3");
+            StartPhaseTransition(2f, 2);
         }
         if (Health <= 0)
             gameObject.SetActive(false);
