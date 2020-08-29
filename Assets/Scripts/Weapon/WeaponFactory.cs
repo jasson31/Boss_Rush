@@ -52,6 +52,9 @@ public class WeaponFactory
 				break;
 		}
 
+		weapon.controller = Resources.Load<AnimatorOverrideController>("Anims/" + weaponSpec.weaponName);
+		weapon.sprite = Resources.Load<Sprite>("Sprites/" + weaponSpec.weaponName);
+
 		return weapon;
 	}
 }
