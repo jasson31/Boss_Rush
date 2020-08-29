@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8257533199528145293}
   - component: {fileID: 8257533199528145292}
-  - component: {fileID: 8257533199528145294}
   - component: {fileID: -993267069042726287}
+  - component: {fileID: 1619007690000451633}
+  - component: {fileID: 7280230525016111667}
   m_Layer: 0
   m_Name: CocoonSpike
   m_TagString: Untagged
@@ -72,19 +73,32 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 260f79ab420d696459ab0e09b75029be, type: 3}
+  m_Sprite: {fileID: 3909271212103024321, guid: 3f67e843f44219345a519934d4a9ef34,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.1, y: 1.28}
+  m_Size: {x: 1.6, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &8257533199528145294
-BoxCollider2D:
+--- !u!114 &-993267069042726287
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8257533199528145291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4462af959892214f830cbe597c3ad4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!60 &1619007690000451633
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -99,25 +113,34 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.28, y: 0.2}
-    newSize: {x: 0.1, y: 1.28}
+    pivot: {x: 0.5, y: 0}
+    oldSize: {x: 1.6, y: 2}
+    newSize: {x: 1.6, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 1.28, y: 0.2}
-  m_EdgeRadius: 0
---- !u!114 &-993267069042726287
-MonoBehaviour:
+  m_Points:
+    m_Paths:
+    - - {x: 0.375, y: 0}
+      - {x: 0, y: 1.9}
+      - {x: -0.35, y: 0}
+--- !u!95 &7280230525016111667
+Animator:
+  serializedVersion: 3
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8257533199528145291}
   m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4462af959892214f830cbe597c3ad4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 484729903691fb8428fc018b0be34a59, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

@@ -11,5 +11,6 @@ public class CocoonLine : MonoBehaviour, IDamagable
     {
         //StartCoroutine(spiderBoss.CocoonBreakRoutine());
         spiderBoss.Stun(0.5f);
+        spiderBoss.GetComponent<Animator>().SetTrigger("CocoonExit");
     }
 }

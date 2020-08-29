@@ -9,6 +9,9 @@ public class SpiderBoss : Boss
     private Bounds map;
 
     #region Phase1 Variables
+    [SerializeField]
+    private Vector3 shootPos;
+
     private float webBulletSpeed = 10;
     private float webConeBulletSpeed = 5;
     [SerializeField]
@@ -74,31 +77,27 @@ public class SpiderBoss : Boss
                 {
                     lastBiteAttackTime = Time.time;
                     nextRoutines.Enqueue(NewActionRoutine(BiteRoutine()));
-                    nextRoutines.Enqueue(NewActionRoutine(Phase1IdleRoutine(1)));
                 }
                 else
                 {
                     if (rand < 0.4f)
                     {
                         nextRoutines.Enqueue(NewActionRoutine(WebShootRoutine((GetPlayerPos() - transform.position).normalized)));
-                        nextRoutines.Enqueue(NewActionRoutine(Phase1IdleRoutine(1)));
                     }
                     else if (rand < 0.7f)
                     {
                         nextRoutines.Enqueue(NewActionRoutine(WebTrapShootRoutine(10)));
-                        nextRoutines.Enqueue(NewActionRoutine(Phase1IdleRoutine(2)));
                     }
                     else if (rand < 0.95f)
                     {
                         nextRoutines.Enqueue(NewActionRoutine(WebConeShootRoutine()));
-                        nextRoutines.Enqueue(NewActionRoutine(Phase1IdleRoutine(1)));
                     }
                     else
                     {
                         nextRoutines.Enqueue(NewActionRoutine(CocoonRoutine()));
                     }
                 }
-                nextRoutines.Enqueue(NewActionRoutine(Phase1IdleRoutine(10)));
+                nextRoutines.Enqueue(NewActionRoutine(Phase1IdleRoutine(0.5f)));
                 break;
             case 1:
                 if (rand < 0.4f)
@@ -114,6 +113,7 @@ public class SpiderBoss : Boss
                 else
                 {
                 }
+                nextRoutines.Enqueue(NewActionRoutine(LegSpikeRoutine()));
                 nextRoutines.Enqueue(NewActionRoutine(Phase2IdleRoutine(2)));
 
                 break;
@@ -143,7 +143,7 @@ public class SpiderBoss : Boss
     {
         Stun(3);
 
-        StartCoroutine(MoveRoutine(new Vector2(map.center.x, phase2Height), 3));
+        StartCoroutine(MoveRoutine(new Vector2(map.center.x, map.min.y), 3));
         yield return new WaitForSeconds(3);
         animator.SetTrigger("Phase1To2");
         Phase = 1;
@@ -158,7 +158,8 @@ public class SpiderBoss : Boss
 
     private IEnumerator WebShootRoutine(Vector3 dir, float speed)
     {
-        WebBullet newWebBullet = Instantiate(webBullet, transform.position, Quaternion.identity);
+        animator.SetTrigger("WebShoot");
+        WebBullet newWebBullet = Instantiate(webBullet, transform.position + shootPos, Quaternion.identity);
         newWebBullet.GetComponent<Rigidbody2D>().velocity = dir * speed;
         Destroy(newWebBullet.gameObject, 4);
         yield return null;
@@ -166,13 +167,14 @@ public class SpiderBoss : Boss
 
     private IEnumerator WebTrapShootRoutine(int trapCount)
     {
+        animator.SetTrigger("WebShoot");
         float webTrapBulletSpeed = 5;
         for (int i = 0; i < 5; i++)
         {
             float randPosX = Random.Range(map.min.x, map.max.x);
             float randPosY = Random.Range(map.min.y, map.max.y / 2);
             Vector2 trapPos = new Vector2(randPosX, randPosY);
-            WebTrapBullet newWebTrapBullet = Instantiate(webTrapBullet, transform.position, Quaternion.identity);
+            WebTrapBullet newWebTrapBullet = Instantiate(webTrapBullet, transform.position + shootPos, Quaternion.identity);
             newWebTrapBullet.GetComponent<Rigidbody2D>().velocity = ((Vector3)trapPos - transform.position).normalized * webTrapBulletSpeed;
         }
         yield return null;
@@ -180,9 +182,9 @@ public class SpiderBoss : Boss
 
     private IEnumerator BiteRoutine()
     {
-        Debug.Log("Bite Attack");
+        animator.SetTrigger("Bite");
         player.GetDamaged(0.75f);
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.5f);
     }
 
     private IEnumerator WebConeShootRoutine()
@@ -204,6 +206,8 @@ public class SpiderBoss : Boss
     {
         yield return StartCoroutine(MoveRoutine(map.center, Vector3.Distance(map.center, transform.position) / phase1MoveSpeed));
         //Heal();
+
+        animator.SetTrigger("CocoonEnter");
         curCocoonLine = Instantiate(cocoonLine, (new Vector3(map.center.x, map.max.y) + map.center) / 2, Quaternion.identity, transform);
         curCocoonLine.spiderBoss = this;
         while(true)
@@ -217,7 +221,7 @@ public class SpiderBoss : Boss
                 posCands.RemoveAt(rand);
 
                 Vector3 spikeDir = (spikePos - transform.position).normalized;
-                Destroy(Instantiate(cocoonSpike, spikePos, Quaternion.Euler(0, 0, Mathf.Atan2(spikeDir.y, spikeDir.x) * Mathf.Rad2Deg), transform), 2);
+                Destroy(Instantiate(cocoonSpike, spikePos, Quaternion.Euler(0, 0, Mathf.Atan2(spikeDir.y, spikeDir.x) * Mathf.Rad2Deg - 90), transform), 2);
 
             }
         }
@@ -261,6 +265,9 @@ public class SpiderBoss : Boss
 
     private IEnumerator LegSpikeRoutine()
     {
+        animator.SetTrigger("LegSpike");
+        yield return new WaitForSeconds(1);
+
         for(int i = 0; i < 8; i++)
         {
             LineRenderer newLegSpikeAlert = Instantiate(legSpikeAlert, new Vector2(GetPlayerPos().x, map.min.y), Quaternion.identity);
@@ -272,15 +279,19 @@ public class SpiderBoss : Boss
 
             legSpikeAlerts.Remove(newLegSpikeAlert);
             Destroy(newLegSpikeAlert.gameObject);
-            GameObject newLegSpike = Instantiate(legSpike, legSpikePos - new Vector2(0, legSpike.GetComponent<BoxCollider2D>().size.y), Quaternion.identity);
+            GameObject newLegSpike = Instantiate(legSpike, legSpikePos, Quaternion.identity);
             Destroy(newLegSpike, 1);
             yield return new WaitForSeconds(0.5f);
         }
+        animator.SetTrigger("LegSpikeEnd");
     }
 
     private IEnumerator FallRoutine()
     {
+        animator.SetTrigger("JumpUp");
+        yield return new WaitForSeconds(0.24f);
         yield return MoveRoutine(new Vector2(transform.position.x, map.max.y + 5), 1);
+
         yield return new WaitForSeconds(0.5f);
         fallRoutineShadow.gameObject.SetActive(true);
         Vector2 fallPos = new Vector2(Random.Range(map.min.x, map.max.x), map.min.y);
@@ -288,9 +299,12 @@ public class SpiderBoss : Boss
         fallRoutineShadow.SetPosition(1, transform.position);
         fallRoutineShadow.SetPosition(0, fallPos);
         yield return new WaitForSeconds(2);
+
         isFallRoutine = true;
         fallRoutineShadow.gameObject.SetActive(false);
+        animator.SetTrigger("JumpDown");
         yield return MoveRoutine(fallPos, 0.2f);
+        transform.position = fallPos;
         isFallRoutine = false;
     }
 

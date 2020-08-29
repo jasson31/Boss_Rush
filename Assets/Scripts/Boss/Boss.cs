@@ -87,7 +87,10 @@ public abstract class Boss : MonoBehaviour, IDamagable
         {
             foreach (var renderer in renderers)
             {
-                renderer.color = Color.Lerp(Color.red, Color.white, t * 4);
+                if(renderer)
+                {
+                    renderer.color = Color.Lerp(Color.red, Color.white, t * 4);
+                }
         }
             yield return null;
         }
