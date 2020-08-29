@@ -59,7 +59,7 @@ public class GuardBoss : Boss
         Gizmos.DrawWireCube(map.center, map.size);
     }
 
-    public override void GetDamaged(int damage)
+    public override void GetDamaged(float damage)
     {
         base.GetDamaged(damage);
         if (MaxHealth * 0.2f >= Health && Phase == 0)
