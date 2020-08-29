@@ -4,19 +4,18 @@ using UnityEngine;
 
 public class Knife : MonoBehaviour
 {
-    public bool IsKnifeHit;
-
-    private void OnEnabled()
-    {
-        IsKnifeHit = false;
-    }
-
     private void OnTriggerEnter2D(Collider2D col)
     {
         GameObject Boss = GameObject.Find("BurangBoss");
         if (col.GetComponent<Player>() != null)
         {
-            if(Boss.GetComponent<BurangBoss>().IsRollDodgeable)
+            if (Boss.GetComponent<BurangBoss>().IsBleedKnife)
+            {
+                BurangBossBleedDebuff bleedDebuff = new BurangBossBleedDebuff();
+                bleedDebuff.Init(4);
+                Game.inst.player.AddBuffable(bleedDebuff);
+            }
+            if (Boss.GetComponent<BurangBoss>().IsRollDodgeable)
             {
                 if(FindObjectOfType<Player>().GetComponent<Player>().isControllable)
                 {
@@ -28,7 +27,6 @@ public class Knife : MonoBehaviour
             {
                 float damage = Boss.GetComponent<BurangBoss>().BossDamage;
                 Game.inst.player.GetDamaged(damage);
-                IsKnifeHit = true;
             }
         }
     }

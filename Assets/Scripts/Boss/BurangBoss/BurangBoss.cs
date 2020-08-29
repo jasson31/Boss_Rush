@@ -49,9 +49,6 @@ public class BurangBoss : Boss
     private LayerMask wallfloorLayerMask;
 
     [SerializeField]
-    private LayerMask WFPLayerMask;
-
-    [SerializeField]
     private float NearDist;
 
     bool Invincible = false;
@@ -61,10 +58,10 @@ public class BurangBoss : Boss
     bool IsHit = false;
 
     [HideInInspector]
-    public bool IsBloodVomitHit = false;
+    public bool IsRollDodgeable = false;
 
     [HideInInspector]
-    public bool IsRollDodgeable = false;
+    public bool IsBleedKnife = false;
 
     Animator ani;
     SpriteRenderer rend;
@@ -93,6 +90,8 @@ public class BurangBoss : Boss
         FirstPhase3 = 1;
         BossDamage = 0.25f;
         ani.SetInteger("Phase", 0);
+        IsRollDodgeable = false;
+        IsBleedKnife = false;
     }
 
     private float XDist()
@@ -159,7 +158,7 @@ public class BurangBoss : Boss
         Vector3 playerPos = GetPlayerPos();
         Vector3 dist = BossPos - playerPos;
 
-        switch (2)
+        switch (Phase)
         {
             case 0:
                 ani.SetInteger("Phase", 0);
@@ -228,7 +227,7 @@ public class BurangBoss : Boss
                     }
                     else
                     {
-                        if(playerPos.x <= -8 || playerPos.x >= 8)
+                        if(playerPos.x <= -8 && XDist() < -5 || playerPos.x >= 8 && XDist() > 5)
                         {
                             if (rand < 0.25f)
                             {
@@ -677,11 +676,11 @@ public class BurangBoss : Boss
         prefab.GetComponent<Rigidbody2D>().velocity = direction.normalized * bombSpeed;
 
         LayerMask PLayerMask = 1 << LayerMask.NameToLayer("Player");
-        var hit = Physics2D.Raycast(transform.position, direction, float.MaxValue, WFPLayerMask);
+        var hit = Physics2D.Raycast(transform.position, direction, float.MaxValue, wallfloorLayerMask);
         var hit2 = Physics2D.Raycast(transform.position, direction, float.MaxValue, PLayerMask.value);
         Collider2D col = prefab.GetComponent<Collider2D>();
 
-        while (!col.IsTouching(hit.collider))//뭐든 닿음
+        while (!col.IsTouching(hit.collider) && !col.IsTouching(hit2.collider))//뭐든 닿음
         {
             yield return null;
         }
@@ -743,17 +742,12 @@ public class BurangBoss : Boss
         }
         GetDamaged(MaxHealth * 0.03f);
         GameObject[] prefab = new GameObject[45];
-        IsBloodVomitHit = false;
         for (int i = 0; i < 45; i++)
         {
             prefab[i] = Instantiate(Blood, transform.position, Quaternion.identity) as GameObject;
             float radian = (dirD + 2 * i * dir) * Mathf.Deg2Rad;
             prefab[i].GetComponent<Rigidbody2D>().velocity = new Vector2(Mathf.Cos(radian), Mathf.Sin(radian)) * bloodSpeed;
             yield return new WaitForSeconds(0.05f);
-            if(i == 10 || i == 20 || i == 30)
-            {
-                IsBloodVomitHit = false;
-            }
         }
         yield return new WaitForSeconds(1f);
 
@@ -761,8 +755,6 @@ public class BurangBoss : Boss
         {
             Destroy(prefab[i]);
         }
-
-        IsBloodVomitHit = false;
 
         ani.SetBool("BloodVomit", false);
     }
@@ -826,7 +818,7 @@ public class BurangBoss : Boss
         GameObject prefab = Instantiate(BurangBossCol, transform.position, Quaternion.identity) as GameObject;
         prefab.transform.parent = Parent;
 
-        while (XDist() > NearDist || XDist() < -1 * NearDist)
+        while (XDist() > 3 || XDist() < -3)
         {
             yield return null;
         }
@@ -835,19 +827,30 @@ public class BurangBoss : Boss
         LayerMask WPLayerMask = 1 << LayerMask.NameToLayer("Wall") | 1 << LayerMask.NameToLayer("Player");
         LayerMask PLayerMask = 1 << LayerMask.NameToLayer("Player");
         LayerMask WLayerMask = 1 << LayerMask.NameToLayer("Wall");
-        var hit = Physics2D.Raycast(transform.position, direction, float.MaxValue, WPLayerMask.value);
-        var hit1 = Physics2D.Raycast(transform.position, direction, float.MaxValue, PLayerMask.value);
+        var hit = Physics2D.Raycast(transform.position, direction, float.MaxValue, WLayerMask.value);
+        var hit1 = Physics2D.Raycast(transform.position, new Vector2(XDist(),YDist()), float.MaxValue, PLayerMask.value);
         Collider2D col = prefab.GetComponent<Collider2D>();
 
-        while (!col.IsTouching(hit.collider))
+        bool isP = false;
+        while (true)
         {
+            if(!col.IsTouching(hit1.collider))
+            {
+                isP = true;
+                break;
+            }
+            else if(!col.IsTouching(hit.collider))
+            {
+                break;
+            }
+
             yield return null;
         }
         rb.velocity = Vector2.zero;
-        if (col.IsTouching(hit1.collider))//플레이어에 닿았으면
+        if (isP)//플레이어에 닿았으면
         {
             BurangBossStunDebuff stunDebuff = new BurangBossStunDebuff();
-            stunDebuff.Init(3);
+            stunDebuff.Init(2);
             Game.inst.player.AddBuffable(stunDebuff);//플레이어 스턴
 
             FindObjectOfType<Player>().GetComponent<Rigidbody2D>().velocity = direction.normalized * dashSpeed;
@@ -856,6 +859,8 @@ public class BurangBoss : Boss
 
             while (!col2.IsTouching(hit2.collider))
             {
+                Game.inst.player.AddBuffable(stunDebuff);//플레이어 스턴
+                FindObjectOfType<Player>().GetComponent<Rigidbody2D>().velocity = direction.normalized * dashSpeed;
                 yield return null;
             }
             FindObjectOfType<Player>().GetComponent<Rigidbody2D>().velocity = Vector2.zero;
@@ -863,7 +868,7 @@ public class BurangBoss : Boss
             ani.SetTrigger("WallThump_2");
 
             rb.velocity = direction.normalized * dashSpeed;
-            while (!col.IsTouching(hit.collider))
+            while (!col.IsTouching(hit.collider) && !col.IsTouching(hit1.collider))
             {
                 yield return null;
             }
@@ -877,6 +882,8 @@ public class BurangBoss : Boss
 
             BossDamage += 0.5f;
 
+            IsBleedKnife = true;
+
             GameObject child = Instantiate(NearAttack, transform.position, Quaternion.identity) as GameObject;
             if (!bDir)
             {
@@ -885,18 +892,17 @@ public class BurangBoss : Boss
 
             yield return new WaitForSeconds(0.2f);
 
-            if(child.GetComponent<Knife>().IsKnifeHit)
-            {
-                BurangBossBleedDebuff bleedDebuff = new BurangBossBleedDebuff();
-                bleedDebuff.Init(4);
-                Game.inst.player.AddBuffable(bleedDebuff);
-            }
-
             Destroy(child);
 
             BossDamage -= 0.5f;
         }
+        if(prefab != null)
+        {
+            Destroy(prefab);
+        }
         ani.SetBool("WallThump", false);
+
+        IsBleedKnife = false;
     }
 
     private IEnumerator IdleRoutine(float time, float speed)
