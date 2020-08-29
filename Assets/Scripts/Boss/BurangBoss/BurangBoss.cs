@@ -125,12 +125,14 @@ public class BurangBoss : Boss
         else if(bombArmor){ IsHit = true; }
         if (MaxHealth * 0.1f >= Health && Phase == 0)
         {
+            Invincible = true;
             Phase = 1;
             ani.SetInteger("Phase", 1);
             Health = MaxHealth * 0.3f;
         }
         if (MaxHealth * 0.1f >= Health && Phase == 1)
         {
+            Invincible = true;
             Phase = 2;
             ani.SetInteger("Phase", 2);
             Health = MaxHealth * 0.2f;
@@ -157,7 +159,7 @@ public class BurangBoss : Boss
         Vector3 playerPos = GetPlayerPos();
         Vector3 dist = BossPos - playerPos;
 
-        switch (Phase)
+        switch (2)
         {
             case 0:
                 ani.SetInteger("Phase", 0);
@@ -591,7 +593,7 @@ public class BurangBoss : Boss
         }
         child.transform.parent = Parent;
 
-        Vector2 dashDir = new Vector2(XDist(), YDist()).normalized;
+        Vector2 dashDir = new Vector2(XDist(), YDist() + 0.46f).normalized;
         if (bDir)
         {
             transform.rotation = Quaternion.Euler(0, 0, Vector2.Angle(new Vector2(1, 0),dashDir));
