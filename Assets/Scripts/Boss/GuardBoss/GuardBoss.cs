@@ -25,6 +25,8 @@ public class GuardBoss : Boss
     const float bulletSpeed = 20;
     const float moveSpeed = 5;
 
+	const float meleeRange = 1.5f;
+
     private LineRenderer lr;
 
     // FIXME: Play particle with Observer e.g. OnShake += ... and move this to map related script
@@ -39,13 +41,16 @@ public class GuardBoss : Boss
         lr = GetComponent<LineRenderer>();
 	}
 
-    private void OnDrawGizmos()
+#if UNITY_EDITOR
+	private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Vector3 playerPosition = FindObjectOfType<Player>().transform.position;
         Vector2 direction = playerPosition - transform.position;
         direction.Normalize();
         Gizmos.DrawLine(transform.position, transform.position + new Vector3(direction.x, direction.y));
+		Gizmos.color = Color.green;
+		Gizmos.DrawWireSphere(transform.position, meleeRange);
     }
 
     private void OnDrawGizmosSelected()
@@ -58,17 +63,18 @@ public class GuardBoss : Boss
         Gizmos.color = Color.white;
         Gizmos.DrawWireCube(map.center, map.size);
     }
+#endif
 
-    public override void GetDamaged(float damage)
+	public override void GetDamaged(float damage)
     {
         base.GetDamaged(damage);
-        if (MaxHealth * 0.2f >= Health && Phase == 0)
+        if (MaxHealth * 0.3f >= Health && Phase == 0)
         {
-            Phase = 1;
-        }
+			StartPhaseTransition(2f, 1);
+		}
         if (MaxHealth * 0.05f >= Health && Phase == 1)
         {
-            Phase = 2;
+			StartPhaseTransition(2f, 2);
         }
         if (Health <= 0)
             gameObject.SetActive(false);
@@ -79,11 +85,10 @@ public class GuardBoss : Boss
         Queue<IEnumerator> nextRoutines = new Queue<IEnumerator>();
         float rand = Random.value;
 
-
         switch (Phase)
         {
             case 0:
-                if (rand < 0.25f)
+				if (rand < 0.25f)
                 {
                     nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[Random.Range(0, 2)], 2, moveCurve)));
                     for (int i = 0; i < 5; i++)
@@ -114,7 +119,6 @@ public class GuardBoss : Boss
                 nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(3f)));
                 break;
 			case 1:
-                rand *= 0.65f;
                 if (rand < 0.45f)
                 {
                     nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[4], 1)));
@@ -122,13 +126,18 @@ public class GuardBoss : Boss
                     nextRoutines.Enqueue(NewActionRoutine(ChargeToPlayerRoutine()));
                     nextRoutines.Enqueue(NewActionRoutine(StunRoutine(1)));
                 }
-                else
+                else if (rand < 0.65f)
                 {
                     int idx = FindObjectOfType<Player>().transform.position.x > 0 ? 3 : 2;
                     nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[idx], 1)));
                     nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(0.5f)));
                     nextRoutines.Enqueue(NewActionRoutine(ChargeRoutine(idx == 2 ? Vector2.right : Vector2.left)));
                 }
+				else
+				{
+					nextRoutines.Enqueue(NewActionRoutine(MeleeAttackRoutine()));
+					nextRoutines.Enqueue(NewActionRoutine(MeleeAttackRoutine()));
+				}
                 nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(2.5f)));
                 break;
             case 2:
@@ -140,7 +149,6 @@ public class GuardBoss : Boss
                 nextRoutines.Enqueue(NewActionRoutine(StunRoutine(5)));
                 break;
         }
-
 
         return nextRoutines;
     }
@@ -210,10 +218,21 @@ public class GuardBoss : Boss
 
     private IEnumerator MeleeAttackRoutine()
     {
-        animator.SetTrigger("Attack");
+		Vector3 playerPosition = FindObjectOfType<Player>().transform.position;
+		Vector2 direction = (playerPosition - transform.position).normalized;
+
+		Vector3 destination = transform.position + new Vector3(direction.x, direction.y) * Mathf.Min(Vector2.Distance(playerPosition, transform.position) - 0.2f, 5);
+
+		yield return MoveRoutine(destination, 0.3f, moveCurve);
+		animator.SetTrigger("Attack");
+		playerPosition = FindObjectOfType<Player>().transform.position;
+		Debug.Log(Vector2.Angle(direction, playerPosition - transform.position));
+		if (Vector2.Distance(transform.position, playerPosition) <= meleeRange && Vector2.Angle(direction, playerPosition - transform.position) <= 60)
+		{
+			FindObjectOfType<Player>().GetDamaged(0.25f);
+		}
+
         yield return new WaitForSeconds(1f);
-        animator.SetTrigger("Attack");
-        yield return null;
     }
 
     private IEnumerator SetCollide(bool value)
@@ -241,6 +260,9 @@ public class GuardBoss : Boss
 		rb.velocity = direction * 30;
         yield return new WaitForSeconds(0.1f);
 
+		Player player = FindObjectOfType<Player>();
+		Collider2D playerCol = player.GetComponent<Collider2D>();
+
 		while (!col.IsTouching(hit.collider))
 		{
 			yield return null;
@@ -256,11 +278,11 @@ public class GuardBoss : Boss
         Player player = collision.GetComponent<Player>();
         if (isCollidePlayer && player != null)
         {
-            player.GetDamaged(1);
+            player.GetDamaged(0.5f);
         }
     }
 
-    protected override void OnStunned()
+	protected override void OnStunned()
     {
         isCollidePlayer = false;
     }

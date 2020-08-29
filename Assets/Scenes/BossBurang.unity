@@ -341,6 +341,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageTextPrefab: {fileID: 6103845031904764219, guid: 42ae5155d9c85e548b32d3fc145463eb,
     type: 3}
+  dropInfos:
+  - weaponId: 401
+    probability: 0.7
+  - weaponId: 201
+    probability: 0.1
+  - weaponId: 211
+    probability: 0.2
   ThrowingknifePrefab: {fileID: 2305370399308298145, guid: d0d99948c1f775249afd8fd3ea85fe14,
     type: 3}
   garbagePrefab: {fileID: 3104099088749748763, guid: d7a22d7964b8be9419437b869b733ec7,

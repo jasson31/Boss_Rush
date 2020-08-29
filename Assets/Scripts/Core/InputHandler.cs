@@ -51,7 +51,10 @@ public class InputHandler : SingletonBehaviour<InputHandler>
 
     private void Update()
     {
-        cursor.GetComponent<RectTransform>().position = Input.mousePosition;
+        if(cursor)
+        {
+            cursor.GetComponent<RectTransform>().position = Input.mousePosition;
+        }
 
         if (Input.GetKey(KeyCode.W))
         {
