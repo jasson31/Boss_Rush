@@ -348,8 +348,8 @@ MonoBehaviour:
   - {fileID: 1707900952}
   - {fileID: 1100816066}
   phase1MoveSpeed: 2
-  bitePos: {x: 0, y: 0, z: 0}
-  biteRange: 2
+  bitePos: {x: 0, y: -0.79, z: 0}
+  biteRange: 1.06
   phase2MoveSpeed: 1
   spiderling: {fileID: 372815137789746509, guid: 0ba49f6e4fc76b44f9a62f7c47952695,
     type: 3}

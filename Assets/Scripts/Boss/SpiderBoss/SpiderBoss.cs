@@ -190,8 +190,13 @@ public class SpiderBoss : Boss
     private IEnumerator BiteRoutine()
     {
         animator.SetTrigger("Bite");
-        player.GetDamaged(0.75f);
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.2f);
+
+        if(Vector2.Distance(bitePos + transform.position, player.transform.position) < biteRange)
+        {
+            player.GetDamaged(0.75f);
+        }
+        yield return new WaitForSeconds(0.1f);
     }
 
     private IEnumerator WebConeShootRoutine()
