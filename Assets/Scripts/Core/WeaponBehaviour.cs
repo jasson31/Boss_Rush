@@ -11,8 +11,8 @@ public class WeaponBehaviour : MonoBehaviour
 
 
     [SerializeField]
-    private List<Weapon> weapons = new List<Weapon>();
-    private int weaponIndex = 0;
+    public List<Weapon> weapons = new List<Weapon>();
+    public int weaponIndex = 0;
     private Weapon Weapon { get { return weapons.Count > weaponIndex ? weapons[weaponIndex] : null; } }
 
     public GameObject testBullet;

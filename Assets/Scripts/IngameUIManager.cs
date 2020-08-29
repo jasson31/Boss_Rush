@@ -25,13 +25,13 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
     [SerializeField]
     private int health;
     [SerializeField]
-    private int numHearts;
+    private int maxHealth;
 
     public Image[] hearts;
     public Sprite fullHeart;
     public Sprite emptyHeart;
     
-    public Image[] weaponsImage;
+    public Image[] weaponImage;
     public WeaponBehaviour weapon;
 
    
@@ -52,6 +52,18 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
 
     public void SetWeaponSprites()
     {
+        int numWeapons = weapon.weapons.Count;
+        for (int i = 0; i < 3; i++)
+        {
+            if (i < numWeapons)
+            {
+                weaponImage[i].sprite = weapon.weapons[i].sprite;
+            }
+            else
+            {
+                weaponImage[i].gameObject.SetActive(false);
+            }
+        }
     }
 
     public void OpenMenuUI()
@@ -59,12 +71,20 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
         
     }
 
+    private void Start()
+    {
+        SetWeaponSprites();
+
+        health = weapon.weapons[weapon.weaponIndex].health;
+        maxHealth = weapon.weapons[weapon.weaponIndex].MaxHealth;
+
+    }
     private void Update()
     {
 
-        if (health > numHearts)
+        if (health > maxHealth)
         {
-            health = numHearts;
+            health = maxHealth;
         }
 
         for (int i = 0; i < hearts.Length; i++)
@@ -78,7 +98,7 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
                 hearts[i].sprite = emptyHeart;
             }
 
-            if (i < numHearts)
+            if (i < maxHealth)
             {
                 hearts[i].enabled = true;
             }
