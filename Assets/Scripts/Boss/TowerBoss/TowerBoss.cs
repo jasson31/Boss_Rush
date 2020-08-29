@@ -24,6 +24,8 @@ public class TowerBoss : Boss
     private LineRenderer lr, lr2;
     const float laserReadyWidth = 0.1f;
     const float laserShootWidth = 2.0f;
+    bool Invincible = false;
+    bool check;
     
   
     RaycastHit2D shootHit;
@@ -36,23 +38,34 @@ public class TowerBoss : Boss
         bullet.AddComponent<Bullet>();
         laserCollider.AddComponent<Laser>();
         laserCollider2.AddComponent<Laser>();
-        Phase = 1;
-        MaxHealth = Health = 200;
+        Phase = 0;
+        check = true;
+        MaxHealth = Health = 350;
     }
 
     public override void GetDamaged(float damage)
     {
-        base.GetDamaged(damage);
+
+        if (!Invincible) base.GetDamaged(damage); 
         if (MaxHealth * 0.33f >= Health && Phase == 1)
         {
+            animator.SetTrigger("Trans2");
+            Invincible = true;
+            check = true;
             Phase = 2;
         }
         if (Health <= 0 && Phase == 2)
         {
+            Invincible = true;
             Phase = 3;
+            laserCollider.AddComponent<Laser2>();
         }
-        if (Phase == 4)
+        if(Phase == 4)
+        {
             gameObject.SetActive(false);
+        }
+
+
     }
 
     protected override Queue<IEnumerator> DecideNextRoutine()
@@ -60,8 +73,14 @@ public class TowerBoss : Boss
         Queue<IEnumerator> nextRoutines = new Queue<IEnumerator>();
 
         float rand = Random.value;
+        //nextRoutines.Enqueue(NewActionRoutine(FinalRoutine(15f)));
         switch (Phase)
         {
+            case 0:
+                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine1(1.8f)));
+                Phase = 1;
+                break;
+
             case 1:
 
                 if (rand < 0.33f)
@@ -81,51 +100,52 @@ public class TowerBoss : Boss
                     nextRoutines.Enqueue(NewActionRoutine(FanShotRoutine(5, 5, 0.7f)));
                     //nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
                 }
-
-                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(3f)));
+                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine1(2.4f)));
                 break;
 
             case 2:
-
-                Vector3 distance = shootPos - GetPlayerPos();
-
-                if (rand < 0.25f)
+                if(check) nextRoutines.Enqueue(NewActionRoutine(PhaseTrans2()));
+                else
                 {
-                    nextRoutines.Enqueue(NewActionRoutine(LaserRoutine(1.0f)));
-                    //nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-                }
-                else if (rand < 0.5f)
-                {
-                    if (distance.magnitude > 9)
+                    Vector3 distance = shootPos - GetPlayerPos();
+
+                    if (rand < 0.25f)
                     {
-                        nextRoutines.Enqueue(NewActionRoutine(LaserRoutine2(1.0f)));
+                        nextRoutines.Enqueue(NewActionRoutine(LaserRoutine(1.0f)));
+                        //nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                    }
+                    else if (rand < 0.5f)
+                    {
+                        if (distance.magnitude > 9)
+                        {
+                            nextRoutines.Enqueue(NewActionRoutine(LaserRoutine2(1.0f)));
+                            //nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                        }
+                        else
+                        {
+                            nextRoutines.Enqueue(NewActionRoutine(LaserRoutine2b(1.0f)));
+                            //nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
+                        }
+                    }
+                    else if (rand < 0.75f)
+                    {
+                        nextRoutines.Enqueue(NewActionRoutine(OrbRoutine(7)));
                         //nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
                     }
                     else
                     {
-                        nextRoutines.Enqueue(NewActionRoutine(LaserRoutine2b(1.0f)));
+                        nextRoutines.Enqueue(NewActionRoutine(ThunderRoutine(0.7f)));
                         //nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
                     }
-                }
-                else if (rand < 0.75f)
-                {
-                    nextRoutines.Enqueue(NewActionRoutine(OrbRoutine(7)));
-                    //nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-                }
-                else
-                {
-                    nextRoutines.Enqueue(NewActionRoutine(ThunderRoutine(0.7f)));
-                    //nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(1.0f)));
-                }
 
-                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(3f)));
+                    nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(2.4f)));
+                }
+                
                 break;
 
             case 3:
-                nextRoutines.Enqueue(NewActionRoutine(FinalRoutine(15f)));
-                Phase = -1;
-
-                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(0.8f)));
+                
+                nextRoutines.Enqueue(NewActionRoutine(FinalRoutine(15f)));     
                 break;
 
         }
@@ -133,10 +153,17 @@ public class TowerBoss : Boss
         return nextRoutines;
     }
 
+    private IEnumerator PhaseTrans2()
+    {
+        Invincible = true;
+        check = false;
+        yield return new WaitForSeconds(2f);
+        Invincible = false;
+    }
 
     private IEnumerator CircularShotRoutine(int numWave, int bulletCount, float interval)
     {
-        animator.SetTrigger("Attack");
+        animator.SetTrigger("Attack1");
         for(int j=0; j <numWave; j++)
         {
             Vector3 originalBulletPos = (GetPlayerPos() - shootPos).normalized;
@@ -164,7 +191,7 @@ public class TowerBoss : Boss
     }
     private IEnumerator StraightShotRoutine(int numWave, int bulletCount, float interval)
     {
-        animator.SetTrigger("Attack");
+        animator.SetTrigger("Attack1");
         for (int n=0; n<numWave; n++)
         {
             for (int i = 0; i < bulletCount; i++)
@@ -184,7 +211,7 @@ public class TowerBoss : Boss
 
     private IEnumerator FanShotRoutine(int numWave, int bulletCount, float interval)
     {
-        animator.SetTrigger("Attack");
+        animator.SetTrigger("Attack1");
         for (int i=0; i<numWave; i++)
         {
             Vector3 pos = GetPlayerPos();
@@ -205,7 +232,7 @@ public class TowerBoss : Boss
 
     private IEnumerator LaserRoutine(float waitTime)
     {
-        animator.SetTrigger("Attack");
+        animator.SetTrigger("Attack2");
         for (int i=0; i<3; i++)
         {
             lr.enabled = true;
@@ -261,7 +288,7 @@ public class TowerBoss : Boss
     
     private IEnumerator LaserRoutine2(float waitTime)
     {
-        animator.SetTrigger("Attack");
+        animator.SetTrigger("Attack2");
         lr.enabled = true;
         lr2.enabled = true;
 
@@ -520,7 +547,9 @@ public class TowerBoss : Boss
 
     private IEnumerator FinalRoutine(float count)
     {
-        animator.SetTrigger("Attack");
+        Invincible = true;
+        animator.SetTrigger("Trans3");
+
         for (float i = 0; i < count; i ++)
         {
             lr.enabled = true;
@@ -568,20 +597,33 @@ public class TowerBoss : Boss
             lr.endWidth = laserReadyWidth;
             lr.enabled = false;
         }
+
+        animator.SetTrigger("Destruct");
+        yield return new WaitForSeconds(3f);
+        Phase = 4;
+        GetDamaged(0);
         
     }
 
 
+    private IEnumerator IdleRoutine1(float time)
+    {
+        animator.SetTrigger("Idle1");
+        yield return new WaitForSeconds(time);
+    }
     private IEnumerator IdleRoutine(float time)
     {
-        animator.SetTrigger("Idle");
+        animator.SetTrigger("Idle1");
         yield return new WaitForSeconds(time);
     }
 
     protected override void OnStunned()
     {
-
+        lr.enabled = false;
+        lr2.enabled = false;
     }
+
+    
 
 }
 
@@ -603,8 +645,18 @@ public class Laser : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.GetComponent<Player>() != null)
+        { 
+            Game.inst.player.GetDamaged(0.5f);
+        }
+    }
+}
+public class Laser2 : MonoBehaviour
+{
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.GetComponent<Player>() != null)
         {
-            Game.inst.player.GetDamaged(0.25f);
+            Game.inst.player.GetDamaged(1f);
         }
     }
 }
