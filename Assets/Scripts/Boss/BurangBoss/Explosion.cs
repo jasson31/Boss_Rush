@@ -10,8 +10,17 @@ public class Explosion : MonoBehaviour
         {
             UnityEngine.Debug.Log("Boom");
             float damage = GameObject.Find("BurangBoss").GetComponent<BurangBoss>().BossDamage;
-            //플레이어 스턴
-            //Game.inst.player.GetDamaged(damage);
+
+            BurangBossStunDebuff debuff = new BurangBossStunDebuff();
+            debuff.Init(2);
+            Game.inst.player.AddBuffable(debuff);//플레이어 스턴
+
+            Game.inst.player.GetDamaged(damage);
         }
+    }
+
+    private void OnDisable()
+    {
+        //독데미지 장판 소환
     }
 }

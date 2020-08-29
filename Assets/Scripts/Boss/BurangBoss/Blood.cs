@@ -22,7 +22,7 @@ public class Blood : MonoBehaviour
         if (col.GetComponent<Player>() != null)
         {
             float damage = GameObject.Find("BurangBoss").GetComponent<BurangBoss>().BossDamage;
-            //Game.inst.player.GetDamaged(damage);
+            Game.inst.player.GetDamaged(damage);
         }
         else if (col.gameObject == GameObject.Find("Wall") || col.gameObject == GameObject.Find("Floor"))
         {

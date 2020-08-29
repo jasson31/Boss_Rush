@@ -115,7 +115,7 @@ public class BurangBoss : Boss
         }
     }
 
-    /*public override void GetDamaged(float damage)
+    public override void GetDamaged(float damage)
     {
         if (!Invincible) { base.GetDamaged(damage); }
         else if(bombArmor){ IsHit = true; }
@@ -142,7 +142,7 @@ public class BurangBoss : Boss
             UnityEngine.Debug.Log("Boss Defeated!");
             gameObject.SetActive(false);
         }
-    }*/
+    }
 
     protected override Queue<IEnumerator> DecideNextRoutine()
     {
@@ -222,7 +222,7 @@ public class BurangBoss : Boss
                     }
                     else
                     {
-                        if(playerPos.x <= -8 || playerPos.x >= 8)
+                        if(playerPos.x <= -8 && XDist() <= 0 || playerPos.x >= 8 && XDist() >= 0)
                         {
                             if (rand < 0.25f)
                             {
@@ -254,7 +254,7 @@ public class BurangBoss : Boss
                             {
                                 nextRoutines.Enqueue(NewActionRoutine(AttachGarbageBomb(0.1f,50f,50f,2f)));
                             }
-                            else if(rand < 0.66f)
+                            else if(rand < 0.66f && Health > MaxHealth * 0.03)
                             {
                                 nextRoutines.Enqueue(NewActionRoutine(BloodVomit(30f)));
                             }
@@ -641,8 +641,8 @@ public class BurangBoss : Boss
 
         if (!IsHit)
         {
-            //GetDamaged(10);
-            yield return StunRoutine(3f);
+            GetDamaged(10);
+            yield return StunRoutine(2f);
         }
         IsHit = false;
         bombArmor = false;
@@ -735,6 +735,7 @@ public class BurangBoss : Boss
             dirD = 210f;
             dir = -1;
         }
+        GetDamaged(MaxHealth * 0.03);
         GameObject[] prefab = new GameObject[45];
         for (int i = 0; i < 45; i++)
         {
@@ -832,7 +833,10 @@ public class BurangBoss : Boss
         rb.velocity = Vector2.zero;
         if (col.IsTouching(hit1.collider))//플레이어에 닿았으면
         {
-            FindObjectOfType<Player>().GetComponent<Player>().isControllable = false;//플레이어 스턴 추가 필요
+            BurangBossStunDebuff stunDebuff = new BurangBossStunDebuff();
+            stunDebuff.Init(3);
+            Game.inst.player.AddBuffable(stunDebuff);//플레이어 스턴
+
             FindObjectOfType<Player>().GetComponent<Rigidbody2D>().velocity = direction.normalized * dashSpeed;
             var hit2 = Physics2D.Raycast(FindObjectOfType<Player>().transform.position, direction, float.MaxValue, WLayerMask.value);
             Collider2D col2 = FindObjectOfType<Player>().GetComponent<Collider2D>();
@@ -846,7 +850,7 @@ public class BurangBoss : Boss
             ani.SetTrigger("WallThump_2");
 
             rb.velocity = direction.normalized * dashSpeed;
-            while (!col.IsTouching(hit1.collider))
+            while (!col.IsTouching(hit.collider))
             {
                 yield return null;
             }
@@ -858,6 +862,8 @@ public class BurangBoss : Boss
 
             yield return new WaitForSeconds(0.1f);
 
+            BossDamage += 0.5f;
+
             GameObject child = Instantiate(NearAttack, transform.position, Quaternion.identity) as GameObject;
             if (!bDir)
             {
@@ -866,9 +872,16 @@ public class BurangBoss : Boss
 
             yield return new WaitForSeconds(0.2f);
 
+            if(child.GetComponent<Knife>().IsKnifeHit)
+            {
+                BurangBossBleedDebuff bleedDebuff = new BurangBossBleedDebuff();
+                bleedDebuff.Init(4);
+                Game.inst.player.AddBuffable(bleedDebuff);
+            }
+
             Destroy(child);
 
-            FindObjectOfType<Player>().GetComponent<Player>().isControllable = true;//플레이어 스턴 해제 필요
+            BossDamage -= 0.5f;
         }
         ani.SetBool("WallThump", false);
     }
@@ -891,4 +904,46 @@ public class BurangBoss : Boss
     {
 
     }
+}
+
+public class BurangBossStunDebuff : Buffable
+{
+    public override void StartDebuff(Player player)
+    {
+        player.StopPlayer();
+    }
+
+    public override void Apply(Player player)
+    {
+        player.SetPlayerControllable(false);
+    }
+
+    public override void EndDebuff(Player player)
+    {
+        player.SetPlayerControllable(true);
+    }
+}
+
+public class BurangBossBleedDebuff : Buffable
+{
+    private float timer;
+    private float nextTime;
+
+    public override void StartDebuff(Player player)
+    {
+        nextTime = 1;
+        timer = 0;
+    }
+
+    public override void Apply(Player player)
+    {
+        timer += Time.deltaTime;
+        if(timer >= nextTime)
+        {
+            nextTime++;
+            Game.inst.player.GetDamaged(0.25f);
+        }
+    }
+
+    public override void EndDebuff(Player player) { }
 }
