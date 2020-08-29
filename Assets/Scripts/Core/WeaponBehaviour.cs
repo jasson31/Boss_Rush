@@ -88,7 +88,7 @@ public class WeaponBehaviour : MonoBehaviour
 
     public void ChangeWeapon(int index)
     {
-        if(index != weaponIndex)
+        if(index != weaponIndex && index < weapons.Count)
         {
             if(Time.time - prevWeaponChangedTime > weaponChangeCoolTime)
             {
