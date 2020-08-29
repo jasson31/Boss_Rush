@@ -1,7 +1,16 @@
 fileFormatVersion: 2
-guid: c295ad5626a36f244a4dedc9227d9ad2
+guid: 65ff3c347570c4d42ba18aa61cb09a28
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: -4665470359520215844
+    second: "\uAC70\uBBF81-5_0"
+  - first:
+      213: -6953006555124441672
+    second: "\uAC70\uBBF81-5_1"
+  - first:
+      213: -6591431951090517424
+    second: "\uAC70\uBBF81-5_2"
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -40,12 +49,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 35
+  spritePixelsToUnits: 130
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -85,7 +94,70 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: "\uAC70\uBBF81-5_0"
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 530
+        height: 500
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cdcfeae3d6be04fb0800000000000000
+      internalID: -4665470359520215844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\uAC70\uBBF81-5_1"
+      rect:
+        serializedVersion: 2
+        x: 530
+        y: 0
+        width: 530
+        height: 500
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bd58d07065f18f90800000000000000
+      internalID: -6953006555124441672
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "\uAC70\uBBF81-5_2"
+      rect:
+        serializedVersion: 2
+        x: 1060
+        y: 0
+        width: 530
+        height: 500
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05af61a30978684a0800000000000000
+      internalID: -6591431951090517424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []

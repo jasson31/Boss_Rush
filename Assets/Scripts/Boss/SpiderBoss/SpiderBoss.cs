@@ -9,6 +9,9 @@ public class SpiderBoss : Boss
     private Bounds map;
 
     #region Phase1 Variables
+    [SerializeField]
+    private Vector3 shootPos;
+
     private float webBulletSpeed = 10;
     private float webConeBulletSpeed = 5;
     [SerializeField]
@@ -22,7 +25,7 @@ public class SpiderBoss : Boss
     [SerializeField]
     private List<Transform> cocoonSpikePos;
     [SerializeField]
-    private float moveSpeed = 2;
+    private float phase1MoveSpeed = 2;
     private CocoonLine curCocoonLine;
 
     [SerializeField]
@@ -36,6 +39,13 @@ public class SpiderBoss : Boss
 
 
     #region Phase2 Variables
+    private float phase2Height = -2.98f;
+    [SerializeField]
+    private float phase2MoveSpeed = 2;
+
+    [SerializeField]
+    private Spiderling spiderling;
+
     [SerializeField]
     private LineRenderer fallRoutineShadow;
     private bool isFallRoutine = false;
@@ -44,6 +54,7 @@ public class SpiderBoss : Boss
     private LineRenderer legSpikeAlert;
     [SerializeField]
     private GameObject legSpike;
+    private List<LineRenderer> legSpikeAlerts = new List<LineRenderer>();
     #endregion
 
 
@@ -62,52 +73,55 @@ public class SpiderBoss : Boss
         switch (Phase)
         {
             case 0:
-                /*if(Vector2.Distance(bitePos + transform.position, player.transform.position) < biteRange && Time.time - lastBiteAttackTime > biteAttackDelay)
+                if(Vector2.Distance(bitePos + transform.position, player.transform.position) < biteRange && Time.time - lastBiteAttackTime > biteAttackDelay)
                 {
                     lastBiteAttackTime = Time.time;
                     nextRoutines.Enqueue(NewActionRoutine(BiteRoutine()));
-                    nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(1)));
                 }
                 else
                 {
                     if (rand < 0.4f)
                     {
                         nextRoutines.Enqueue(NewActionRoutine(WebShootRoutine((GetPlayerPos() - transform.position).normalized)));
-                        nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(1)));
                     }
                     else if (rand < 0.7f)
                     {
                         nextRoutines.Enqueue(NewActionRoutine(WebTrapShootRoutine(10)));
-                        nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(2)));
                     }
                     else if (rand < 0.95f)
                     {
                         nextRoutines.Enqueue(NewActionRoutine(WebConeShootRoutine()));
-                        nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(1)));
                     }
                     else
                     {
                         nextRoutines.Enqueue(NewActionRoutine(CocoonRoutine()));
                     }
                 }
-                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(10)));*/
-                nextRoutines.Enqueue(NewActionRoutine(LegSpikeRoutine()));
-                nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(2)));
+                nextRoutines.Enqueue(NewActionRoutine(Phase1IdleRoutine(0.5f)));
                 break;
             case 1:
-                if (rand < 0.4f)
+                /*if (rand < 0.3f)
                 {
-                    nextRoutines.Enqueue(NewActionRoutine(FallRoutine()));
+
+                }
+                else if (rand < 0.45f)
+                {
+
                 }
                 else if (rand < 0.7f)
                 {
+
                 }
-                else if (rand < 0.95f)
+                else if (rand < 0.9f)
                 {
+                    nextRoutines.Enqueue(NewActionRoutine(LegSpikeRoutine()));
                 }
                 else
                 {
-                }
+                    nextRoutines.Enqueue(NewActionRoutine(FallRoutine()));
+                }*/
+                nextRoutines.Enqueue(NewActionRoutine(SpawnSpiderlingRoutine(10)));
+                nextRoutines.Enqueue(NewActionRoutine(Phase2IdleRoutine(2)));
 
                 break;
         }
@@ -119,15 +133,27 @@ public class SpiderBoss : Boss
     public override void GetDamaged(float damage)
     {
         base.GetDamaged(damage);
-        if (MaxHealth * 0.1f >= Health && Phase == 0)
-        {
 
-            Phase = 1;
+
+        //if (MaxHealth * 0.1f >= Health && Phase == 0)
+        if (Phase == 0)
+        {
+            StartCoroutine(PhaseChangeRoutine());
         }
         if (Health <= 0)
         {
             gameObject.SetActive(false);
         }
+    }
+
+    private IEnumerator PhaseChangeRoutine()
+    {
+        Stun(3);
+
+        StartCoroutine(MoveRoutine(new Vector2(map.center.x, map.min.y), 3));
+        yield return new WaitForSeconds(3);
+        animator.SetTrigger("Phase1To2");
+        Phase = 1;
     }
 
     #region Phase1
@@ -139,7 +165,8 @@ public class SpiderBoss : Boss
 
     private IEnumerator WebShootRoutine(Vector3 dir, float speed)
     {
-        WebBullet newWebBullet = Instantiate(webBullet, transform.position, Quaternion.identity);
+        animator.SetTrigger("WebShoot");
+        WebBullet newWebBullet = Instantiate(webBullet, transform.position + shootPos, Quaternion.identity);
         newWebBullet.GetComponent<Rigidbody2D>().velocity = dir * speed;
         Destroy(newWebBullet.gameObject, 4);
         yield return null;
@@ -147,13 +174,14 @@ public class SpiderBoss : Boss
 
     private IEnumerator WebTrapShootRoutine(int trapCount)
     {
+        animator.SetTrigger("WebShoot");
         float webTrapBulletSpeed = 5;
         for (int i = 0; i < 5; i++)
         {
             float randPosX = Random.Range(map.min.x, map.max.x);
             float randPosY = Random.Range(map.min.y, map.max.y / 2);
             Vector2 trapPos = new Vector2(randPosX, randPosY);
-            WebTrapBullet newWebTrapBullet = Instantiate(webTrapBullet, transform.position, Quaternion.identity);
+            WebTrapBullet newWebTrapBullet = Instantiate(webTrapBullet, transform.position + shootPos, Quaternion.identity);
             newWebTrapBullet.GetComponent<Rigidbody2D>().velocity = ((Vector3)trapPos - transform.position).normalized * webTrapBulletSpeed;
         }
         yield return null;
@@ -161,9 +189,14 @@ public class SpiderBoss : Boss
 
     private IEnumerator BiteRoutine()
     {
-        Debug.Log("Bite Attack");
-        player.GetDamaged(0.75f);
-        yield return new WaitForSeconds(1);
+        animator.SetTrigger("Bite");
+        yield return new WaitForSeconds(0.2f);
+
+        if(Vector2.Distance(bitePos + transform.position, player.transform.position) < biteRange)
+        {
+            player.GetDamaged(0.75f);
+        }
+        yield return new WaitForSeconds(0.1f);
     }
 
     private IEnumerator WebConeShootRoutine()
@@ -183,8 +216,10 @@ public class SpiderBoss : Boss
 
     public IEnumerator CocoonRoutine()
     {
-        yield return StartCoroutine(MoveRoutine(map.center, Vector3.Distance(map.center, transform.position) / moveSpeed));
+        yield return StartCoroutine(MoveRoutine(map.center, Vector3.Distance(map.center, transform.position) / phase1MoveSpeed));
         //Heal();
+
+        animator.SetTrigger("CocoonEnter");
         curCocoonLine = Instantiate(cocoonLine, (new Vector3(map.center.x, map.max.y) + map.center) / 2, Quaternion.identity, transform);
         curCocoonLine.spiderBoss = this;
         while(true)
@@ -198,13 +233,13 @@ public class SpiderBoss : Boss
                 posCands.RemoveAt(rand);
 
                 Vector3 spikeDir = (spikePos - transform.position).normalized;
-                Destroy(Instantiate(cocoonSpike, spikePos, Quaternion.Euler(0, 0, Mathf.Atan2(spikeDir.y, spikeDir.x) * Mathf.Rad2Deg), transform), 2);
+                Destroy(Instantiate(cocoonSpike, spikePos, Quaternion.Euler(0, 0, Mathf.Atan2(spikeDir.y, spikeDir.x) * Mathf.Rad2Deg - 90), transform), 2);
 
             }
         }
     }
 
-    private IEnumerator IdleRoutine(float time)
+    private IEnumerator Phase1IdleRoutine(float time)
     {
         float moveTime;
         for (float t = 0; t < time; t += moveTime)
@@ -219,7 +254,7 @@ public class SpiderBoss : Boss
             float y = Random.Range(map.min.y, map.max.y);
             float z = Random.Range(map.min.z, map.max.z);
 
-            Vector3 dir = new Vector3(x, y, z).normalized * moveSpeed * moveTime;
+            Vector3 dir = new Vector3(x, y, z).normalized * phase1MoveSpeed * moveTime;
             Vector3 dest = transform.position + dir;
             if (dest.x > map.max.x || dest.x < map.min.x) dest.x = transform.position.x - dir.x;
             if (dest.y > map.max.y || dest.y < map.min.y) dest.y = transform.position.y - dir.y;
@@ -232,26 +267,48 @@ public class SpiderBoss : Boss
 
     #region Phase2
 
+    private IEnumerator SpawnSpiderlingRoutine(int count)
+    {
+
+
+        for(int i = -count / 2; i < count / 2; i++)
+        {
+            Vector2 spawnPoint = new Vector2(transform.position.x + i * 0.5f, transform.position.y);
+            Instantiate(spiderling, spawnPoint, Quaternion.identity);
+            yield return null;
+
+        }
+    }
+
     private IEnumerator LegSpikeRoutine()
     {
+        animator.SetTrigger("LegSpike");
+        yield return new WaitForSeconds(1);
+
         for(int i = 0; i < 8; i++)
         {
             LineRenderer newLegSpikeAlert = Instantiate(legSpikeAlert, new Vector2(GetPlayerPos().x, map.min.y), Quaternion.identity);
             Vector2 legSpikePos = new Vector2(GetPlayerPos().x, map.min.y);
             newLegSpikeAlert.SetPosition(0, legSpikePos);
             newLegSpikeAlert.SetPosition(1, new Vector2(legSpikePos.x, map.max.y));
+            legSpikeAlerts.Add(newLegSpikeAlert);
             yield return new WaitForSeconds(1);
 
+            legSpikeAlerts.Remove(newLegSpikeAlert);
             Destroy(newLegSpikeAlert.gameObject);
-            GameObject newLegSpike = Instantiate(legSpike, legSpikePos - new Vector2(0, legSpike.GetComponent<BoxCollider2D>().size.y), Quaternion.identity);
+            GameObject newLegSpike = Instantiate(legSpike, legSpikePos, Quaternion.identity);
             Destroy(newLegSpike, 1);
             yield return new WaitForSeconds(0.5f);
         }
+        animator.SetTrigger("LegSpikeEnd");
     }
 
     private IEnumerator FallRoutine()
     {
+        animator.SetTrigger("JumpUp");
+        yield return new WaitForSeconds(0.24f);
         yield return MoveRoutine(new Vector2(transform.position.x, map.max.y + 5), 1);
+
         yield return new WaitForSeconds(0.5f);
         fallRoutineShadow.gameObject.SetActive(true);
         Vector2 fallPos = new Vector2(Random.Range(map.min.x, map.max.x), map.min.y);
@@ -259,10 +316,25 @@ public class SpiderBoss : Boss
         fallRoutineShadow.SetPosition(1, transform.position);
         fallRoutineShadow.SetPosition(0, fallPos);
         yield return new WaitForSeconds(2);
+
         isFallRoutine = true;
         fallRoutineShadow.gameObject.SetActive(false);
+        animator.SetTrigger("JumpDown");
         yield return MoveRoutine(fallPos, 0.2f);
+        transform.position = fallPos;
         isFallRoutine = false;
+    }
+
+    private IEnumerator Phase2IdleRoutine(float time)
+    {
+        for(float t = 0; t < time; t += Time.deltaTime)
+        {
+            Vector3 playerDir = GetPlayerPos() - transform.position;
+            playerDir.y = 0;
+            transform.position += playerDir.normalized * phase2MoveSpeed * Time.deltaTime;
+            transform.localScale = new Vector2(1 * (playerDir.x > 0 ? 1 : -1), 1);
+            yield return null;
+        }
     }
 
     #endregion
@@ -275,7 +347,14 @@ public class SpiderBoss : Boss
             {
                 Game.inst.player.GetDamaged(0.75f);
             }
-            else
+        }
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (Phase == 1 && collision.GetComponent<Player>() != null)
+        {
+            if (!isFallRoutine)
             {
                 Game.inst.player.GetDamaged(0.25f);
             }
@@ -285,11 +364,26 @@ public class SpiderBoss : Boss
 
     protected override void OnStunned()
     {
-        Destroy(curCocoonLine.gameObject);
+        if(curCocoonLine != null)
+        {
+            Destroy(curCocoonLine.gameObject);
+        }
         foreach(var child in GetComponentsInChildren<CocoonSpike>())
         {
             Destroy(child.gameObject);
         }
+        for(int i = 0; i < legSpikeAlerts.Count; i++)
+        {
+            LineRenderer lr = legSpikeAlerts[0];
+            legSpikeAlerts.Remove(lr);
+            Destroy(lr);
+        }
+    }
+
+    private void Awake()
+    {
+        MaxHealth = 100;
+        Health = 100;
     }
 }
 
