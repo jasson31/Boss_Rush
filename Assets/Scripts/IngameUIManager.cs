@@ -26,8 +26,12 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
     private float maxHealth;
 
     public Image[] hearts;
-    public Sprite fullHeart;
-    public Sprite emptyHeart;
+
+    public Sprite Heart0;
+    public Sprite Heart1;
+    public Sprite Heart2;
+    public Sprite Heart3;
+    public Sprite Heart4;
     
     public Image[] weaponImage;
     private WeaponBehaviour weapon;
@@ -36,7 +40,7 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
     public Button yes, no;
 
     private Boss boss;
-    public GameObject gameCursor;
+    private GameObject gameCursor;
 
 
 
@@ -57,26 +61,56 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
             health = maxHealth;
         }
 
-        for (int i = 0; i < hearts.Length; i++)
-        {
-            if (i < health)
-            {
-                hearts[i].sprite = fullHeart;
-            }
-            else
-            {
-                hearts[i].sprite = emptyHeart;
-            }
+        //int i = 0;
+        //if (health % 1 != 0)
+        //{
+        //    for(i=0; i<Mathf.FloorToInt(health); i++)
+        //    {
+        //        hearts[i].sprite = Heart4;
+        //        hearts[i].enabled = true;
+        //    }
+        //    if (health % 1 == 0.25f) hearts[i].sprite = Heart1;
+        //    else if (health % 1 == 0.50f) hearts[i].sprite = Heart2;
+        //    else if (health % 1 == 0.75f) hearts[i].sprite = Heart3;
+        //}
 
-            if (i < health)
+        for (int i = 0; i < maxHealth; i++)
+        {
+            if (i < Mathf.FloorToInt(health))
             {
-                hearts[i].enabled = true;
+                hearts[i].sprite = Heart4;
+            }
+            else if(health - i == 0 || health - i < 0)
+            {
+                hearts[i].sprite = Heart0;
+                
             }
             else
             {
-                hearts[i].enabled = false;
+                if (health % 1 == 0.25f) hearts[i].sprite = Heart1;
+                else if (health % 1 == 0.50f) hearts[i].sprite = Heart2;
+                else if (health % 1 == 0.75f) hearts[i].sprite = Heart3;
             }
+            
         }
+
+        for (int i = 0; i < maxHealth; i++)
+        {
+            hearts[i].enabled = true;
+        }
+        for (int i = (int)maxHealth; i < hearts.Length; i++)
+        {
+            hearts[i].enabled = false;
+        }
+
+        //for(int i=0; i<maxHealth; i++)
+        //{
+        //    hearts[i].enabled = true;
+        //}
+        //for(int i=(int)maxHealth; i<hearts.Length; i++)
+        //{
+        //    hearts[i].enabled = false;
+        //}
     }
 
     public void SetWeaponSprites()
@@ -109,6 +143,7 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
 
     private void Start()
     {
+
         gameCursor = GameObject.Find("IngameCursor");
         boss = FindObjectOfType<Boss>();
         weapon = GameObject.Find("Weapon").GetComponent<WeaponBehaviour>();
