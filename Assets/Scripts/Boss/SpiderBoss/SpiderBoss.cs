@@ -142,7 +142,7 @@ public class SpiderBoss : Boss
         {
             base.GetDamaged(damage);
 
-            if (MaxHealth * 0.1f >= Health && Phase == 0)
+            if (MaxHealth * 0.2f >= Health && Phase == 0)
             {
                 StartCoroutine(PhaseChangeRoutine());
             }
@@ -160,6 +160,9 @@ public class SpiderBoss : Boss
         animator.SetTrigger("Phase1To2");
         yield return new WaitForSeconds(0.46f);
 
+        MaxHealth = 200;
+        Health = MaxHealth;
+        IngameUIManager.inst.SetBossHealthBar(Health, MaxHealth);
         StartCoroutine(MoveRoutine(new Vector2(map.center.x, map.min.y), 3));
         yield return new WaitForSeconds(3);
         animator.SetTrigger("Phase1To2End");
@@ -284,7 +287,7 @@ public class SpiderBoss : Boss
         {
             Vector2 spawnPoint = new Vector2(transform.position.x + i * 0.5f, transform.position.y);
             spiderlings.Add(Instantiate(spiderling, spawnPoint, Quaternion.identity));
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(0.1f);
         }
     }
 
