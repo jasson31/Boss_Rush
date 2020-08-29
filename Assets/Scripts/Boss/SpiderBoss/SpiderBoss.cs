@@ -138,8 +138,7 @@ public class SpiderBoss : Boss
     {
         base.GetDamaged(damage);
 
-        //if (MaxHealth * 0.1f >= Health && Phase == 0)
-        if (Phase == 0)
+        if (MaxHealth * 0.1f >= Health && Phase == 0)
         {
             StartCoroutine(PhaseChangeRoutine());
         }
