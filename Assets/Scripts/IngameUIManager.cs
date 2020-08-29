@@ -22,9 +22,7 @@ public abstract class UIManager : SingletonBehaviour<UIManager>
 
 public class IngameUIManager : SingletonBehaviour<IngameUIManager>
 {
-    [SerializeField]
     private int health;
-    [SerializeField]
     private int maxHealth;
 
     public Image[] hearts;
@@ -32,7 +30,7 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
     public Sprite emptyHeart;
     
     public Image[] weaponImage;
-    public WeaponBehaviour weapon;
+    private WeaponBehaviour weapon;
 
    
 
@@ -47,41 +45,6 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
 
     public void SetHealthBar(int health, int maxHealth)
     {
-        //healthBar.value = health / maxHealth;
-    }
-
-    public void SetWeaponSprites()
-    {
-        int numWeapons = weapon.weapons.Count;
-        for (int i = 0; i < 3; i++)
-        {
-            if (i < numWeapons)
-            {
-                weaponImage[i].sprite = weapon.weapons[i].sprite;
-            }
-            else
-            {
-                weaponImage[i].gameObject.SetActive(false);
-            }
-        }
-    }
-
-    public void OpenMenuUI()
-    {
-        
-    }
-
-    private void Start()
-    {
-        SetWeaponSprites();
-
-        health = weapon.weapons[weapon.weaponIndex].health;
-        maxHealth = weapon.weapons[weapon.weaponIndex].MaxHealth;
-
-    }
-    private void Update()
-    {
-
         if (health > maxHealth)
         {
             health = maxHealth;
@@ -107,5 +70,58 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
                 hearts[i].enabled = false;
             }
         }
+    }
+
+    public void SetWeaponSprites()
+    {
+        int a = weapon.weaponIndex;
+        int numWeapons = weapon.weapons.Count;
+        weaponImage[0].sprite = weapon.weapons[weapon.weaponIndex].sprite;
+        int index = 1;
+        if (numWeapons < 3)
+        {
+            for(int i = numWeapons; i < 3; i++)
+            {
+                weaponImage[i].gameObject.SetActive(false);
+            }
+        }
+
+        for (int i = 0; i < numWeapons; i++)
+        {
+            if (i == weapon.weaponIndex) continue;
+            weaponImage[index++].sprite = weapon.weapons[i].sprite;
+        }
+ 
+        
+    }
+
+    public void OpenMenuUI()
+    {
+        
+    }
+
+    private void Start()
+    {
+        weapon = GameObject.Find("Weapon").GetComponent<WeaponBehaviour>();
+
+        SetWeaponSprites();
+
+        health = weapon.weapons[weapon.weaponIndex].health;
+        maxHealth = weapon.weapons[weapon.weaponIndex].MaxHealth;
+
+        SetHealthBar(health, maxHealth);
+
+    }
+    private void Update()
+    {
+
+        SetWeaponSprites();
+
+        health = weapon.weapons[weapon.weaponIndex].health;
+        maxHealth = weapon.weapons[weapon.weaponIndex].MaxHealth;
+
+        SetHealthBar(health, maxHealth);
+
+
     }
 }
