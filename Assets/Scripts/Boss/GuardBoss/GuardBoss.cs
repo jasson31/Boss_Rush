@@ -70,7 +70,8 @@ public class GuardBoss : Boss
         base.GetDamaged(damage);
         if (MaxHealth * 0.3f >= Health && Phase == 0)
         {
-			StartPhaseTransition(2f, 1);
+            animator.SetTrigger("Phase1To2");
+            StartPhaseTransition(2f, 1);
 		}
         if (MaxHealth * 0.05f >= Health && Phase == 1)
         {
@@ -99,7 +100,7 @@ public class GuardBoss : Boss
                 else if (rand < 0.4f)
                 {
                     int idx = FindObjectOfType<Player>().transform.position.x > 0 ? 3 : 2;
-                    nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[idx], 1)));
+                    nextRoutines.Enqueue(NewActionRoutine(LandRoutine(targetPositions[idx])));
                     nextRoutines.Enqueue(NewActionRoutine(ShotLaserRoutine(1.5f, 2f)));
                     nextRoutines.Enqueue(NewActionRoutine(StunRoutine(3)));
                 }
@@ -112,8 +113,8 @@ public class GuardBoss : Boss
                     Vector3 startPosition = transform.position;
                     Vector3 destination = new Vector3(2 * targetPositions[4].x - startPosition.x, startPosition.y, startPosition.z);
                     nextRoutines.Enqueue(NewActionRoutine(SetCollide(true)));
-                    nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[4], 2, moveCurve)));
-                    nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(destination, 2, moveCurve)));
+                    nextRoutines.Enqueue(NewActionRoutine(JumpUpRoutine(targetPositions[4])));
+                    nextRoutines.Enqueue(NewActionRoutine(JumpDownRoutine(destination)));
                     nextRoutines.Enqueue(NewActionRoutine(SetCollide(false)));
                 }
                 nextRoutines.Enqueue(NewActionRoutine(IdleRoutine(3f)));
@@ -160,7 +161,7 @@ public class GuardBoss : Boss
 
         lr.enabled = true;
         lr.startWidth = 0.01f;
-
+        animator.SetTrigger("BulletShoot");
         for (float t = 0; t < waitTime; t += Time.deltaTime)
         {
             playerPosition = player.transform.position;  
@@ -171,13 +172,19 @@ public class GuardBoss : Boss
 
         lr.enabled = false;
         playerPosition = player.transform.position;
-        animator.SetTrigger("Attack");
 
         for (int i = 0; i < bulletCount; i++)
         {
             Instantiate(bulletPrefab, transform.position, Quaternion.identity).GetComponent<Rigidbody2D>().velocity = (playerPosition - transform.position).normalized * bulletSpeed;
             yield return new WaitForSeconds(interval);
         }
+        animator.SetTrigger("BulletShootEnd");
+    }
+
+    private IEnumerator LandRoutine(Vector3 dest)
+    {
+        animator.SetTrigger("Land");
+        yield return MoveRoutine(dest, 0.16f);
     }
 
     private IEnumerator ShotLaserRoutine(float waitTime, float width)
@@ -186,8 +193,9 @@ public class GuardBoss : Boss
         lr.SetPosition(0, transform.position);
         lr.SetPosition(1, transform.position + 100 * (FindObjectOfType<Player>().transform.position - transform.position).normalized);
         lr.startWidth = 0.01f;
-        yield return new WaitForSeconds(waitTime);
-        animator.SetTrigger("Attack");
+        yield return new WaitForSeconds(waitTime - 0.35f);
+        animator.SetTrigger("LaserShoot");
+        yield return new WaitForSeconds(0.35f);
         CameraController.inst.ShakeCamera(0.5f, 0.5f);
         debrisParticle.Play();
         for (float t = 0; t < 1; t += Time.deltaTime)
@@ -195,7 +203,21 @@ public class GuardBoss : Boss
             lr.startWidth = width * (1-t) * (1-t);
             yield return null;
         }
+        animator.SetTrigger("LaserShootEnd");
         lr.enabled = false;
+    }
+
+    private IEnumerator JumpUpRoutine(Vector3 dest)
+    {
+        animator.SetTrigger("Up");
+        yield return MoveRoutine(dest, 2, moveCurve);
+    }
+
+    private IEnumerator JumpDownRoutine(Vector3 dest)
+    {
+        animator.SetTrigger("Down");
+        yield return MoveRoutine(dest, 2, moveCurve);
+        animator.SetTrigger("DownEnd");
     }
 
     private IEnumerator IdleRoutine(float time)
@@ -214,6 +236,12 @@ public class GuardBoss : Boss
             float z = Random.Range(map.min.z, map.max.z);
             yield return MoveRoutine(new Vector3(x,y,z), Vector2.Distance(transform.position, new Vector2(x,y)) / moveSpeed);
         }
+    }
+
+    private IEnumerator Land2Routine(Vector3 dest)
+    {
+        animator.SetTrigger("Land2");
+        yield return MoveRoutine(dest, 1);
     }
 
     private IEnumerator MeleeAttackRoutine()
@@ -249,8 +277,16 @@ public class GuardBoss : Boss
     }
 
     private IEnumerator ChargeRoutine(Vector2 direction)
-	{
-		direction.Normalize();
+    {
+        direction.Normalize();
+        if(direction == Vector2.right || direction == Vector2.left)
+        {
+            animator.SetTrigger("Dash");
+        }
+        else
+        {
+            animator.SetTrigger("Down2");
+        }
 
         var hit = Physics2D.Raycast(transform.position, direction, float.MaxValue, wallLayerMask);
 
@@ -271,7 +307,15 @@ public class GuardBoss : Boss
         debrisParticle.Play();
         rb.velocity = Vector2.zero;
 		yield return SetCollide(false);
-	}
+        if (direction == Vector2.right || direction == Vector2.left)
+        {
+            animator.SetTrigger("DashEnd");
+        }
+        else
+        {
+            animator.SetTrigger("Down2End");
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
