@@ -11,6 +11,13 @@ public class ListWrapper
     public List<AnimatorOverrideController> attackPatterns;
 }
 
+[System.Serializable]
+struct DropInfo
+{
+	public int weaponId;
+	public float probability;
+}
+
 public abstract class Boss : MonoBehaviour, IDamagable
 {
     public int Phase { get; protected set; }
@@ -29,6 +36,9 @@ public abstract class Boss : MonoBehaviour, IDamagable
     protected Player player;
     protected Collider2D col;
     protected Rigidbody2D rb;
+
+	[SerializeField]
+	private List<DropInfo> dropInfos;
 
     protected virtual void Start()
     {
@@ -107,6 +117,21 @@ public abstract class Boss : MonoBehaviour, IDamagable
     {
 
     }
+
+	private void DropItem()
+	{
+		float rand = UnityEngine.Random.value;
+		float sum = 0;
+		foreach (var dropInfo in dropInfos)
+		{
+			sum += dropInfo.probability;
+			if (sum > rand)
+			{
+				FindObjectOfType<WeaponBehaviour>().AddWeapon(dropInfo.weaponId);
+				break;
+			}
+		}
+	}
 
     private void NextRoutine()
     {
