@@ -38,7 +38,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - PostProcessing
   m_SortingLayers:
   - name: Background
     uniqueID: 4282279209
