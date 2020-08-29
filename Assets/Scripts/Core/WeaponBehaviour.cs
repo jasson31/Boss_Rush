@@ -15,6 +15,8 @@ public class WeaponBehaviour : MonoBehaviour
     public int weaponIndex = 0;
     private Weapon Weapon { get { return weapons.Count > weaponIndex ? weapons[weaponIndex] : null; } }
 
+    public bool check = true;
+
     public GameObject testBullet;
     public GameObject testLaser;
 
@@ -31,6 +33,8 @@ public class WeaponBehaviour : MonoBehaviour
     }
     private void Awake()
     {
+        check = true;
+
         Weapon weapon = ScriptableObject.CreateInstance<Weapon>();
         //weapon.attackBehaviour = new LaserAttack(testLaser, 2, 2);
         weapon.attackBehaviour = new StabAttack();
@@ -75,7 +79,7 @@ public class WeaponBehaviour : MonoBehaviour
 
     private void Update()
     {
-        Weapon.Update();
+        Weapon?.Update();
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             ChangeWeapon(0);
@@ -111,15 +115,18 @@ public class WeaponBehaviour : MonoBehaviour
         if (Weapon.health <= 0)
         {
             Weapon weapon = Weapon;
+            check = false;
             weapons.Remove(weapon);
             Destroy(weapon);
+            Debug.Log(weapons.Count);
             if (weapons.Count <= 0)
             {
                 //Game Over Routine
             }
-            else if(weaponIndex >= weapons.Count)
+            else
             {
                 weaponIndex = 0;
+                Weapon.OnMountWeapon();
                 //Weapon Break Routine
             }
         }

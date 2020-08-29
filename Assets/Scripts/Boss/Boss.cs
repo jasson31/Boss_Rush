@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class ListWrapper
@@ -88,6 +89,11 @@ public abstract class Boss : MonoBehaviour, IDamagable
         StartCoroutine(DamageRoutine());
         Health -= damage;
         IngameUIManager.inst.SetBossHealthBar(Health, MaxHealth);
+        if(Health < 0)
+        {
+            FindObjectOfType<ClearChecker>().isClear = true;
+            SceneManager.LoadScene("SelectScreen");
+        }
     }
 
     private IEnumerator DamageRoutine()

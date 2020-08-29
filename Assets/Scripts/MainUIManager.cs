@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class MainUIManager : UIManager
 {
@@ -46,6 +47,7 @@ public class MainUIManager : UIManager
     public void GameStart()
     {
         UnityEngine.Debug.Log("Game Start!");
+        SceneManager.LoadScene("SelectScreen");
 
         audio1.Play();
     }

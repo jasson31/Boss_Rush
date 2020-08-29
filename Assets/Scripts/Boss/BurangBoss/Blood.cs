@@ -21,13 +21,8 @@ public class Blood : MonoBehaviour
     {
         if (col.GetComponent<Player>() != null)
         {
-            GameObject Boss = GameObject.Find("BurangBoss");
-            if (!Boss.GetComponent<BurangBoss>().IsBloodVomitHit)
-            {
-                float damage = Boss.GetComponent<BurangBoss>().BossDamage;
-                Game.inst.player.GetDamaged(damage);
-                Boss.GetComponent<BurangBoss>().IsBloodVomitHit = true;
-            }
+            float damage = GameObject.Find("BurangBoss").GetComponent<BurangBoss>().BossDamage;
+            Game.inst.player.GetDamaged(damage);
         }
         else if (col.gameObject == GameObject.Find("Wall") || col.gameObject == GameObject.Find("Floor"))
         {
