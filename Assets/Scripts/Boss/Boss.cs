@@ -175,7 +175,21 @@ public abstract class Boss : MonoBehaviour, IDamagable
         yield return new WaitForSeconds(time);
     }
 
-    protected void TeleportTo(Vector3 position)
+	protected void StartPhaseTransition(float time, int nextPhase)
+	{
+		nextRoutines.Clear();
+		StartCoroutineBoss(NewActionRoutine(PhaseTransitionRoutine(time, nextPhase)));
+	}
+
+	protected virtual IEnumerator PhaseTransitionRoutine(float time, int phase)
+	{
+		col.enabled = false;
+		yield return new WaitForSeconds(time);
+		col.enabled = true;
+		Phase = phase;
+	}
+
+	protected void TeleportTo(Vector3 position)
     {
         transform.position = position;
     }

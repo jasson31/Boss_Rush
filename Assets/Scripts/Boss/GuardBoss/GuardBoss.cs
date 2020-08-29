@@ -70,11 +70,11 @@ public class GuardBoss : Boss
         base.GetDamaged(damage);
         if (MaxHealth * 0.2f >= Health && Phase == 0)
         {
-            Phase = 1;
-        }
+			StartPhaseTransition(2f, 1);
+		}
         if (MaxHealth * 0.05f >= Health && Phase == 1)
         {
-            Phase = 2;
+			StartPhaseTransition(2f, 2);
         }
         if (Health <= 0)
             gameObject.SetActive(false);
