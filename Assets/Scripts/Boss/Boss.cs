@@ -161,6 +161,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
     protected IEnumerator MoveRoutine(Vector3 destination, float time, AnimationCurve curve)
     {
         Vector3 startPosition = transform.position;
+		Debug.Log(startPosition);
         for (float t = 0; t <= time; t += Time.deltaTime)
         {
             transform.position =
