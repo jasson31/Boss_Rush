@@ -193,6 +193,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
                 Vector3.Lerp(startPosition, destination, curve.Evaluate(t / time));
             yield return null;
         }
+        transform.position = destination;
     }
 
     protected IEnumerator WaitRoutine(float time)

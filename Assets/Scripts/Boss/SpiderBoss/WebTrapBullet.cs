@@ -12,7 +12,7 @@ public class WebTrapBullet : MonoBehaviour
     {
         if (collision.gameObject.layer == LayerMask.NameToLayer("Floor") || collision.gameObject.layer == LayerMask.NameToLayer("Wall") || collision.gameObject.layer == LayerMask.NameToLayer("Platform"))
         {
-            Destroy(Instantiate(webTrap, transform.position, Quaternion.identity).AddComponent<WebTrap>().gameObject, 10);
+            Destroy(Instantiate(webTrap, transform.position - new Vector3(0, 0.2f), Quaternion.identity).AddComponent<WebTrap>().gameObject, 10);
             Destroy(gameObject);
         }
         if(dealToPlayer && collision.GetComponent<Player>() != null)
