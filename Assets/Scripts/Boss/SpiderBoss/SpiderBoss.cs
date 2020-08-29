@@ -134,7 +134,6 @@ public class SpiderBoss : Boss
     {
         base.GetDamaged(damage);
 
-
         if (MaxHealth * 0.1f >= Health && Phase == 0)
         {
             StartCoroutine(PhaseChangeRoutine());
@@ -363,7 +362,8 @@ public class SpiderBoss : Boss
 
     protected override void OnStunned()
     {
-        if(curCocoonLine != null)
+        animator.SetTrigger("CocoonExit");
+        if (curCocoonLine != null)
         {
             Destroy(curCocoonLine.gameObject);
         }
