@@ -82,7 +82,8 @@ public class BurangBoss : Boss
     {
         base.Start();
         Phase = 0;
-        //Health = MaxHealth * 0.5f;
+        MaxHealth = 400;
+        Health = MaxHealth * 0.5f;
         Parent = GameObject.Find("BurangBoss").GetComponent<Transform>();
         PlayerParent = GameObject.Find("Player").GetComponent<Transform>();
         ani = GetComponent<Animator>();
