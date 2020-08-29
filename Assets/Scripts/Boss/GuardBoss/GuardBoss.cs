@@ -68,7 +68,7 @@ public class GuardBoss : Boss
 	public override void GetDamaged(float damage)
     {
         base.GetDamaged(damage);
-        if (MaxHealth * 0.2f >= Health && Phase == 0)
+        if (MaxHealth * 0.3f >= Health && Phase == 0)
         {
 			StartPhaseTransition(2f, 1);
 		}
