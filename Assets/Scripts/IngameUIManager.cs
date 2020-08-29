@@ -32,11 +32,18 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
     public Image[] weaponImage;
     private WeaponBehaviour weapon;
 
-   
+    public GameObject panel;
+    public Button yes, no;
+
+    private Boss boss;
+    public GameObject gameCursor;
+
 
 
     [SerializeField]
     private Slider bossHealthBar;
+
+    private Player player;
 
     public void SetBossHealthBar(float health, float maxHealth)
     {
@@ -102,7 +109,10 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
 
     private void Start()
     {
+        gameCursor = GameObject.Find("IngameCursor");
+        boss = FindObjectOfType<Boss>();
         weapon = GameObject.Find("Weapon").GetComponent<WeaponBehaviour>();
+        player = FindObjectOfType<Player>();
 
         SetWeaponSprites();
 
@@ -122,6 +132,25 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
 
         SetHealthBar(health, maxHealth);
 
+        if(!weapon.check)
+        {
+            gameCursor.SetActive(false);
+            boss.gameObject.SetActive(false);
+            player.SetPlayerControllable(false);
+            panel.SetActive(true);
+            yes.gameObject.SetActive(true);
+            no.gameObject.SetActive(true);
+        }
 
+
+    }
+
+    public void continueButton()
+    {
+        Debug.Log("이어서 전투");
+    }
+    public void abandonButton()
+    {
+        Debug.Log("포기하기");
     }
 }
