@@ -6,11 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Boss.unity
-    guid: 6f9b9a3c8f69f4a4db647d8f096228e3
-  - enabled: 1
     path: Assets/Scenes/TitleScreen.unity
     guid: 4a314546c3109f942ae93b640ca03d0d
+  - enabled: 1
+    path: Assets/Scenes/SelectScreen.unity
+    guid: 849a36e47155f044ca1cad8205d543e1
+  - enabled: 1
+    path: Assets/Scenes/Boss.unity
+    guid: 6f9b9a3c8f69f4a4db647d8f096228e3
   - enabled: 1
     path: Assets/Scenes/BossBurang.unity
     guid: 6a14c107712e1d44e894328f13a353c8
@@ -20,7 +23,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BossTower.unity
     guid: adf277de4e83fb84f87cc32935d98720
-  - enabled: 1
-    path: Assets/Scenes/SelectScreen.unity
-    guid: 849a36e47155f044ca1cad8205d543e1
   m_configObjects: {}

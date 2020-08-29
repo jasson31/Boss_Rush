@@ -16,6 +16,7 @@ public class WeaponFactory
 	{
 		if (weaponSpecs == null)
 		{
+			weaponSpecs = new Dictionary<int, WeaponSpec>();
 			var json = Resources.Load<TextAsset>("Weapons");
 			foreach(var newWeaponSpec in JsonParser<WeaponSpecsContainer>.FromJson(json.text).weapons)
 			{
@@ -51,6 +52,9 @@ public class WeaponFactory
 				weapon.attackBehaviour = new LaserAttack(laserPrefab, weaponSpec.chargeTime, weaponSpec.shotTime);
 				break;
 		}
+
+		weapon.controller = Resources.Load<AnimatorOverrideController>("Anims/" + weaponSpec.weaponName);
+		weapon.sprite = Resources.Load<Sprite>("Sprites/" + weaponSpec.weaponName);
 
 		return weapon;
 	}

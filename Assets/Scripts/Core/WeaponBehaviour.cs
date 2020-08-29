@@ -34,31 +34,8 @@ public class WeaponBehaviour : MonoBehaviour
     private void Awake()
     {
         check = true;
-
-        Weapon weapon = ScriptableObject.CreateInstance<Weapon>();
-        //weapon.attackBehaviour = new LaserAttack(testLaser, 2, 2);
-        weapon.attackBehaviour = new StabAttack();
-        weapon.damage = 3;
-        weapon.range = 1;
-        weapon.moveSpeed = 7;
-        weapon.sprite = testImage1;
-        weapon.controller = testController1;
-        weapon.health = 3;
-        weapon.maxHealth = 3;
-        weapons.Add(weapon);
-        Debug.Log(weapon.attackBehaviour);
-
-        Weapon weapon2 = ScriptableObject.CreateInstance<Weapon>();
-        weapon2.attackBehaviour = new SwordAttack();
-        weapon2.damage = 3;
-        weapon2.range = 1.2f;
-        weapon2.moveSpeed = 7;
-        weapon2.sprite = testImage2;
-        weapon2.controller = testController2;
-        weapon2.health = 3;
-        weapon.maxHealth = 3;
-        weapons.Add(weapon2);
-        Debug.Log(weapon2.attackBehaviour);
+        weapons.Add(WeaponFactory.CreateWeapon(101));
+        weapons.Add(WeaponFactory.CreateWeapon(102));
 
         anim = GetComponent<Animator>();
     }
