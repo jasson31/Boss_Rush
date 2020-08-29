@@ -222,7 +222,7 @@ public class BurangBoss : Boss
                     }
                     else
                     {
-                        if(playerPos.x <= -8 && XDist() <= 0 || playerPos.x >= 8 && XDist() >= 0)
+                        if(playerPos.x <= -8 || playerPos.x >= 8)
                         {
                             if (rand < 0.25f)
                             {
