@@ -592,9 +592,8 @@ public class Bullet : MonoBehaviour
         Player player = collision.GetComponent<Player>();
         if (player != null)
         {
-            //player.GetDamaged(0);
-            Debug.Log("Damaged\n");
-            
+            Game.inst.player.GetDamaged(0.25f);
+
         }
     }
 }
@@ -605,8 +604,7 @@ public class Laser : MonoBehaviour
     {
         if (collision.GetComponent<Player>() != null)
         {
-            //collision.GetComponent<Player>().GetDamaged(0);
-            Debug.Log("Damaged2\n");
+            Game.inst.player.GetDamaged(0.25f);
         }
     }
 }
