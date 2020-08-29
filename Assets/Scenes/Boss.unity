@@ -439,7 +439,7 @@ GameObject:
   m_Component:
   - component: {fileID: 335323300}
   - component: {fileID: 335323301}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: Shield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -619,7 +619,7 @@ GameObject:
   m_Component:
   - component: {fileID: 728102520}
   - component: {fileID: 728102521}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: Weapon-Sword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -704,7 +704,7 @@ GameObject:
   - component: {fileID: 814174706}
   - component: {fileID: 814174705}
   - component: {fileID: 814174710}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: Boss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -755,7 +755,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  bulletPrefab: {fileID: 2614991159716093874, guid: 2c3987ef2675ce24c8c854c460e0404f,
+  bulletPrefab: {fileID: 1402264946740934469, guid: 25a703dd02e243f47a438a26f9298b63,
     type: 3}
   map:
     m_Center: {x: 0, y: 1.48, z: 0}
@@ -774,7 +774,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: -0.08253494, y: 0.21003479}
@@ -953,7 +953,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 899279150}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1016,7 +1016,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1238184279}
   - component: {fileID: 1238184280}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: Leg (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1967,7 +1967,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1629279784}
   - component: {fileID: 1629279785}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7993,7 +7993,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1834224916}
   - component: {fileID: 1834224917}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: Hat-Helmet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8074,7 +8074,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1911978705}
   - component: {fileID: 1911978706}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8158,7 +8158,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1937123046}
   - component: {fileID: 1937123047}
-  m_Layer: 13
+  m_Layer: 14
   m_Name: Leg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
