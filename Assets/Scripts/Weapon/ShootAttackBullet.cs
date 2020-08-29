@@ -4,11 +4,11 @@ using UnityEngine;
 
 class ShootAttackBullet : MonoBehaviour
 {
-    private int damage;
+    private float damage;
     private Vector2 startPos;
     private float range;
 
-    public void Init(int _damage, Vector2 _startPos, float _range, Vector2 velocity)
+    public void Init(float _damage, Vector2 _startPos, float _range, Vector2 velocity)
     {
         damage = _damage;
         startPos = _startPos;

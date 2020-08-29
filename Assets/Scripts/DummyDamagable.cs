@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class DummyDamagable : MonoBehaviour, IDamagable
 {
-    public int Health => throw new System.NotImplementedException();
+    public float Health => throw new System.NotImplementedException();
 
-    public void GetDamaged(int damage)
+    public void GetDamaged(float damage)
     {
         Debug.Log(name + " Attacked! " + damage + " Damage!");
     }

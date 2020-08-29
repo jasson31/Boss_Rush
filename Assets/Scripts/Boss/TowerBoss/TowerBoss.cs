@@ -40,7 +40,7 @@ public class TowerBoss : Boss
         MaxHealth = Health = 200;
     }
 
-    public override void GetDamaged(int damage)
+    public override void GetDamaged(float damage)
     {
         base.GetDamaged(damage);
         if (MaxHealth * 0.33f >= Health && Phase == 1)

@@ -116,7 +116,7 @@ public class SpiderBoss : Boss
         return nextRoutines;
     }
 
-    public override void GetDamaged(int damage)
+    public override void GetDamaged(float damage)
     {
         base.GetDamaged(damage);
         if (MaxHealth * 0.1f >= Health && Phase == 0)

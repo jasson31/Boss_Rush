@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class LaserAttackBullet : MonoBehaviour
 {
-    private int damage;
+    private float damage;
     private float chargeWidth = 0.2f;
     private float shootWidth = 1;
 
     private LineRenderer lr;
     private List<GameObject> damagedObjects = new List<GameObject>();
 
-    public IEnumerator LaserBulletRoutine(int _damage, Vector2 startPos, Vector2 endPos, float chargeTime, float shootTime)
+    public IEnumerator LaserBulletRoutine(float _damage, Vector2 startPos, Vector2 endPos, float chargeTime, float shootTime)
     {
         damage = _damage;
 

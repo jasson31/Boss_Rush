@@ -22,7 +22,7 @@ public enum WeaponMoveSpeed
 
 public interface IWeaponAttack
 {
-    void Attack(Vector2 handPosition, Vector2 mousePosition, int damage, float range);
+    void Attack(Vector2 handPosition, Vector2 mousePosition, float damage, float range);
 }
 
 [System.Serializable]
@@ -31,7 +31,7 @@ public class WeaponSpec
 	public int id;
 	public string weaponName;
 	public int health;
-	public int damage;
+	public float damage;
 	public float range;
 	public float coolTime;
 	public WeaponAttack attack;
@@ -54,7 +54,7 @@ public class Weapon : ScriptableObject
 	public string weaponName;
     public int health;
     public int MaxHealth { get; private set; }
-    public int damage;
+    public float damage;
     public float range;
     public float coolTime;
     private float timer;
@@ -104,7 +104,7 @@ public class Weapon : ScriptableObject
 
 public class SwordAttack : IWeaponAttack
 {
-    public void Attack(Vector2 handPosition, Vector2 mousePosition, int damage, float range)
+    public void Attack(Vector2 handPosition, Vector2 mousePosition, float damage, float range)
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(handPosition, range);
         foreach (var hit in hits)
@@ -117,7 +117,7 @@ public class SwordAttack : IWeaponAttack
 
 public class StabAttack : IWeaponAttack
 {
-    public void Attack(Vector2 handPosition, Vector2 mousePosition, int damage, float range)
+    public void Attack(Vector2 handPosition, Vector2 mousePosition, float damage, float range)
     {
         Vector2 dir = (mousePosition - handPosition).normalized;
         float angle = Mathf.Atan2(dir.y, dir.x);
@@ -144,7 +144,7 @@ public class ShootAttack : IWeaponAttack
         speed = _speed;
     }
 
-    public void Attack(Vector2 handPosition, Vector2 mousePosition, int damage, float range)
+    public void Attack(Vector2 handPosition, Vector2 mousePosition, float damage, float range)
     {
         Vector2 dir = (mousePosition - handPosition).normalized;
         GameObject.Instantiate(bullet, handPosition, Quaternion.identity).GetComponent<ShootAttackBullet>().Init(damage, handPosition, range, dir * speed);    
@@ -165,7 +165,7 @@ public class LaserAttack : IWeaponAttack
 
     }
 
-    public void Attack(Vector2 handPosition, Vector2 mousePosition, int damage, float range)
+    public void Attack(Vector2 handPosition, Vector2 mousePosition, float damage, float range)
     {
         Vector2 dir = (mousePosition - handPosition).normalized;
         float angle = Mathf.Atan2(dir.y, dir.x);
