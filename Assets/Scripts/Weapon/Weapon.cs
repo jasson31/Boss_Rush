@@ -52,8 +52,8 @@ public class Weapon : ScriptableObject
     public int weaponID;
     public float moveSpeed;
 	public string weaponName;
-    public int health;
-    public int MaxHealth { get; private set; }
+    public float health;
+    public float maxHealth;
     public float damage;
     public float range;
     public float coolTime;

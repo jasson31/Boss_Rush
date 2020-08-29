@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Spiderling : MonoBehaviour, IDamagable
 {
-    public int Health { get; protected set; }
+    public float Health { get; protected set; }
+
     [SerializeField]
     private float moveSpeed;
 
@@ -17,7 +18,7 @@ public class Spiderling : MonoBehaviour, IDamagable
             Destroy(gameObject, 0.2f);
         }
     }
-    public void GetDamaged(int damage)
+    public void GetDamaged(float damage)
     {
         GetComponent<Collider2D>().enabled = false;
         GetComponent<Animator>().SetTrigger("Explode");

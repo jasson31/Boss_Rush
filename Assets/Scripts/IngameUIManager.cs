@@ -22,8 +22,8 @@ public abstract class UIManager : SingletonBehaviour<UIManager>
 
 public class IngameUIManager : SingletonBehaviour<IngameUIManager>
 {
-    private int health;
-    private int maxHealth;
+    private float health;
+    private float maxHealth;
 
     public Image[] hearts;
     public Sprite fullHeart;
@@ -43,7 +43,7 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
         bossHealthBar.value = health / (float)maxHealth;
     }
 
-    public void SetHealthBar(int health, int maxHealth)
+    public void SetHealthBar(float health, float maxHealth)
     {
         if (health > maxHealth)
         {
@@ -61,7 +61,7 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
                 hearts[i].sprite = emptyHeart;
             }
 
-            if (i < maxHealth)
+            if (i < health)
             {
                 hearts[i].enabled = true;
             }
@@ -107,7 +107,7 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
         SetWeaponSprites();
 
         health = weapon.weapons[weapon.weaponIndex].health;
-        maxHealth = weapon.weapons[weapon.weaponIndex].MaxHealth;
+        maxHealth = weapon.weapons[weapon.weaponIndex].maxHealth;
 
         SetHealthBar(health, maxHealth);
 
@@ -118,7 +118,7 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
         SetWeaponSprites();
 
         health = weapon.weapons[weapon.weaponIndex].health;
-        maxHealth = weapon.weapons[weapon.weaponIndex].MaxHealth;
+        maxHealth = weapon.weapons[weapon.weaponIndex].maxHealth;
 
         SetHealthBar(health, maxHealth);
 

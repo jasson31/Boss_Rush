@@ -39,6 +39,8 @@ public class WeaponBehaviour : MonoBehaviour
         weapon.moveSpeed = 7;
         weapon.sprite = testImage1;
         weapon.controller = testController1;
+        weapon.health = 3;
+        weapon.maxHealth = 3;
         weapons.Add(weapon);
         Debug.Log(weapon.attackBehaviour);
 
@@ -49,6 +51,8 @@ public class WeaponBehaviour : MonoBehaviour
         weapon2.moveSpeed = 7;
         weapon2.sprite = testImage2;
         weapon2.controller = testController2;
+        weapon2.health = 3;
+        weapon.maxHealth = 3;
         weapons.Add(weapon2);
         Debug.Log(weapon2.attackBehaviour);
 
@@ -103,7 +107,7 @@ public class WeaponBehaviour : MonoBehaviour
 
     public void GetDamaged(float damage)
     {
-        /*Weapon.health -= damage;
+        Weapon.health -= damage;
         if (Weapon.health <= 0)
         {
             Weapon weapon = Weapon;
@@ -118,8 +122,7 @@ public class WeaponBehaviour : MonoBehaviour
                 weaponIndex = 0;
                 //Weapon Break Routine
             }
-        }*/
-        
+        }
     }
 
     private void UseWeaponAttack(Vector2 mousePosition)

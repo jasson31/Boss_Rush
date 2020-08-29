@@ -28,6 +28,7 @@ public class WeaponFactory
 		weapon.weaponID = weaponSpec.id;
 		weapon.weaponName = weaponSpec.weaponName;
 		weapon.health = weaponSpec.health;
+		weapon.maxHealth = weaponSpec.health;
 		weapon.damage = weaponSpec.damage;
 		weapon.range = weaponSpec.range;
 		weapon.moveSpeed = MoveSpeed[(int)weaponSpec.speed];
