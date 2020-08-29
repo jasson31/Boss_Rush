@@ -19,7 +19,7 @@ public class WeaponEditorWindow : EditorWindow
 
 	private int id;
 	private string weaponName = "";
-	private int damage;
+	private float damage;
 	private float coolTime;
 	private float range;
 	private int health;
@@ -64,7 +64,7 @@ public class WeaponEditorWindow : EditorWindow
 			EditorGUILayout.LabelField(weapons.IndexOf(weapon).ToString(), EditorStyles.boldLabel);
 			weapon.id = EditorGUILayout.IntField("ID", weapon.id);
 			weapon.weaponName = EditorGUILayout.TextField("Name", weapon.weaponName);
-			weapon.damage = EditorGUILayout.IntField("Damage", weapon.damage);
+			weapon.damage = EditorGUILayout.FloatField("Damage", weapon.damage);
 			weapon.coolTime = EditorGUILayout.FloatField("Cooltime", weapon.coolTime);
 			weapon.range = EditorGUILayout.FloatField("Range", weapon.range);
 			weapon.health = EditorGUILayout.IntField("Health", weapon.health);
@@ -91,7 +91,7 @@ public class WeaponEditorWindow : EditorWindow
 		GUILayout.Label("New Weapon", EditorStyles.boldLabel);
 		id = EditorGUILayout.IntField("ID", id);
 		weaponName = EditorGUILayout.TextField("Name", weaponName);
-		damage = EditorGUILayout.IntField("Damage", damage);
+		damage = EditorGUILayout.FloatField("Damage", damage);
 		coolTime = EditorGUILayout.FloatField("Cooltime", coolTime);
 		range = EditorGUILayout.FloatField("Range", range);
 		health = EditorGUILayout.IntField("Health", health);
