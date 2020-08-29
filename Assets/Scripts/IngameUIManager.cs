@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public abstract class UIManager : SingletonBehaviour<UIManager>
 {
     private void OnDisable()
