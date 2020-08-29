@@ -4,7 +4,7 @@ using UnityEngine;
 
 class ShootAttackBullet : MonoBehaviour
 {
-    private int damage;
+    private float damage;
     private Vector2 startPos;
     private float range;
 

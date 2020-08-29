@@ -37,7 +37,7 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
     [SerializeField]
     private Slider bossHealthBar;
 
-    public void SetBossHealthBar(int health, int maxHealth)
+    public void SetBossHealthBar(float health, float maxHealth)
     {
         bossHealthBar.value = health / (float)maxHealth;
     }

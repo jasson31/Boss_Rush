@@ -5,9 +5,9 @@ using UnityEngine;
 public class CocoonLine : MonoBehaviour, IDamagable
 {
     public SpiderBoss spiderBoss;
-    public int Health { get; protected set; }
+    public float Health { get; protected set; }
 
-    public void GetDamaged(int damage)
+    public void GetDamaged(float damage)
     {
         //StartCoroutine(spiderBoss.CocoonBreakRoutine());
         spiderBoss.Stun(0.5f);

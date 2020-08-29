@@ -17,8 +17,8 @@ public abstract class Boss : MonoBehaviour, IDamagable
     protected Coroutine CurrentRoutine { get; private set; }
     private Queue<IEnumerator> nextRoutines = new Queue<IEnumerator>();
 
-    public int Health { get; protected set; }
-    public int MaxHealth { get; protected set; }
+    public float Health { get; protected set; }
+    public float MaxHealth { get; protected set; }
 
     protected Animator animator;
 
@@ -71,7 +71,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
         pooledDamageTexts.Add(text);
     }
 
-    public virtual void GetDamaged(int damage)
+    public virtual void GetDamaged(float damage)
     {
         damage += UnityEngine.Random.Range(-1, 2);
         GetPooledDamageText().SetText(damage.ToString());

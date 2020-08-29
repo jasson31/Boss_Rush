@@ -109,7 +109,7 @@ public class BurangBoss : Boss
         }
     }
 
-    public override void GetDamaged(int damage)
+    public override void GetDamaged(float damage)
     {
         if (!Invincible) { base.GetDamaged(damage); }
         else if(bombArmor){ IsHit = true; }

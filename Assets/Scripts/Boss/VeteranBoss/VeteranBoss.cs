@@ -60,7 +60,7 @@ public class VeteranBoss : Boss
         yield return null;
     }
     
-    public override void GetDamaged(int damage)
+    public override void GetDamaged(float damage)
     {
         base.GetDamaged(damage);
         if (MaxHealth * 0.25f >= Health && Phase == 0)
