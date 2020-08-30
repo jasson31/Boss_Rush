@@ -18,9 +18,9 @@ EditorBuildSettings:
     path: Assets/Scenes/BossBurang.unity
     guid: 6a14c107712e1d44e894328f13a353c8
   - enabled: 1
-    path: Assets/Scenes/BossSpider.unity
-    guid: 35efea20e5b0cca46834327fde667251
-  - enabled: 1
     path: Assets/Scenes/BossTower.unity
     guid: adf277de4e83fb84f87cc32935d98720
+  - enabled: 1
+    path: Assets/Scenes/BossSpider.unity
+    guid: 35efea20e5b0cca46834327fde667251
   m_configObjects: {}

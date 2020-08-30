@@ -34,7 +34,7 @@ public class WeaponBehaviour : MonoBehaviour
     {
         check = true;
         weapons.Add(WeaponFactory.CreateWeapon(101));
-		weapons.Add(WeaponFactory.CreateWeapon(201));
+		weapons.Add(WeaponFactory.CreateWeapon(301));
 		anim = GetComponent<Animator>();
     }
 
