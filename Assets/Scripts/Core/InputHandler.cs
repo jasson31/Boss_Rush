@@ -46,7 +46,11 @@ public class InputHandler : SingletonBehaviour<InputHandler>
     private void Start()
     {
         //For Text
-        cursor = GameObject.Find("IngameCursor").transform;
+        GameObject cursorObject = GameObject.Find("IngameCursor");
+        if(cursorObject)
+        {
+            cursor = cursorObject.transform;
+        }
     }
 
     private void Update()
@@ -54,73 +58,73 @@ public class InputHandler : SingletonBehaviour<InputHandler>
         if(cursor)
         {
             cursor.GetComponent<RectTransform>().position = Input.mousePosition;
-        }
 
-        if (Input.GetKey(KeyCode.W))
-        {
-            OnUpKey?.Invoke();
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            OnDownKey?.Invoke(Vector2.down);
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            OnLeftKey?.Invoke(Vector2.left);
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            OnRightKey?.Invoke(Vector2.right);
-        }
-        if (Input.GetKey(KeyCode.Space))
-        {
-            OnJumpKey?.Invoke();
-        }
+            if (Input.GetKey(KeyCode.W))
+            {
+                OnUpKey?.Invoke();
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                OnDownKey?.Invoke(Vector2.down);
+            }
+            if (Input.GetKey(KeyCode.A))
+            {
+                OnLeftKey?.Invoke(Vector2.left);
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                OnRightKey?.Invoke(Vector2.right);
+            }
+            if (Input.GetKey(KeyCode.Space))
+            {
+                OnJumpKey?.Invoke();
+            }
 
-        if (Input.GetKeyUp(KeyCode.W))
-        {
-            OnUpKeyUp?.Invoke();
-        }
-        if (Input.GetKeyUp(KeyCode.S))
-        {
-            OnUpKeyUp?.Invoke();
-        }
-        if (Input.GetKeyUp(KeyCode.A))
-        {
-            OnLeftKeyUp?.Invoke(Vector2.left);
-        }
-        if (Input.GetKeyUp(KeyCode.D))
-        {
-            OnRightKeyUp?.Invoke(Vector2.right);
-        }
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            OnJumpKeyUp?.Invoke();
-        }
+            if (Input.GetKeyUp(KeyCode.W))
+            {
+                OnUpKeyUp?.Invoke();
+            }
+            if (Input.GetKeyUp(KeyCode.S))
+            {
+                OnUpKeyUp?.Invoke();
+            }
+            if (Input.GetKeyUp(KeyCode.A))
+            {
+                OnLeftKeyUp?.Invoke(Vector2.left);
+            }
+            if (Input.GetKeyUp(KeyCode.D))
+            {
+                OnRightKeyUp?.Invoke(Vector2.right);
+            }
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                OnJumpKeyUp?.Invoke();
+            }
 
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            OnUpKeyDown?.Invoke();
-        }
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            OnDownKeyDown?.Invoke(Vector2.down);
-        }
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            OnLeftKeyDown?.Invoke(Vector2.left);
-        }
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            OnRightKeyDown?.Invoke(Vector2.right);
-        }
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            OnJumpKeyDown?.Invoke();
-        }
-        if (Input.GetKeyDown(KeyCode.Mouse0) && Game.inst.player.isControllable)
-        {
-            OnAttackKeyDown?.Invoke(CursorPos);
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                OnUpKeyDown?.Invoke();
+            }
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                OnDownKeyDown?.Invoke(Vector2.down);
+            }
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                OnLeftKeyDown?.Invoke(Vector2.left);
+            }
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                OnRightKeyDown?.Invoke(Vector2.right);
+            }
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                OnJumpKeyDown?.Invoke();
+            }
+            if (Input.GetKeyDown(KeyCode.Mouse0) && Game.inst.player.isControllable)
+            {
+                OnAttackKeyDown?.Invoke(CursorPos);
+            }
         }
     }
 }
