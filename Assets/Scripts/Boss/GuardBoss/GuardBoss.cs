@@ -131,7 +131,7 @@ public class GuardBoss : Boss
                 else if (rand < 0.65f)
                 {
                     int idx = FindObjectOfType<Player>().transform.position.x > 0 ? 3 : 2;
-                    nextRoutines.Enqueue(NewActionRoutine(MoveRoutine(targetPositions[idx], 1)));
+					nextRoutines.Enqueue(NewActionRoutine(Land2Routine(targetPositions[idx])));
                     nextRoutines.Enqueue(NewActionRoutine(WaitRoutine(0.5f)));
                     nextRoutines.Enqueue(NewActionRoutine(ChargeRoutine(idx == 2 ? Vector2.right : Vector2.left)));
                 }
@@ -253,7 +253,7 @@ public class GuardBoss : Boss
 		Vector3 destination = transform.position + new Vector3(direction.x, direction.y) * Mathf.Min(Vector2.Distance(playerPosition, transform.position) - 0.2f, 5);
 
 		yield return MoveRoutine(destination, 0.3f, moveCurve);
-		animator.SetTrigger("Attack");
+		animator.SetTrigger("Swing");
 		playerPosition = FindObjectOfType<Player>().transform.position;
 		Debug.Log(Vector2.Angle(direction, playerPosition - transform.position));
 		if (Vector2.Distance(transform.position, playerPosition) <= meleeRange && Vector2.Angle(direction, playerPosition - transform.position) <= 60)
