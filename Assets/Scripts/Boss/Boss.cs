@@ -91,6 +91,7 @@ public abstract class Boss : MonoBehaviour, IDamagable
         IngameUIManager.inst.SetBossHealthBar(Health, MaxHealth);
         if(Health < 0)
         {
+			DropItem();
             FindObjectOfType<ClearChecker>().isClear = true;
             SceneManager.LoadScene("SelectScreen");
         }
