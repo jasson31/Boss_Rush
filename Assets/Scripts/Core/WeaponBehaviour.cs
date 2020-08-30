@@ -34,9 +34,8 @@ public class WeaponBehaviour : MonoBehaviour
     {
         check = true;
         weapons.Add(WeaponFactory.CreateWeapon(101));
-        weapons.Add(WeaponFactory.CreateWeapon(102));
-
-        anim = GetComponent<Animator>();
+		weapons.Add(WeaponFactory.CreateWeapon(201));
+		anim = GetComponent<Animator>();
     }
 
     private void OnEnable()
@@ -64,7 +63,11 @@ public class WeaponBehaviour : MonoBehaviour
         {
             ChangeWeapon(1);
         }
-    }
+		else if (Input.GetKeyDown(KeyCode.Alpha3))
+		{
+			ChangeWeapon(2);
+		}
+	}
 
     public void ChangeWeapon(int index)
     {

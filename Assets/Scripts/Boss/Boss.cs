@@ -52,10 +52,6 @@ public abstract class Boss : MonoBehaviour, IDamagable
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            GetDamaged(100000);
-        }
         if (CurrentRoutine == null)
         {
             NextRoutine();
