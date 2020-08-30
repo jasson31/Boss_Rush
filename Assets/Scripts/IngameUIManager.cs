@@ -116,7 +116,7 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
     public void SetWeaponSprites()
     {
         int a = weapon.weaponIndex;
-        int numWeapons = WeaponBehaviour.weapons.Count;
+        int numWeapons = Mathf.Min(WeaponBehaviour.weapons.Count, 3);
         if(numWeapons > 0)
         {
             weaponImage[0].sprite = WeaponBehaviour.weapons[weapon.weaponIndex].sprite;
@@ -132,6 +132,8 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
 
         for (int i = 0; i < numWeapons; i++)
         {
+			Debug.Log(i.ToString() + " " + weapon.weaponIndex);
+			Debug.Log(numWeapons);
             if (i == weapon.weaponIndex) continue;
 			weaponImage[index++].sprite = WeaponBehaviour.weapons[i].sprite;
         }

@@ -33,8 +33,11 @@ public class WeaponBehaviour : MonoBehaviour
     private void Awake()
     {
         check = true;
-        weapons.Add(WeaponFactory.CreateWeapon(101));
-		weapons.Add(WeaponFactory.CreateWeapon(201));
+		if (weapons.Count == 0)
+		{
+			weapons.Add(WeaponFactory.CreateWeapon(101));
+			weapons.Add(WeaponFactory.CreateWeapon(201));
+		}
 		anim = GetComponent<Animator>();
     }
 
