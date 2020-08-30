@@ -28,6 +28,7 @@ public class WeaponFactory
 		WeaponSpec weaponSpec = weaponSpecs[id];
 		weapon.weaponID = weaponSpec.id;
 		weapon.weaponName = weaponSpec.weaponName;
+		weapon.coolTime = weaponSpec.coolTime;
 		weapon.health = weaponSpec.health;
 		weapon.maxHealth = weaponSpec.health;
 		weapon.damage = weaponSpec.damage;
