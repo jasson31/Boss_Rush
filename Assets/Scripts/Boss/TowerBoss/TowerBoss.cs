@@ -35,6 +35,7 @@ public class TowerBoss : Boss
     protected override void Start()
     {
         base.Start();
+        lightningOrb.AddComponent<OrbHit>();
         bullet.AddComponent<Bullet>();
         laserCollider.AddComponent<Laser>();
         laserCollider2.AddComponent<Laser>();
@@ -54,8 +55,9 @@ public class TowerBoss : Boss
             check = true;
             Phase = 2;
         }
-        if (Health <= 0 && Phase == 2)
+        if (Health <= 5 && Phase == 2)
         {
+            Destroy(laserCollider.GetComponent<Laser>());
             Invincible = true;
             Phase = 3;
             laserCollider.AddComponent<Laser2>();
@@ -63,6 +65,7 @@ public class TowerBoss : Boss
         if(Phase == 4)
         {
             gameObject.SetActive(false);
+            //Debug.Log(Health);
         }
 
 
@@ -232,7 +235,7 @@ public class TowerBoss : Boss
 
     private IEnumerator LaserRoutine(float waitTime)
     {
-        animator.SetTrigger("Attack2");
+        //animator.SetTrigger("Attack2");
         for (int i=0; i<3; i++)
         {
             lr.enabled = true;
@@ -288,7 +291,7 @@ public class TowerBoss : Boss
     
     private IEnumerator LaserRoutine2(float waitTime)
     {
-        animator.SetTrigger("Attack2");
+        //animator.SetTrigger("Attack2");
         lr.enabled = true;
         lr2.enabled = true;
 
@@ -373,7 +376,7 @@ public class TowerBoss : Boss
 
     private IEnumerator LaserRoutine2b(float waitTime)
     {
-        animator.SetTrigger("Attack");
+        //animator.SetTrigger("Attack");
         lr.enabled = true;
         lr2.enabled = true;
 
@@ -453,7 +456,7 @@ public class TowerBoss : Boss
 
     private IEnumerator OrbRoutine(int orbCount)
     {
-        animator.SetTrigger("Attack");
+        //animator.SetTrigger("Attack");
         GameObject[] orbs = new GameObject[orbCount];
         yield return new WaitForSeconds(0.4f);
         for (int i = 0; i < orbCount; i++)
@@ -601,7 +604,7 @@ public class TowerBoss : Boss
         animator.SetTrigger("Destruct");
         yield return new WaitForSeconds(3f);
         Phase = 4;
-        GetDamaged(0);
+        GetDamaged(20);
         
     }
 
@@ -657,6 +660,17 @@ public class Laser2 : MonoBehaviour
         if (collision.GetComponent<Player>() != null)
         {
             Game.inst.player.GetDamaged(1f);
+        }
+    }
+}
+
+public class OrbHit : MonoBehaviour
+{
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.GetComponent<Player>() != null)
+        {
+            Game.inst.player.GetDamaged(0.5f);
         }
     }
 }
