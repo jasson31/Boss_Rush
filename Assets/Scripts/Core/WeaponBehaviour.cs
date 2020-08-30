@@ -10,8 +10,7 @@ public class WeaponBehaviour : MonoBehaviour
     private float weaponChangeCoolTime = 2;
 
 
-    [SerializeField]
-    public List<Weapon> weapons = new List<Weapon>();
+    public static List<Weapon> weapons = new List<Weapon>();
     public int weaponIndex = 0;
     private Weapon Weapon { get { return weapons.Count > weaponIndex ? weapons[weaponIndex] : null; } }
 
@@ -83,7 +82,7 @@ public class WeaponBehaviour : MonoBehaviour
 
     public void AddWeapon(int weaponID)
     {
-        weapons.Add(StaticData.inst.CreateWeapon(weaponID));
+        weapons.Add(WeaponFactory.CreateWeapon(weaponID));
     }
 
     public void GetDamaged(float damage)

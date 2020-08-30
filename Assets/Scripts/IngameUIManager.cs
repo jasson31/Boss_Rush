@@ -116,10 +116,10 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
     public void SetWeaponSprites()
     {
         int a = weapon.weaponIndex;
-        int numWeapons = weapon.weapons.Count;
+        int numWeapons = WeaponBehaviour.weapons.Count;
         if(numWeapons > 0)
         {
-            weaponImage[0].sprite = weapon.weapons[weapon.weaponIndex].sprite;
+            weaponImage[0].sprite = WeaponBehaviour.weapons[weapon.weaponIndex].sprite;
         }
         int index = 1;
         if (numWeapons < 3)
@@ -133,7 +133,7 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
         for (int i = 0; i < numWeapons; i++)
         {
             if (i == weapon.weaponIndex) continue;
-            weaponImage[index++].sprite = weapon.weapons[i].sprite;
+			weaponImage[index++].sprite = WeaponBehaviour.weapons[i].sprite;
         }
  
         
@@ -154,8 +154,8 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
 
         SetWeaponSprites();
 
-        health = weapon.weapons[weapon.weaponIndex].health;
-        maxHealth = weapon.weapons[weapon.weaponIndex].maxHealth;
+        health = WeaponBehaviour.weapons[weapon.weaponIndex].health;
+        maxHealth = WeaponBehaviour.weapons[weapon.weaponIndex].maxHealth;
 
         SetHealthBar(health, maxHealth);
 
@@ -166,10 +166,10 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
         SetWeaponSprites();
 
 
-        if (weapon.weapons.Count > 0)
+        if (WeaponBehaviour.weapons.Count > 0)
         {
-            health = weapon.weapons[weapon.weaponIndex].health;
-            maxHealth = weapon.weapons[weapon.weaponIndex].maxHealth;
+            health = WeaponBehaviour.weapons[weapon.weaponIndex].health;
+            maxHealth = WeaponBehaviour.weapons[weapon.weaponIndex].maxHealth;
         }
 
         SetHealthBar(health, maxHealth);
@@ -196,8 +196,8 @@ public class IngameUIManager : SingletonBehaviour<IngameUIManager>
         yes.gameObject.SetActive(false);
         no.gameObject.SetActive(false);
 
-        health = weapon.weapons[weapon.weaponIndex].health;
-        maxHealth = weapon.weapons[weapon.weaponIndex].maxHealth;
+        health = WeaponBehaviour.weapons[weapon.weaponIndex].health;
+        maxHealth = WeaponBehaviour.weapons[weapon.weaponIndex].maxHealth;
         SetHealthBar(health, maxHealth);
 
         weapon.check = true;
