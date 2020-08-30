@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct WeaponSpecsContainer
-{
-	public List<WeaponSpec> weapons;
-}
+
 
 public class WeaponFactory
 {
+	private struct WeaponSpecsContainer
+	{
+		public List<WeaponSpec> weapons;
+	}
+
 	private static readonly float[] MoveSpeed = { 4, 5.5f, 7, 9.5f, 12 };
 
 	private static Dictionary<int, WeaponSpec> weaponSpecs = null;
